@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 112002
+      POSTGRES_DB: TYMEdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build: ./backend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: 112002
+      DATABASE_NAME: TYMEdb
+
+  frontend:
+    build: ./frontend
+    ports:
+      - '5173:5173'
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
