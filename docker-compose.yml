@@ -38,7 +38,7 @@ services:
       POSTGRES_DB: tymedb
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      #- ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
   pgdata:
