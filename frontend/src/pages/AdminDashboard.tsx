@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type { FC } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { Search, Bell, LogOut, Home, Users, Calendar as CalendarIcon } from "lucide-react";
+import { Search, Bell, LogOut, Home, Users, Calendar as AppWindow, NotebookPen, FolderKanban, BadgeDollarSign, School2, ClipboardPlus } from "lucide-react";
 import CreateUser from "../pages/CreateUser";
 
 interface Member {
@@ -42,16 +42,32 @@ const AdminDashboard: FC = () => {
           </div>
           <nav className="space-y-4">
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <Home /> Inicio
+              <AppWindow /> Inicio
+            </a>
+             <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <Home /> Administrador
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <NotebookPen/> Registrar Usuarios
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <Bell /> Ejercicios y rutina
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <FolderKanban /> Plan
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <BadgeDollarSign /> Pagos
             </a>
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
               <Users /> Usuarios
             </a>
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <CalendarIcon /> Rutinas
+              <School2 /> Profesores
             </a>
+                       
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <Bell /> Pagos
+              <ClipboardPlus /> Reportes
             </a>
           </nav>
         </div>
@@ -59,7 +75,7 @@ const AdminDashboard: FC = () => {
           className="flex items-center gap-2 text-white hover:opacity-90"
           onClick={() => {/* opcional logout */}}
         >
-          <LogOut /> Logout
+          <LogOut /> Desconectarse
         </button>
       </aside>
 
