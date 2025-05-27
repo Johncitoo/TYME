@@ -5,7 +5,7 @@ import logo from '../assets/logo2-tyme.png'
 export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const login = useAuthStore((state) => state.login)
+  const login = useAuthStore((state: { login: (user: any) => void }) => state.login)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

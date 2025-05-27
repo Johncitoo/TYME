@@ -1,26 +1,25 @@
 import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() dto: LoginDto) {
-    const user = await this.authService.validateUser(dto.email, dto.contrasena);
-    
-    if (!user || user.contrasena !== dto.contrasena) {
-      throw new UnauthorizedException('Credenciales inválidas');
+  async login(@Body() body: { email: string; password: string }) {
+    const user = await this.authService.validateUser(body.email, body.password);
+    if (!user) {
+      throw new UnauthorizedException('Credenciales incorrectas');
     }
-
-    const token = this.authService.generateToken(user);
-
+    const token = await this.authService.generateJwtToken(user);
+    // src/auth/auth.controller.ts
     return {
-      id: user.id,
-      nombre: user.nombre,
-      tipo: user.tipo_usuario.nombre,
+      id_usuario: user.id_usuario,
+      correo: user.correo,
+      primer_nombre: user.primer_nombre,
+      tipo_usuario: user.tipo_usuario, // Esto debe ser un STRING, no un objeto ni número
       token,
     };
+
   }
 }

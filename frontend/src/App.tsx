@@ -1,30 +1,24 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import AdminDashboard from "./pages/AdminDashboard";
-import CreateUser from "./pages/CreateUser";
-import Routines from "./pages/Routines";
-import MobileLogin from "./pages/MobileLogin";  // ← importa aquí
+import HomePage from "./pages/HomePage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-
-        {/* Login móvil (para pruebas en celular/emulador) */}
-        <Route path="/mobile-login" element={<MobileLogin />} />
-
-        {/* Proteger las rutas para administradores */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/create-user" element={<CreateUser />} />
-
-        {/* Página de Rutinas */}
-        <Route path="/admin/routines" element={<Routines />} />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute allowedRoles={["cliente"]}>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        {/* Agrega aquí otras rutas si quieres, por ejemplo para admin */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
-export default App;
-
-
