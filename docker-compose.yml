@@ -1,46 +1,43 @@
-version: '3.9'
-
 services:
-  frontend:
-    build: ./frontend
-    ports:
-      - '5173:5173'
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    working_dir: /app
-    command: npm run dev -- --host
-    depends_on:
-      - backend
-
-  backend:
-    build: ./backend
-    ports:
-      - '3000:3000'
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    working_dir: /app
-    env_file:
-      - ./backend/.env
-    command: npm run start:dev
-    depends_on:
-      - postgres
-
   postgres:
     image: postgres:15
     restart: always
-    ports:
-      - '5432:5432'
     environment:
+      POSTGRES_DB: tyme
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 112002
-      POSTGRES_DB: tymedb
     volumes:
       - pgdata:/var/lib/postgresql/data
-      #- ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: tyme
+      DATABASE_PASSWORD: 112002
+      DATABASE_NAME: tyme
+      JWT_SECRET: tu_jwt_secreto_aquí
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: "http://host.docker.internal:3000"
+    ports:
+      - "5173:5173"
 
 volumes:
   pgdata:
-
-  #probando el github"
