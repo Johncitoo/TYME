@@ -1,3 +1,4 @@
+// frontend/src/pages/LoginPage.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
@@ -14,42 +15,44 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
+      const res = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const text = await response.text();
-      console.log("STATUS:", response.status);
-      console.log("RESPUESTA:", text);
-
-      if (!response.ok) {
+      if (!res.ok) {
         setError("Credenciales incorrectas");
         return;
       }
 
-      const usuario = JSON.parse(text);
+      const usuario = await res.json();
       login(usuario);
 
-      // Ajuste flexible para cualquier formato de tipo_usuario
+      // 1) Extrae el rol en minúsculas
       let tipo = "";
-      if (usuario.tipo_usuario) {
-        if (typeof usuario.tipo_usuario === "string") {
-          tipo = usuario.tipo_usuario;
-        } else if (typeof usuario.tipo_usuario === "object" && usuario.tipo_usuario.nombre) {
-          tipo = usuario.tipo_usuario.nombre;
-        }
+      if (typeof usuario.tipo_usuario === "string") {
+        tipo = usuario.tipo_usuario.toLowerCase();
+      } else if (usuario.tipo_usuario?.nombre) {
+        tipo = String(usuario.tipo_usuario.nombre).toLowerCase();
       } else if (usuario.rol) {
-        tipo = usuario.rol;
+        tipo = String(usuario.rol).toLowerCase();
       } else if (usuario.role) {
-        tipo = usuario.role;
+        tipo = String(usuario.role).toLowerCase();
       }
 
-      if (tipo.toLowerCase() === "cliente") {
+      console.log("ROL DETECTADO:", tipo);
+
+      // 2) Redirige primero a admins, luego a clientes
+      if (tipo === "admin") {
+        navigate("/admin");
+        return;
+      } else if (tipo === "cliente") {
         navigate("/home");
+        return;
       } else {
-        setError("Solo clientes pueden ingresar aquí por ahora.");
+        setError("Rol no autorizado");
+        return;
       }
     } catch (err) {
       console.error("ERROR FETCH:", err);
@@ -59,7 +62,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form className="bg-white p-6 rounded shadow w-full max-w-sm" onSubmit={handleLogin}>
+      <form
+        className="bg-white p-6 rounded shadow w-full max-w-sm"
+        onSubmit={handleLogin}
+      >
         <h2 className="mb-4 text-xl font-bold">Iniciar sesión</h2>
         <input
           type="email"
@@ -86,3 +92,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

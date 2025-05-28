@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { AdminModule } from './admin/admin.module';
 
 // Ensure the file './entities/usuario.entity.ts' exists and is correctly named.
 // If the file is missing, create it as shown below:
@@ -32,6 +33,7 @@ import { AuthModule } from './auth/auth.module';
       signOptions: { expiresIn: '1h' },
     }),
     AuthModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

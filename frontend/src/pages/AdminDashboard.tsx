@@ -2,7 +2,20 @@ import React, { useState } from "react";
 import type { FC } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { Search, Bell, LogOut, Home, Users, Calendar as AppWindow, NotebookPen, FolderKanban, BadgeDollarSign, School2, ClipboardPlus } from "lucide-react";
+import {
+  Search,
+  Bell,
+  LogOut,
+  Home,
+  Users,
+  Calendar as AppWindow,
+  NotebookPen,
+  FolderKanban,
+  BadgeDollarSign,
+  School2,
+  ClipboardPlus
+} from "lucide-react";
+import { NavLink } from 'react-router-dom';
 import CreateUser from "../pages/CreateUser";
 
 interface Member {
@@ -41,14 +54,22 @@ const AdminDashboard: FC = () => {
             <p className="text-sm opacity-80">admin@example.com</p>
           </div>
           <nav className="space-y-4">
-            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+            <NavLink
+              to="/home"
+              className="flex items-center gap-2 hover:opacity-90"
+            >
               <AppWindow /> Inicio
-            </a>
-             <a href="#" className="flex items-center gap-2 hover:opacity-90">
+            </NavLink>
+
+            <NavLink
+              to="/admin/profile"
+              className="flex items-center gap-2 hover:opacity-90"
+            >
               <Home /> Administrador
-            </a>
+            </NavLink>
+
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <NotebookPen/> Registrar Usuarios
+              <NotebookPen /> Registrar Usuarios
             </a>
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
               <Bell /> Ejercicios y rutina
@@ -65,7 +86,6 @@ const AdminDashboard: FC = () => {
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
               <School2 /> Profesores
             </a>
-                       
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
               <ClipboardPlus /> Reportes
             </a>
@@ -188,4 +208,5 @@ const AdminDashboard: FC = () => {
 };
 
 export default AdminDashboard;
+
 
