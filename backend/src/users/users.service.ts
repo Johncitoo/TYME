@@ -16,4 +16,15 @@ export class UsersService {
       relations: ['tipoUsuario'],
     });
   }
+
+  async getAllClientes(): Promise<Usuario[]> {
+    const clientes = await this.repo.find({
+      where: {
+        tipo_usuario: { id_tipo_usuario: 2 },
+      },
+      relations: ['tipo_usuario'],
+    });
+    console.log('CLIENTES ENCONTRADOS:', clientes.length);
+    return clientes;
+  }
 }

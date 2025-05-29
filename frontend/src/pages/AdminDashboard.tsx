@@ -16,6 +16,7 @@ import {
   ClipboardPlus
 } from "lucide-react";
 import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import CreateUser from "../pages/CreateUser";
 
@@ -590,9 +591,10 @@ const AdminDashboard: FC = () => {
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
               <BadgeDollarSign /> Pagos
             </a>
-            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+            <NavLink to="/admin/users" className="flex items-center gap-2 hover:opacity-90">
               <Users /> Usuarios
-            </a>
+            </NavLink>
+
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
               <School2 /> Profesores
             </a>
