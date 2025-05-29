@@ -11,7 +11,7 @@ export class AuthController {
     if (!user) {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
-    const token = await this.authService.generateJwtToken(user);
+    const token = this.authService.generateJwtToken(user);
     // src/auth/auth.controller.ts
     return {
       id_usuario: user.id_usuario,
@@ -20,6 +20,5 @@ export class AuthController {
       tipo_usuario: user.tipo_usuario, // Esto debe ser un STRING, no un objeto ni número
       token,
     };
-
   }
 }

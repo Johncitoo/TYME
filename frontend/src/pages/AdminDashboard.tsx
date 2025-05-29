@@ -13,8 +13,10 @@ import {
   FolderKanban,
   BadgeDollarSign,
   School2,
-  ClipboardPlus,
+  ClipboardPlus
 } from "lucide-react";
+import { NavLink } from 'react-router-dom';
+
 import CreateUser from "../pages/CreateUser";
 
 const HomeContent: FC = () => {
@@ -561,20 +563,43 @@ const AdminDashboard: FC = () => {
             <p className="text-sm opacity-80">admin@example.com</p>
           </div>
           <nav className="space-y-4">
-            {sidebarItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => handleNavigation(item)}
-                className={`flex items-center gap-2 w-full p-2 rounded-lg transition-colors duration-200 ${
-                  selectedPage.path === item.path
-                    ? 'bg-white bg-opacity-20 text-white font-semibold'
-                    : 'hover:bg-white hover:bg-opacity-10'
-                }`}
-                style={{ textAlign: 'left' }}
-              >
-                {item.icon} {item.label}
-              </button>
-            ))}
+
+            <NavLink
+              to="/home"
+              className="flex items-center gap-2 hover:opacity-90"
+            >
+              <AppWindow /> Inicio
+            </NavLink>
+
+            <NavLink
+              to="/admin/profile"
+              className="flex items-center gap-2 hover:opacity-90"
+            >
+              <Home /> Administrador
+            </NavLink>
+
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <NotebookPen /> Registrar Usuarios
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <Bell /> Ejercicios y rutina
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <FolderKanban /> Plan
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <BadgeDollarSign /> Pagos
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <Users /> Usuarios
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <School2 /> Profesores
+            </a>
+            <a href="#" className="flex items-center gap-2 hover:opacity-90">
+              <ClipboardPlus /> Reportes
+            </a>
+
           </nav>
         </div>
         <button
@@ -628,4 +653,6 @@ const AdminDashboard: FC = () => {
   );
 };
 
+
 export default AdminDashboard;
+

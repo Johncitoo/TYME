@@ -1,6 +1,13 @@
+// jwt.strategy.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
+
+interface JwtPayload {
+  sub: number;
+  correo: string;
+  role: string;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super(opts);
   }
 
-  async validate(payload: any) {
+  validate(payload: JwtPayload) {
     return {
       id_usuario: payload.sub,
       correo: payload.correo,
