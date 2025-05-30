@@ -4,13 +4,23 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
-// Ensure the file './entities/usuario.entity.ts' exists and is correctly named.
-// If the file is missing, create it as shown below:
+// Importa todas tus entidades
 import { Usuario } from './entities/user.entity';
 import { TipoUsuario } from './entities/tipo_usuario.entity';
+import { Cliente } from './entities/cliente.entity';
+import { TipoMembresia } from './entities/tipo_membresia.entity'; // <-- FALTABA ESTE IMPORT
+import { Membresia } from './entities/membresia.entity';
+import { Ejercicio } from './entities/ejercicio.entity';
+import { Rutina } from './entities/rutina.entity';
 
+// Si tienes entidad Clase, Asistencia, etc., agrégalas aquí también
+// import { Clase } from './entities/clase.entity';
+
+// Importa los módulos principales
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ClasesModule } from './clases/clases.module';
+import { RutinasModule } from './rutinas/rutinas.module';
 
 @Module({
   imports: [
@@ -22,8 +32,18 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Usuario, TipoUsuario],
-      synchronize: false,
+      // Aquí van TODAS tus entidades que usarás con TypeORM
+      entities: [
+        Usuario,
+        TipoUsuario,
+        Cliente,
+        TipoMembresia,
+        Membresia,
+        Ejercicio,
+        Rutina,
+        // Clase,
+      ],
+      synchronize: false, // IMPORTANTE: false en producción
     }),
     UsersModule,
     PassportModule,
@@ -32,6 +52,8 @@ import { AuthModule } from './auth/auth.module';
       signOptions: { expiresIn: '1h' },
     }),
     AuthModule,
+    ClasesModule,
+    RutinasModule,
   ],
 })
 export class AppModule {}
