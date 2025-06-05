@@ -4,7 +4,8 @@
  import { ProtectedRoute } from './components/ProtectedRoute';
  import AdminDashboard from './pages/AdminDashboard';
  import AdminProfile   from './pages/AdminProfile';
-  import Users          from './pages/Users';
+ import RegisterUser from './pages/RegisterUsers';
+ import UsersPage from './pages/Users';
 
  export default function App() {
    return (
@@ -48,10 +49,21 @@
           path="/admin/users"
           element={
           <ProtectedRoute allowedRoles={['admin']}>
-            <Users />
+            <UsersPage/>
           </ProtectedRoute>
           }
         />
+
+        {/* Ruta protegida para admin: Registrar usuarios */}
+        <Route
+          path="/admin/RegisterUsers"
+          element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <RegisterUser />
+          </ProtectedRoute>
+          }
+        />
+        
 
          {/* Cualquier otra URL redirige al login */}
          <Route path="*" element={<Navigate to="/" replace />} />

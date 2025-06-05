@@ -579,9 +579,13 @@ const AdminDashboard: FC = () => {
               <Home /> Administrador
             </NavLink>
 
-            <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <NotebookPen /> Registrar Usuarios
-            </a>
+            <NavLink
+              to="/admin/RegisterUsers"
+              className="flex items-center gap-2 hover:opacity-90"
+            >    
+              <NotebookPen /> Registrar Usuarios 
+            </NavLink>
+
             <a href="#" className="flex items-center gap-2 hover:opacity-90">
               <Bell /> Ejercicios y rutina
             </a>
