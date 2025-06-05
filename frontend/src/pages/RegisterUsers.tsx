@@ -15,6 +15,7 @@ import {
   Bell,
 } from "lucide-react";
 import axios from "axios";
+import SidebarAdmin from "@/components/AdminSidebar";
 
 // Opciones estáticas de género y sexo
 const generoOptions = [
@@ -264,40 +265,7 @@ const RegisterUsers: React.FC = () => {
   return (
     <div className="flex h-screen bg-[#f4f4f6]">
       {/* -------------------- Sidebar -------------------- */}
-      <aside className="w-64 bg-[#92dbf8] text-[#222] p-6 flex flex-col justify-between flex-shrink-0 shadow-lg border-r border-[#c7e6ef]">
-        <div>
-          <div className="flex flex-col items-center mb-10">
-            <div className="bg-white rounded-full p-2 mb-2">
-              <Users className="text-[#71e3ea]" />
-            </div>
-            <h2 className="text-xl font-semibold text-[#3a3a3a]">
-              Administrator Name
-            </h2>
-            <p className="text-sm text-[#39678a]">admin@example.com</p>
-          </div>
-          <nav className="space-y-2">
-            {sidebarLinks.map(({ to, icon, label }) => (
-              <NavLink
-                key={label}
-                to={to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors font-medium ${
-                    isActive
-                      ? "bg-[#e6f7fa] text-[#23b6e4]"
-                      : "hover:bg-[#d7eef7] text-[#24577b]"
-                  }`
-                }
-                end
-              >
-                {icon} {label}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-[#ececec] text-[#217ba3] rounded-lg font-semibold hover:bg-[#e6f7fa] transition">
-          <LogOut /> Desconectarse
-        </button>
-      </aside>
+      <SidebarAdmin />
 
       {/* -------------------- Contenido Principal -------------------- */}
       <main className="flex-1 flex flex-col min-h-screen bg-[#f4f4f6] p-10">

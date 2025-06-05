@@ -14,6 +14,7 @@ import {
   ClipboardPlus
 } from "lucide-react";
 import { getAllClientes } from "../services/userServices"; // <-- Importa tu servicio
+import SidebarAdmin from "../components/AdminSidebar";
 
 interface Cliente {
   id_usuario: number;
@@ -60,41 +61,8 @@ const UsersPage: React.FC = () => {
   return (
     <div className="flex h-screen bg-[#141517]">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#23242b] text-[#71e3ea] p-6 flex flex-col justify-between flex-shrink-0 shadow-lg border-r border-[#25252d]">
-        <div>
-          {/* Perfil Admin */}
-          <div className="flex flex-col items-center mb-10">
-            <div className="bg-[#71e3ea] rounded-full p-2 mb-2">
-              <Users className="text-[#23242b]" />
-            </div>
-            <h2 className="text-xl font-semibold text-white">Administrator Name</h2>
-            <p className="text-sm text-[#bdbdbd]">admin@example.com</p>
-          </div>
-          <nav className="space-y-2">
-            {sidebarLinks.map(({ to, icon, label }) => (
-              <NavLink
-                key={label}
-                to={to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors font-medium ${
-                    isActive
-                      ? "bg-[#1c3c43] text-[#71e3ea]"
-                      : "hover:bg-[#232e34] text-[#bdbdbd]"
-                  }`
-                }
-                end
-              >
-                {icon}
-                {label}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-[#232e34] text-[#71e3ea] rounded-lg font-semibold hover:bg-[#25252d] transition">
-          <LogOut /> Desconectarse
-        </button>
-      </aside>
-
+      <SidebarAdmin />
+      
       {/* Main content */}
       <main className="flex-1 flex flex-col min-h-screen bg-[#141517] p-10">
         <div className="max-w-6xl w-full mx-auto">
