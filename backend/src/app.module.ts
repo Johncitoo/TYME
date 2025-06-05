@@ -19,6 +19,9 @@ import { Cliente } from './entities/cliente.entity';
 import { TipoMembresia } from './entities/tipo_membresia.entity';
 import { Entrenador } from './entities/entrenador.entity';
 import { EntrenadorModule } from './entrenador/entrenador.module';
+import { EntrenadorTipo } from './entities/entrenador_tipo.entity';
+import { TipoEspecialidad } from './entities/tipo_especialidad.entity';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -37,6 +40,8 @@ import { EntrenadorModule } from './entrenador/entrenador.module';
         Cliente,
         TipoMembresia,
         Entrenador,
+        EntrenadorTipo,
+        TipoEspecialidad,
       ],
       synchronize: false,
     }),

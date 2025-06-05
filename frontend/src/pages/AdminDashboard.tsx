@@ -19,6 +19,7 @@ import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 import CreateUser from "../pages/CreateUser";
+import SidebarAdmin from "@/components/AdminSidebar";
 
 const HomeContent: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -554,70 +555,7 @@ const AdminDashboard: FC = () => {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-primary text-white p-6 flex flex-col justify-between flex-shrink-0">
-        <div>
-          <div className="flex flex-col items-center mb-8">
-            <div className="bg-white rounded-full p-2 mb-2">
-              <Users className="text-primary" />
-            </div>
-            <h2 className="text-xl font-semibold">Administrator Name</h2>
-            <p className="text-sm opacity-80">admin@example.com</p>
-          </div>
-          <nav className="space-y-4">
-
-            <NavLink
-              to="/home"
-              className="flex items-center gap-2 hover:opacity-90"
-            >
-              <AppWindow /> Inicio
-            </NavLink>
-
-            <NavLink
-              to="/admin/profile"
-              className="flex items-center gap-2 hover:opacity-90"
-            >
-              <Home /> Administrador
-            </NavLink>
-
-            <NavLink
-              to="/admin/RegisterUsers"
-              className="flex items-center gap-2 hover:opacity-90"
-            >    
-              <NotebookPen /> Registrar Usuarios 
-            </NavLink>
-
-            <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <Bell /> Ejercicios y rutina
-            </a>
-            <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <FolderKanban /> Plan
-            </a>
-            <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <BadgeDollarSign /> Pagos
-            </a>
-            <NavLink to="/admin/users" className="flex items-center gap-2 hover:opacity-90">
-              <Users /> Usuarios
-            </NavLink>
-
-            <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <School2 /> Profesores
-            </a>
-            <a href="#" className="flex items-center gap-2 hover:opacity-90">
-              <ClipboardPlus /> Reportes
-            </a>
-
-          </nav>
-        </div>
-        <button
-          className="flex items-center gap-2 text-white hover:opacity-90 transition-colors duration-200"
-          onClick={() => {
-            /* opcional logout */
-          }}
-        >
-          <LogOut /> Desconectarse
-        </button>
-      </aside>
-
+      <SidebarAdmin />
       {/* Main content */}
       <main className={`flex-1 flex flex-col ${selectedPage.bgColorClass} overflow-x-auto overflow-y-auto`}>
         <header className="flex justify-between items-center px-15 py-6 bg-white shadow-md z-10 sticky top-0">

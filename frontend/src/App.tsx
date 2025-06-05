@@ -6,6 +6,8 @@
  import AdminProfile   from './pages/AdminProfile';
  import RegisterUser from './pages/RegisterUsers';
  import UsersPage from './pages/Users';
+ import Teachers from "./pages/Teachers";
+ import CreateTeacher from "./pages/CreateTeacher";
 
  export default function App() {
    return (
@@ -64,6 +66,25 @@
           }
         />
         
+        {/* Ruta protegida para admin: profesores */}
+        <Route
+          path="/admin/profesores"
+          element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <Teachers />
+          </ProtectedRoute>
+          }
+        />
+
+          {/* Rutas protegidas para entrenador */}
+          <Route
+            path="/admin/profesores/crear"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <CreateTeacher />
+              </ProtectedRoute>
+            }
+          />
 
          {/* Cualquier otra URL redirige al login */}
          <Route path="*" element={<Navigate to="/" replace />} />
