@@ -1,4 +1,3 @@
-// src/entities/cliente.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -20,12 +19,11 @@ export class Cliente {
   @JoinColumn({ name: 'id_usuario' })
   usuario: Usuario;
 
-  @ManyToOne(() => TipoMembresia, { eager: true })
+  @ManyToOne(() => TipoMembresia, { eager: true, nullable: true })
   @JoinColumn({ name: 'id_tipo_membresia' })
   tipoMembresia: TipoMembresia;
 
-  @ManyToOne(() => Entrenador, { eager: true })
+  @ManyToOne(() => Entrenador, { eager: true, nullable: true })
   @JoinColumn({ name: 'id_entrenador' })
   entrenador: Entrenador;
-  // Si después quieres agregar entrenador, aquí puedes ponerlo como ManyToOne también.
 }

@@ -1,9 +1,10 @@
-import { create } from 'zustand'
+import { create } from 'zustand';
 
 export interface Usuario {
   id_usuario: number;
   correo: string;
   primer_nombre: string;
+  primer_apellido?: string;
   tipo_usuario: string;
   token?: string;
 }

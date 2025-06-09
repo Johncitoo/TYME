@@ -58,7 +58,9 @@ const HomeContent: FC = () => {
             mode="single"
             required
             selected={selectedDate}
-            onSelect={setSelectedDate}
+            onSelect={(date) => {
+              if (date) setSelectedDate(date);
+            }}
             className="!border-0"
           />
         </div>
