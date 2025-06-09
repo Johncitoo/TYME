@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS usuario (
   primer_apellido       VARCHAR(50) NOT NULL,
   segundo_apellido      VARCHAR(50) NOT NULL DEFAULT '',
   telefono              VARCHAR(20) NOT NULL,
-  cuerpo_rut            VARCHAR(8) NOT NULL,
+  cuerpo_rut            VARCHAR(8) NOT NULL, -- Para otro proyecto, usar int
   dv_rut                CHAR(1) NOT NULL,
   direccion             VARCHAR(200) NOT NULL DEFAULT '',
   fecha_nacimiento      DATE NOT NULL,
