@@ -1,19 +1,21 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('membresia')
+@Entity({ name: 'membresia' })
 export class Membresia {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id_membresia' })
   id_membresia: number;
 
   @Column()
   nombre: string;
 
+  // Permitimos que la descripción sea opcional
   @Column({ nullable: true })
-  descripcion: string;
+  descripcion?: string;
 
-  @Column('numeric')
+  // Definimos el precio como tipo numeric
+  @Column({ type: 'numeric' })
   precio: number;
 
-  @Column()
+  @Column({ name: 'duracion_dias' })
   duracion_dias: number;
 }

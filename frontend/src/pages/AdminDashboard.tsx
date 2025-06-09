@@ -13,9 +13,13 @@ import {
   FolderKanban,
   BadgeDollarSign,
   School2,
-  ClipboardPlus,
+  ClipboardPlus
 } from "lucide-react";
+import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 import CreateUser from "../pages/CreateUser";
+import SidebarAdmin from "@/components/AdminSidebar";
 
 const HomeContent: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -553,42 +557,7 @@ const AdminDashboard: FC = () => {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-primary text-white p-6 flex flex-col justify-between flex-shrink-0">
-        <div>
-          <div className="flex flex-col items-center mb-8">
-            <div className="bg-white rounded-full p-2 mb-2">
-              <Users className="text-primary" />
-            </div>
-            <h2 className="text-xl font-semibold">Administrator Name</h2>
-            <p className="text-sm opacity-80">admin@example.com</p>
-          </div>
-          <nav className="space-y-4">
-            {sidebarItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => handleNavigation(item)}
-                className={`flex items-center gap-2 w-full p-2 rounded-lg transition-colors duration-200 ${
-                  selectedPage.path === item.path
-                    ? 'bg-white bg-opacity-20 text-white font-semibold'
-                    : 'hover:bg-white hover:bg-opacity-10'
-                }`}
-                style={{ textAlign: 'left' }}
-              >
-                {item.icon} {item.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-        <button
-          className="flex items-center gap-2 text-white hover:opacity-90 transition-colors duration-200"
-          onClick={() => {
-            /* opcional logout */
-          }}
-        >
-          <LogOut /> Desconectarse
-        </button>
-      </aside>
-
+      <SidebarAdmin />
       {/* Main content */}
       <main className={`flex-1 flex flex-col ${selectedPage.bgColorClass} overflow-x-auto overflow-y-auto`}>
         <header className="flex justify-between items-center px-15 py-6 bg-white shadow-md z-10 sticky top-0">
@@ -630,4 +599,6 @@ const AdminDashboard: FC = () => {
   );
 };
 
+
 export default AdminDashboard;
+
