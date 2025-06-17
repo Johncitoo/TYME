@@ -247,7 +247,7 @@ const CreateTeacher: React.FC = () => {
       <main className="flex-1 overflow-y-auto bg-[#f4f4f6] p-8">
         <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
           <h1 className="text-3xl font-bold text-teal-500 mb-6">
-            Crear nuevo profesor
+            Crear Nuevo Profesor
           </h1>
 
           {error && (
