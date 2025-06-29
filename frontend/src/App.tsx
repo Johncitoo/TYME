@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
+import Trainer from './pages/TrainerDashboard';
 
 import DashboardInicioCliente from './pages/DashboardInicioCliente';
 import DashboardRutinaCliente from './pages/DashboardRutinaCliente';
@@ -19,6 +20,7 @@ import CreateRoutine from './pages/CreateRoutine';
 import CreateClass from './pages/CreateClass';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
+
 
 export default function App() {
   return (
@@ -44,6 +46,16 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
               <DashboardRutinaCliente />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Ruta de Entrenador*/}
+        <Route
+          path="/trainer"
+          element={
+            <ProtectedRoute allowedRoles={['entrenador']}>
+              <Trainer />
             </ProtectedRoute>
           }
         />

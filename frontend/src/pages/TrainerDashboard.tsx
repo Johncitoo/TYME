@@ -5,13 +5,8 @@ import "react-day-picker/dist/style.css";
 import {
   Search,
   Bell,
-  LogOut,
-  Home,
-  Users,
   Calendar as AppWindow,
   NotebookPen,
-  FolderKanban,
-  BadgeDollarSign,
   School2,
   ClipboardPlus
 } from "lucide-react";
@@ -19,7 +14,7 @@ import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 import CreateUser from "../pages/CreateUser";
-import SidebarAdmin from "@/components/AdminSidebar";
+import SidebarAdmin from "@/components/TrainerSidebar";
 
 const HomeContent: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -37,19 +32,6 @@ const HomeContent: FC = () => {
 
   return (
     <section className="p-10 space-y-6 flex-1 flex flex-col">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { title: "Usuarios", desc: "Gestiona todos los usuarios del gimnasio." },
-          { title: "Rutinas", desc: "Gestiona las rutinas asignadas a los clientes." },
-          { title: "Pagos", desc: "Gestiona los pagos y su estado." },
-        ].map((card) => (
-          <div key={card.title} className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
-            <p>{card.desc}</p>
-          </div>
-        ))}
-      </div>
-
       {/* Calendar and members */}
       <div className="flex flex-col lg:flex-row lg:space-x-6 gap-6 flex-1">
         {/* Calendar */}
@@ -505,27 +487,6 @@ const PlanContent: FC = () => {
 };
 
 
-
-
-const PagosContent: FC = () => (
-  <div className="p-8 flex-1 flex flex-col">
-    <div className="bg-yellow-50 p-6 rounded-lg shadow flex-1">
-      <h2 className="text-2xl font-bold mb-4">Sección de Pagos</h2>
-      <p>Contenido para la sección de Pagos.</p>
-    </div>
-  </div>
-);
-
-const UsuariosContent: FC = () => (
-  <div className="p-8 flex-1 flex flex-col">
-    <div className="bg-blue-50 p-6 rounded-lg shadow flex-1">
-      <h2 className="text-2xl font-bold mb-4">Sección de Usuarios</h2>
-      <p>Contenido para la sección de Usuarios.</p>
-    </div>
-  </div>
-);
-
-
 interface SidebarItem {
   label: string;
   icon: React.ReactNode;
@@ -536,17 +497,13 @@ interface SidebarItem {
 
 const sidebarItems: SidebarItem[] = [
   { label: "Inicio", icon: <AppWindow />, path: "inicio", bgColorClass: "bg-[#ECE9E9]", component: HomeContent },
-  { label: "Administrador", icon: <Home />, path: "administrador", bgColorClass: "bg-white", component: AdministradorContent },
   { label: "Registrar Asistencia", icon: <NotebookPen />, path: "registrar-usuarios", bgColorClass: "bg-green-50", component: RegistrarAsistenciaContent },
   { label: "Ejercicios y rutina", icon: <Bell />, path: "ejercicios-rutina", bgColorClass: "bg-purple-50", component: EjerciciosRutinaContent },
-  { label: "Plan", icon: <FolderKanban />, path: "plan", bgColorClass: "bg-indigo-50", component: PlanContent },
-  { label: "Pagos", icon: <BadgeDollarSign />, path: "pagos", bgColorClass: "bg-yellow-50", component: PagosContent },
-  { label: "Usuarios", icon: <Users />, path: "usuarios", bgColorClass: "bg-blue-50", component: UsuariosContent },
   { label: "Profesores", icon: <School2 />, path: "profesores", bgColorClass: "bg-[#DDEBEE]", component: ProfesoresContent },
   { label: "Reportes", icon: <ClipboardPlus />, path: "reportes", bgColorClass: "bg-[#FBE9E7]", component: ReportesContent }, // Color de fondo para Reportes (aproximado de la imagen)
 ];
 
-const AdminDashboard: FC = () => {
+const TrainerDashboard: FC = () => {
   const [selectedPage, setSelectedPage] = useState<SidebarItem>(sidebarItems[0]);
   const [showModal, setShowModal] = useState(false);
 
@@ -562,14 +519,8 @@ const AdminDashboard: FC = () => {
       <main className={`flex-1 flex flex-col ${selectedPage.bgColorClass} overflow-x-auto overflow-y-auto`}>
         <header className="flex justify-between items-center px-15 py-6 bg-white shadow-md z-10 sticky top-0">
           <h1 className="text-4xl font-bold text-gray-800">
-            {selectedPage.path === "inicio" ? "Bienvenido, Administrador" : `Sección de ${selectedPage.label}`}
+            {selectedPage.path === "inicio" ? "Bienvenido, Instructor" : `Sección de ${selectedPage.label}`}
           </h1>
-          <button
-            className="px-4 py-2 bg-black text-white rounded-lg hover:opacity-90 transition-opacity duration-200"
-            onClick={() => setShowModal(true)}
-          >
-            Crear Usuario
-          </button>
         </header>
 
         {/* Contenido dinámico de la página */}
@@ -600,5 +551,5 @@ const AdminDashboard: FC = () => {
 };
 
 
-export default AdminDashboard;
+export default TrainerDashboard;
 
