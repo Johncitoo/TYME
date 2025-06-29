@@ -73,11 +73,25 @@ const Teachers: React.FC = () => {
         <div className="flex justify-between items-center mb-6 px-8 pt-8">
          <h1 className="text-3xl font-bold text-teal-500">Profesores</h1>
          <button
-           className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
-           onClick={() => navigate("/admin/profesores/crear")}
-         >
-           Agregar profesor
+          className="bg-gray-300 text-white px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
+          onClick={() => navigate("/admin/profesores/crear")}
+        >
+          Agregar profesor
          </button>
+         <button
+          className="bg-gray-300 text-white px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
+          onClick={() => navigate("/admin/profesores/crearClase")}
+        >
+          Crear Clase
+         </button>
+
+         <button
+          className="bg-gray-300 text-white px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
+          onClick={() => navigate("/admin/profesores/crearRutina")}
+        >
+          Crear rutina
+         </button>
+
         </div>
 
         <div className="mx-8 mb-8">
@@ -140,7 +154,7 @@ const Teachers: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <button className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-full text-sm transition">
-                            Edit
+                            Editar
                           </button>
                         </td>
                       </tr>
