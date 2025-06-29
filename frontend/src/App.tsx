@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
-import DashboardCliente from './pages/DashboardCliente';
+import DashboardInicioCliente from './pages/DashboardInicioCliente';
+import DashboardRutinaCliente from './pages/DashboardRutinaCliente';
+import Plan from './pages/Plan';
 
 import AdminDashboard from './pages/AdminDashboard';
 import AdminProfile from './pages/AdminProfile';
@@ -25,15 +27,16 @@ export default function App() {
           path="/home"
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
-              <HomePage />
+              <DashboardInicioCliente />
             </ProtectedRoute>
           }
         />
+        {/* Ruta de Rutina del Cliente */}
         <Route
-          path="/cliente/dashboard"
+          path="/rutina"
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
-              <DashboardCliente />
+              <DashboardRutinaCliente />
             </ProtectedRoute>
           }
         />
@@ -64,7 +67,7 @@ export default function App() {
           }
         />
         <Route
-          path="/admin/register-users"
+          path="/admin/RegisterUsers"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <RegisterUser />
@@ -87,13 +90,18 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/plan"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Plan />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Catch-all */}
+        {/* Catch-all: redirige al login */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
-
-
