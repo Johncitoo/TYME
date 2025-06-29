@@ -6,7 +6,6 @@ import HomePage from './pages/HomePage';
 import DashboardInicioCliente from './pages/DashboardInicioCliente';
 import DashboardRutinaCliente from './pages/DashboardRutinaCliente';
 
-import DashboardCliente from './pages/DashboardCliente';
 
 import Plan from './pages/Plan';
 
