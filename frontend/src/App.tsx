@@ -2,8 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
+
 import DashboardInicioCliente from './pages/DashboardInicioCliente';
 import DashboardRutinaCliente from './pages/DashboardRutinaCliente';
+
+import DashboardCliente from './pages/DashboardCliente';
+
 import Plan from './pages/Plan';
 
 import AdminDashboard from './pages/AdminDashboard';
@@ -12,6 +16,8 @@ import RegisterUser from './pages/RegisterUsers';
 import UsersPage from './pages/Users';
 import Teachers from './pages/Teachers';
 import CreateTeacher from './pages/CreateTeacher';
+import CreateRoutine from './pages/CreateRoutine';
+import CreateClass from './pages/CreateClass';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -27,7 +33,9 @@ export default function App() {
           path="/home"
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
+
               <DashboardInicioCliente />
+        
             </ProtectedRoute>
           }
         />
@@ -82,6 +90,26 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+
+
+
+        <Route
+          path="/admin/profesores/crearRutina"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <CreateRoutine/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/profesores/crearClase"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <CreateClass />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin/profesores/crear"
           element={
@@ -99,9 +127,23 @@ export default function App() {
           }
         />
 
+
+
+
+        <Route
+          path="/admin/plan"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Plan />
+            </ProtectedRoute>
+          }
+        />
+
+
         {/* Catch-all: redirige al login */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
+

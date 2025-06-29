@@ -162,6 +162,7 @@ const SidebarAdmin: React.FC = () => {
         className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-800 transition-colors text-white"
         onClick={() => {
           // Lógica de logout si la necesitas
+          window.location.href = "/"; // Redirigir a la página de logout
         }}
       >
         <LogOut /> Desconectarse

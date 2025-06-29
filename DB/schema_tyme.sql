@@ -338,3 +338,4 @@ INSERT INTO asistencia (id_cliente, id_clase, fecha) VALUES
   (1, 1, '2025-06-06'),
   (1, 2, '2025-06-07')
 ON CONFLICT DO NOTHING;
+
