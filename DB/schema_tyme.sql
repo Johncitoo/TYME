@@ -313,6 +313,7 @@ ON CONFLICT DO NOTHING;
 -- ========================================
 CREATE TABLE IF NOT EXISTS clase (
   id_clase      SERIAL PRIMARY KEY,
+  fecha_clase   DATE NOT NULL,
   nombre        VARCHAR(100) NOT NULL,
   descripcion   TEXT,
   hora_inicio   TIME NOT NULL,
@@ -322,8 +323,8 @@ CREATE TABLE IF NOT EXISTS clase (
 );
 
 INSERT INTO clase (nombre, descripcion, hora_inicio, hora_fin, cupo_maximo, id_entrenador) VALUES
-  ('Yoga Matutino', 'Clase suave de yoga',               '08:00', '09:00', 15, 1),
-  ('HIIT',           'Entrenamiento intervalico de alta intensidad', '18:00', '18:45', 10, 1)
+  ('2025-06-30','Yoga Matutino', 'Clase suave de yoga',               '08:00', '09:00', 15, 1),
+  ('2025-06-29','HIIT',           'Entrenamiento intervalico de alta intensidad', '18:00', '18:45', 10, 1)
 ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS asistencia (

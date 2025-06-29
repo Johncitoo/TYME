@@ -50,6 +50,9 @@ export default function LoginPage() {
       } else if (tipo === "cliente") {
         navigate("/home");
         return;
+      } else if (tipo === "entrenador") {
+        navigate("/home");
+        return;
       } else {
         setError("Rol no autorizado");
         return;
