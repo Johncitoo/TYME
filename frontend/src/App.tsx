@@ -5,8 +5,7 @@ import HomePage from './pages/HomePage';
 
 import DashboardInicioCliente from './pages/DashboardInicioCliente';
 import DashboardRutinaCliente from './pages/DashboardRutinaCliente';
-
-import DashboardCliente from './pages/DashboardCliente';
+import ClasesCliente from './pages/ClasesCliente';
 
 import Plan from './pages/Plan';
 
@@ -33,9 +32,7 @@ export default function App() {
           path="/home"
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
-
               <DashboardInicioCliente />
-        
             </ProtectedRoute>
           }
         />
@@ -45,6 +42,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
               <DashboardRutinaCliente />
+            </ProtectedRoute>
+          }
+        />
+        {/* Ruta de Clases para Cliente */}
+        <Route
+          path="/clases"
+          element={
+            <ProtectedRoute allowedRoles={['cliente']}>
+              <ClasesCliente />
             </ProtectedRoute>
           }
         />
@@ -90,10 +96,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-
-
-
         <Route
           path="/admin/profesores/crearRutina"
           element={
@@ -127,23 +129,9 @@ export default function App() {
           }
         />
 
-
-
-
-        <Route
-          path="/admin/plan"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <Plan />
-            </ProtectedRoute>
-          }
-        />
-
-
         {/* Catch-all: redirige al login */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
