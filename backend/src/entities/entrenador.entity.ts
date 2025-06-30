@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Usuario } from './user.entity';
 import { EntrenadorTipo } from './entrenador_tipo.entity';
-
+import { Rutina } from './rutina.entity';
 @Entity({ name: 'entrenador' })
 export class Entrenador {
   @PrimaryGeneratedColumn({ name: 'id_entrenador' })
@@ -31,4 +31,7 @@ export class Entrenador {
     eager: true,
   })
   especialidades: EntrenadorTipo[];
+
+  @OneToMany(() => Rutina, (rutina) => rutina.entrenador)
+  rutinas: Rutina[];
 }

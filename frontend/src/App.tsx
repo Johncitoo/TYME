@@ -5,7 +5,10 @@ import HomePage from './pages/HomePage';
 
 import DashboardInicioCliente from './pages/DashboardInicioCliente';
 import DashboardRutinaCliente from './pages/DashboardRutinaCliente';
+
 import ClasesCliente from './pages/ClasesCliente';
+
+
 
 import Plan from './pages/Plan';
 
@@ -17,6 +20,12 @@ import Teachers from './pages/Teachers';
 import CreateTeacher from './pages/CreateTeacher';
 import CreateRoutine from './pages/CreateRoutine';
 import CreateClass from './pages/CreateClass';
+import EjerciciosPage from './pages/ExercisePage';
+import RutinasPage from './pages/RoutinesPage';
+import CreateExercisePage from "./pages/CreateExercisePage";
+import EditExercisePage from "./pages/EditExercisePage";
+import RutinaDetailPage from '@/pages/RutinaDetailPage';
+import CreateRutinaPage from './pages/CreateRoutine';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -125,6 +134,72 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <Plan />
+            </ProtectedRoute>
+          }
+        />
+
+
+
+
+
+        <Route
+          path="/admin/plan"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Plan />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/ejercicios"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <EjerciciosPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/ejercicios/crear"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <CreateExercisePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/ejercicios/:id/editar"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <EditExercisePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/rutinas"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <RutinasPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/rutinas/:id/ejercicios"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <RutinaDetailPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/rutinas/crear"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <CreateRutinaPage />
             </ProtectedRoute>
           }
         />
