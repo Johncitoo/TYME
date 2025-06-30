@@ -1,24 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
-import { Cliente } from './cliente.entity';
-import { Ejercicio } from './ejercicio.entity'; // Si no tienes esta entidad aún, dímelo y te la hago.
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 
+import { Entrenador } from './entrenador.entity';
+import { ClienteRutina } from './clienteRutina.entity';
+import { RutinaEjercicio } from './rutinaEjercicio.entity';
 
 @Entity('rutina')
 export class Rutina {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id_rutina' })
   id_rutina: number;
 
-  @Column()
+  @Column({ length: 100 })
   nombre: string;
 
-  @Column({ nullable: true })
-  estado: string;
+  @Column({ type: 'text', nullable: true })
+  descripcion?: string;
 
-  @ManyToOne(() => Cliente, cliente => cliente.id_cliente)
-  @JoinColumn({ name: 'id_cliente' })
-  cliente: Cliente;
+  @Column({ type: 'date', name: 'fecha_inicio' })
+  fecha_inicio: Date;
 
-  // Simula que tienes ejercicios relacionados (puedes omitir esto si no tienes esa relación aún)
-  @OneToMany(() => Ejercicio, ejercicio => ejercicio.rutina)
-  ejercicios: any[];
+  /** FK a Entrenador */
+  @ManyToOne(() => Entrenador, (entrenador) => entrenador.rutinas)
+  @JoinColumn({ name: 'id_entrenador' })
+  entrenador: Entrenador;
+
+  /** Relación a clientes_rutinas */
+  @OneToMany(() => ClienteRutina, (cr) => cr.rutina)
+  clientesRutinas: ClienteRutina[];
+
+  /** Relación a ejercicios de la rutina */
+  @OneToMany(() => RutinaEjercicio, (re) => re.rutina, { cascade: true })
+  rutinaEjercicios: RutinaEjercicio[];
 }
