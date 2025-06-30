@@ -2,12 +2,14 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
   Unique,
 } from 'typeorm';
 import { Usuario } from './user.entity';
 import { TipoMembresia } from './tipo_membresia.entity';
 import { Entrenador } from './entrenador.entity';
+import { ClienteRutina } from './clienteRutina.entity';
 
 @Entity({ name: 'cliente' })
 @Unique(['usuario'])
@@ -26,4 +28,7 @@ export class Cliente {
   @ManyToOne(() => Entrenador, { eager: true, nullable: true })
   @JoinColumn({ name: 'id_entrenador' })
   entrenador: Entrenador;
+
+  @OneToMany(() => ClienteRutina, (cr) => cr.cliente)
+  clientesRutinas: ClienteRutina[];
 }
