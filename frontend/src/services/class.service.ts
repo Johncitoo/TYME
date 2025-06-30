@@ -19,3 +19,14 @@ export async function getAsistenciasCliente() {
   return res.data;
 }
 
+// INSCRIBIR ASISTENCIA A UNA CLASE
+export async function inscribirAsistencia(claseId: string) {
+  const res = await axios.post(
+    `${API_URL}/asistencia/${claseId}`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    }
+  );
+  return res.data;
+}
