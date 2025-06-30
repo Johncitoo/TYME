@@ -24,15 +24,3 @@ export const createClass = async (classData: CreateClassPayload) => {
   }
 };
 
-// También podrías querer funciones para obtener todas las clases, obtener una clase por ID, actualizar, eliminar, etc.
-/*
-export const getAllClasses = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/clases`);
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener las clases:", error);
-    throw error;
-  }
-};
-*/

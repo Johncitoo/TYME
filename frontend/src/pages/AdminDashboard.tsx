@@ -5,7 +5,6 @@ import "react-day-picker/dist/style.css";
 import {
   Search,
   Bell,
-  LogOut,
   Home,
   Users,
   Calendar as AppWindow,
@@ -204,7 +203,7 @@ const ProfesoresContent: FC = () => (
       </div>
     </div>
      </div>
-  );
+);
 
 
 

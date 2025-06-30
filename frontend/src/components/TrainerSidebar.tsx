@@ -1,21 +1,32 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
 import {
   LogOut,
   Users,
-  Home as HomeIcon,
-  NotebookPen,
-  Bell,
-  FolderKanban,
-  BadgeDollarSign,
-  School2,
-  ClipboardPlus,
 } from "lucide-react";
 
-const TrainerSidebar: React.FC = () => {
+// Tipo local para ítems
+interface SidebarItem {
+  label: string;
+  icon: React.ReactNode;
+  path: string;
+  bgColorClass: string;
+  component: React.FC;
+}
+
+interface TrainerSidebarProps {
+  items: SidebarItem[];
+  activeItemPath: string;
+  onSelectItem: (item: SidebarItem) => void;
+}
+
+const TrainerSidebar: React.FC<TrainerSidebarProps> = ({
+  items,
+  activeItemPath,
+  onSelectItem,
+}) => {
   return (
     <aside className="w-64 bg-black text-white p-6 flex flex-col justify-between flex-shrink-0">
-      {/* --- Parte superior (Avatar + datos del admin) --- */}
+      {/* Parte superior (datos del entrenador) */}
       <div>
         <div className="flex flex-col items-center mb-8">
           <div className="bg-cyan-500 rounded-full p-2 mb-2">
@@ -25,59 +36,28 @@ const TrainerSidebar: React.FC = () => {
           <p className="text-sm opacity-80">trainer@example.com</p>
         </div>
 
-        {/* --- Navegación --- */}
+        {/* Navegación */}
         <nav className="space-y-4">
-          {/* Inicio */}
-          <NavLink
-            to="/admin"
-            className={({ isActive }) =>
-              `flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                isActive
+          {items.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => onSelectItem(item)}
+              className={`flex items-center gap-2 px-3 py-2 w-full text-left rounded-lg transition-colors ${
+                activeItemPath === item.path
                   ? "bg-cyan-300 text-black"
                   : "hover:bg-cyan-500 text-white"
-              }`
-            }
-          >
-            <HomeIcon /> Inicio
-          </NavLink>
-
-          {/* Ejercicios y rutina */}
-          <NavLink
-            to="/admin/ejercicios-rutina"
-            className={({ isActive }) =>
-              `flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                isActive
-                  ? "bg-cyan-300 text-black"
-                  : "hover:bg-cyan-500 text-white"
-              }`
-            }
-          >
-            <Bell /> Ejercicios y rutina
-          </NavLink>
-
-          {/* Profesores */}
-          <NavLink
-            to="/admin/profesores"
-            className={({ isActive }) =>
-              `flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                isActive
-                  ? "bg-cyan-300 text-black"
-                  : "hover:bg-cyan-500 text-white"
-              }`
-            }
-          >
-            <School2 /> Profesores
-          </NavLink>
+              }`}
+            >
+              {item.icon} {item.label}
+            </button>
+          ))}
         </nav>
       </div>
 
-      {/* --- Botón de logout (parte inferior) --- */}
+      {/* Botón de logout */}
       <button
         className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-800 transition-colors text-white"
-        onClick={() => {
-          // Lógica de logout si la necesitas
-          window.location.href = "/"; // Redirigir a la página de logout
-        }}
+        onClick={() => (window.location.href = "/")}
       >
         <LogOut /> Desconectarse
       </button>
@@ -86,4 +66,3 @@ const TrainerSidebar: React.FC = () => {
 };
 
 export default TrainerSidebar;
-
