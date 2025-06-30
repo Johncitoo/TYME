@@ -5,10 +5,11 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Column
 } from 'typeorm';
 import { Usuario } from './user.entity';
 import { EntrenadorTipo } from './entrenador_tipo.entity';
-
+import { Rutina } from './rutina.entity';
 @Entity({ name: 'entrenador' })
 export class Entrenador {
   @PrimaryGeneratedColumn({ name: 'id_entrenador' })
@@ -17,6 +18,9 @@ export class Entrenador {
   @ManyToOne(() => Usuario, { eager: true })
   @JoinColumn({ name: 'id_usuario' })
   usuario: Usuario;
+
+  @Column({ name: 'id_usuario' }) 
+  id_usuario: number;
 
   /**
    * Relación uno-a-muchos con EntrenadorTipo.
@@ -27,4 +31,7 @@ export class Entrenador {
     eager: true,
   })
   especialidades: EntrenadorTipo[];
+
+  @OneToMany(() => Rutina, (rutina) => rutina.entrenador)
+  rutinas: Rutina[];
 }

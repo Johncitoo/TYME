@@ -7,6 +7,9 @@ import Trainer from './pages/TrainerDashboard';
 import DashboardInicioCliente from './pages/DashboardInicioCliente';
 import DashboardRutinaCliente from './pages/DashboardRutinaCliente';
 
+import ClasesCliente from './pages/ClasesCliente';
+
+
 
 import Plan from './pages/Plan';
 
@@ -18,6 +21,12 @@ import Teachers from './pages/Teachers';
 import CreateTeacher from './pages/CreateTeacher';
 import CreateRoutine from './pages/CreateRoutine';
 import CreateClass from './pages/CreateClass';
+import EjerciciosPage from './pages/ExercisePage';
+import RutinasPage from './pages/RoutinesPage';
+import CreateExercisePage from "./pages/CreateExercisePage";
+import EditExercisePage from "./pages/EditExercisePage";
+import RutinaDetailPage from '@/pages/RutinaDetailPage';
+import CreateRutinaPage from './pages/CreateRoutine';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -34,9 +43,7 @@ export default function App() {
           path="/home"
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
-
               <DashboardInicioCliente />
-        
             </ProtectedRoute>
           }
         />
@@ -46,6 +53,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
               <DashboardRutinaCliente />
+            </ProtectedRoute>
+          }
+        />
+        {/* Ruta de Clases para Cliente */}
+        <Route
+          path="/clases"
+          element={
+            <ProtectedRoute allowedRoles={['cliente']}>
+              <ClasesCliente />
             </ProtectedRoute>
           }
         />
@@ -101,10 +117,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-
-
-
         <Route
           path="/admin/profesores/crearRutina"
           element={
@@ -141,6 +153,7 @@ export default function App() {
 
 
 
+
         <Route
           path="/admin/plan"
           element={
@@ -150,6 +163,58 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/admin/ejercicios"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <EjerciciosPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/ejercicios/crear"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <CreateExercisePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/ejercicios/:id/editar"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <EditExercisePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/rutinas"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <RutinasPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/rutinas/:id/ejercicios"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <RutinaDetailPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/rutinas/crear"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <CreateRutinaPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Catch-all: redirige al login */}
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -157,4 +222,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-
