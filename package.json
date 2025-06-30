@@ -4,6 +4,7 @@
     "@nestjs/core": "^11.1.2",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
+    "@nestjs/swagger": "^11.2.0",
     "axios": "^1.9.0",
     "framer-motion": "^12.18.1",
     "passport": "^0.7.0",
@@ -20,4 +21,5 @@
     "@types/jest": "^29.5.14",
     "jest": "^30.0.0-beta.3"
   }
+
 }

@@ -13,6 +13,9 @@ import { ClasesModule } from './clases/clases.module';
 import { RutinasModule } from './rutinas/rutinas.module';
 import { MembresiaModule } from './membresia/membresia.module';
 import { EntrenadorModule } from './entrenador/entrenador.module';
+import { EjercicioModule } from 'ejercicio/ejercicio.module';
+import { TipoGrupoMuscularModule } from './tipoGrupoMuscular/tipoGrupoMuscular.module';
+import { TipoEjercicioModule } from './tipoEjercicio/tipoEjercicio.module';
 
 // Entidades
 import { Usuario } from './entities/user.entity';
@@ -26,6 +29,7 @@ import { ContactoEmergencia } from './entities/contacto_emergencia.entity';
 import { Entrenador } from './entities/entrenador.entity';
 import { EntrenadorTipo } from './entities/entrenador_tipo.entity';
 import { TipoEspecialidad } from './entities/tipo_especialidad.entity';
+import { ClienteRutina } from './entities/clienteRutina.entity';
 
 @Module({
   imports: [
@@ -52,8 +56,10 @@ import { TipoEspecialidad } from './entities/tipo_especialidad.entity';
         Entrenador,
         EntrenadorTipo,
         TipoEspecialidad,
+        ClienteRutina,
       ],
       synchronize: false, // en producción siempre false
+      autoLoadEntities: true,
     }),
 
     // Core
@@ -72,6 +78,9 @@ import { TipoEspecialidad } from './entities/tipo_especialidad.entity';
     RutinasModule,
     MembresiaModule,
     EntrenadorModule,
+    EjercicioModule,
+    TipoGrupoMuscularModule,
+    TipoEjercicioModule,
   ],
 })
 export class AppModule {}

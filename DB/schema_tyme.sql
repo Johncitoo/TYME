@@ -322,7 +322,7 @@ CREATE TABLE IF NOT EXISTS clase (
   id_entrenador INTEGER NOT NULL REFERENCES entrenador(id_entrenador)
 );
 
-INSERT INTO clase (nombre, descripcion, hora_inicio, hora_fin, cupo_maximo, id_entrenador) VALUES
+INSERT INTO clase (fecha_clase, nombre, descripcion, hora_inicio, hora_fin, cupo_maximo, id_entrenador) VALUES
   ('2025-06-30','Yoga Matutino', 'Clase suave de yoga',               '08:00', '09:00', 15, 1),
   ('2025-06-29','HIIT',           'Entrenamiento intervalico de alta intensidad', '18:00', '18:45', 10, 1)
 ON CONFLICT DO NOTHING;
