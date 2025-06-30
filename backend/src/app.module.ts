@@ -9,13 +9,17 @@ import { AdminModule } from './admin/admin.module';
 import { ContactoEmergenciaModule } from './contacto_emergencia/contacto_emergencia.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { ClasesModule } from './clases/clases.module';
+import { ClaseModule } from './clase/clase.module';
 import { RutinasModule } from './rutinas/rutinas.module';
 import { MembresiaModule } from './membresia/membresia.module';
 import { EntrenadorModule } from './entrenador/entrenador.module';
+
+import { AsistenciaModule } from './asistencia/asistencia.module';
+
 import { EjercicioModule } from 'ejercicio/ejercicio.module';
 import { TipoGrupoMuscularModule } from './tipoGrupoMuscular/tipoGrupoMuscular.module';
 import { TipoEjercicioModule } from './tipoEjercicio/tipoEjercicio.module';
+
 
 // Entidades
 import { Usuario } from './entities/user.entity';
@@ -29,7 +33,12 @@ import { ContactoEmergencia } from './entities/contacto_emergencia.entity';
 import { Entrenador } from './entities/entrenador.entity';
 import { EntrenadorTipo } from './entities/entrenador_tipo.entity';
 import { TipoEspecialidad } from './entities/tipo_especialidad.entity';
+
+import { Clase } from './clase/clase.entity';
+import { Asistencia } from 'asistencia/asistencia.entity';
+
 import { ClienteRutina } from './entities/clienteRutina.entity';
+
 
 @Module({
   imports: [
@@ -56,6 +65,8 @@ import { ClienteRutina } from './entities/clienteRutina.entity';
         Entrenador,
         EntrenadorTipo,
         TipoEspecialidad,
+        Clase,
+        Asistencia,
         ClienteRutina,
       ],
       synchronize: false, // en producción siempre false
@@ -74,10 +85,11 @@ import { ClienteRutina } from './entities/clienteRutina.entity';
     // Feature modules
     AdminModule,
     ContactoEmergenciaModule,
-    ClasesModule,
+    ClaseModule,
     RutinasModule,
     MembresiaModule,
     EntrenadorModule,
+    AsistenciaModule,
     EjercicioModule,
     TipoGrupoMuscularModule,
     TipoEjercicioModule,
