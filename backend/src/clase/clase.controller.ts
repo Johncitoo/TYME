@@ -1,4 +1,3 @@
-// src/clase/clase.controller.ts
 import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Request, UseGuards } from '@nestjs/common';
 import { ClaseService } from './clase.service';
 import { CreateClaseDto } from './dto/create-clase.dto';
@@ -12,8 +11,7 @@ export class ClaseController {
 
   @Post()
   async create(@Body() createClaseDto: CreateClaseDto, @Request() req) {
-    // El id_usuario viene del token (req.user)
-    return this.claseService.create(createClaseDto, req.user.sub); // Cambia a .sub si ese es tu claim en el JWT
+    return this.claseService.create(createClaseDto, req.user.sub);
   }
 
   @Get()
@@ -34,5 +32,11 @@ export class ClaseController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.claseService.remove(id);
+  }
+
+  // ENDPOINT PARA CLASES INSCRITAS DEL CLIENTE (PRÓXIMAS)
+  @Get('cliente/:id/semana')
+  findClasesInscritasSemana(@Param('id', ParseIntPipe) id: number) {
+    return this.claseService.findClasesInscritasSemana(id);
   }
 }
