@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { Calendar } from "@/components/ui/calendar"; // shadcn/ui
+import MobileMenu from "../components/MobileMenu";
 import { getClasesDisponibles, inscribirAsistencia, getAsistenciasCliente } from "@/services/class.service";
 import { Button } from "@/components/ui/button";
-import { Loader } from "lucide-react";
-import { toast } from "sonner";           // <---- ¡AGREGA ESTE!
-import dayjs from "dayjs";                // instala con npm i dayjs
-
+import { Loader, CalendarCheck, User } from "lucide-react";
+import dayjs from "dayjs";
+import { toast } from "sonner";
 
 type Clase = {
   id_clase: number;
@@ -26,7 +25,6 @@ type Asistencia = {
 export default function ClasesCliente() {
   const [clases, setClases] = useState<Clase[]>([]);
   const [asistencias, setAsistencias] = useState<Asistencia[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,34 +34,33 @@ export default function ClasesCliente() {
 
   const fetchClases = async () => {
     setLoading(true);
-    const data = await getClasesDisponibles(); // GET /clase
+    const data = await getClasesDisponibles();
     setClases(data);
     setLoading(false);
   };
 
   const fetchAsistencias = async () => {
     try {
-      const data = await getAsistenciasCliente(); // GET /asistencia/mis-asistencias
+      const data = await getAsistenciasCliente();
       setAsistencias(data);
     } catch {
       setAsistencias([]);
     }
   };
 
-  // Fechas únicas de clases para marcar en el calendario
-  const fechasConClase = clases.map((c) => dayjs(c.fecha_clase).format("YYYY-MM-DD"));
-
-  // Clases para el día seleccionado
-  const clasesFiltradas = clases.filter(
-    (c) => dayjs(c.fecha_clase).format("YYYY-MM-DD") === dayjs(selectedDate).format("YYYY-MM-DD")
-  );
+  // Ordenar clases por fecha ascendente, filtrar las pasadas
+  const clasesFuturas = clases
+    .filter((c) => dayjs(c.fecha_clase + " " + c.hora_inicio).isAfter(dayjs().subtract(1, "day")))
+    .sort((a, b) =>
+      dayjs(a.fecha_clase + " " + a.hora_inicio).unix() - dayjs(b.fecha_clase + " " + b.hora_inicio).unix()
+    );
 
   const handleInscribir = async (id_clase: number) => {
     try {
       await inscribirAsistencia({ id_clase });
       toast.success("¡Inscrito correctamente!");
       fetchAsistencias();
-      fetchClases(); // Para actualizar cupos si quieres mostrar el cupo restante
+      fetchClases();
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Error al inscribirse");
     }
@@ -73,69 +70,63 @@ export default function ClasesCliente() {
     asistencias.some((a) => a.clase.id_clase === id_clase);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950">
-      <h1 className="text-2xl font-bold mb-4 text-cyan-300">Clases Disponibles</h1>
-
-      {/* Calendario arriba */}
-      <div className="mb-6">
-        <Calendar
-          mode="single"
-          selected={selectedDate}
-          onSelect={setSelectedDate}
-          modifiers={{
-            // Resalta los días con clase
-            marked: (date) => fechasConClase.includes(dayjs(date).format("YYYY-MM-DD")),
-          }}
-          modifiersClassNames={{
-            marked: "bg-cyan-500 text-white",
-          }}
-          className="rounded-xl border"
-        />
-      </div>
-
-      {/* Lista de clases para el día */}
-      <div className="w-full max-w-lg">
-        <h2 className="text-lg font-semibold text-cyan-200 mb-3 text-center">
-          {selectedDate ? `Clases para ${dayjs(selectedDate).format("DD/MM/YYYY")}` : "Seleccione una fecha"}
-        </h2>
-
-        {loading ? (
-          <div className="flex justify-center items-center">
-            <Loader className="animate-spin w-8 h-8 text-cyan-400" />
-          </div>
-        ) : clasesFiltradas.length === 0 ? (
-          <div className="text-zinc-400 text-center">No hay clases para este día.</div>
-        ) : (
-          <ul className="space-y-4">
-            {clasesFiltradas.map((clase) => (
-              <li key={clase.id_clase} className="bg-zinc-800 rounded-2xl p-4 shadow-lg flex flex-col gap-1">
-                <div className="flex flex-col sm:flex-row justify-between items-center">
-                  <span className="font-bold text-cyan-400 text-xl">{clase.nombre}</span>
-                  <span className="text-sm text-zinc-300">{clase.hora_inicio} - {clase.hora_fin}</span>
-                </div>
-                <div className="text-zinc-300">{clase.descripcion}</div>
-                <div className="text-zinc-400 text-xs">
-                  Entrenador: {clase.entrenador?.usuario?.primer_nombre ?? "N/A"}
-                </div>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="text-xs text-cyan-200">Cupos: {clase.cupo_maximo}</span>
-                  {estaInscrito(clase.id_clase) ? (
-                    <span className="text-green-400 font-semibold text-sm ml-auto">Ya inscrito</span>
-                  ) : (
-                    <Button
-                      size="sm"
-                      className="ml-auto"
-                      onClick={() => handleInscribir(clase.id_clase)}
-                    >
-                      Inscribirse
-                    </Button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+    <div className="min-h-screen w-screen bg-zinc-950 flex flex-col overflow-x-hidden">
+      <MobileMenu />
+      <main className="flex-1 flex flex-col w-full max-w-md mx-auto px-2 pt-3 pb-24">
+        <h1 className="text-xl font-bold text-cyan-400 text-center mb-3">
+          Clases disponibles
+        </h1>
+        <section className="flex flex-col gap-4 overflow-y-auto">
+          {loading ? (
+            <div className="flex justify-center items-center mt-12">
+              <Loader className="animate-spin w-8 h-8 text-cyan-400" />
+            </div>
+          ) : clasesFuturas.length === 0 ? (
+            <div className="text-zinc-400 text-center mt-6">
+              No hay clases disponibles.
+            </div>
+          ) : (
+            <ul className="flex flex-col gap-4">
+              {clasesFuturas.map((clase) => (
+                <li
+                  key={clase.id_clase}
+                  className="bg-zinc-900 rounded-2xl px-4 py-3 shadow-md flex flex-col gap-2 border border-cyan-900"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <CalendarCheck className="w-5 h-5 text-cyan-400" />
+                    <span className="font-semibold text-cyan-200 text-lg">
+                      {dayjs(clase.fecha_clase).format("ddd DD/MM")}
+                    </span>
+                    <span className="ml-auto text-cyan-300 text-xs font-mono">
+                      {clase.hora_inicio} - {clase.hora_fin}
+                    </span>
+                  </div>
+                  <div className="font-bold text-cyan-300 text-base">{clase.nombre}</div>
+                  <div className="text-zinc-300 text-sm">{clase.descripcion}</div>
+                  <div className="flex items-center gap-2 text-xs text-cyan-400">
+                    <User className="w-4 h-4" />{" "}
+                    {clase.entrenador?.usuario?.primer_nombre ?? "Entrenador"}
+                    <span className="ml-auto">Cupos: {clase.cupo_maximo}</span>
+                  </div>
+                  <div className="flex justify-end mt-2">
+                    {estaInscrito(clase.id_clase) ? (
+                      <span className="text-green-400 font-semibold text-sm">Ya inscrito</span>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 rounded-md"
+                        onClick={() => handleInscribir(clase.id_clase)}
+                      >
+                        Inscribirse
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </main>
     </div>
   );
 }
