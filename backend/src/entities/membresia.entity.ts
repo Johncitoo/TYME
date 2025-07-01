@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Boleta } from './boleta.entity';
 @Entity({ name: 'membresia' })
 export class Membresia {
   @PrimaryGeneratedColumn({ name: 'id_membresia' })
@@ -18,4 +18,7 @@ export class Membresia {
 
   @Column({ name: 'duracion_dias' })
   duracion_dias: number;
+
+  @OneToMany(() => Boleta, (boleta) => boleta.membresia)
+  boletas: Boleta[];
 }
