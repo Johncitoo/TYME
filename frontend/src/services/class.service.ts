@@ -1,38 +1,44 @@
-// frontend/src/services/class.service.ts
 import axios from "axios";
 
-const API_URL = "http://localhost:3000"; // Asegúrate de que coincida con la URL de tu backend
+const API_URL = "http://localhost:3000"; // Cambia si tienes otra URL/puerto
+const getToken = () => localStorage.getItem("token");
 
-interface CreateClassPayload {
-  nombre: string;
-  descripcion: string;
-  hora_inicio: string;
-  hora_termino: string;
-  cupo_maximo: number;
-  especialidades: number[];
-  // Agrega el ID del entrenador aquí si decides vincular un entrenador durante la creación de la clase
-  // id_entrenador?: number;
+// OBTENER TODAS LAS CLASES DISPONIBLES
+export async function getClasesDisponibles() {
+  const res = await axios.get(`${API_URL}/clase`, {
+    headers: { Authorization: `Bearer ${getToken()}` }
+  });
+  return res.data;
 }
 
-export const createClass = async (classData: CreateClassPayload) => {
-  try {
-    const response = await axios.post(`${API_URL}/clases`, classData); // Tu endpoint de backend para crear clases
-    return response.data;
-  } catch (error) {
-    console.error("Error al crear la clase:", error);
-    throw error;
-  }
-};
+// OBTENER ASISTENCIAS DEL CLIENTE
+export async function getAsistenciasCliente() {
+  const res = await axios.get(`${API_URL}/asistencia/mis-asistencias`, {
+    headers: { Authorization: `Bearer ${getToken()}` }
+  });
+  return res.data;
+}
 
-// También podrías querer funciones para obtener todas las clases, obtener una clase por ID, actualizar, eliminar, etc.
-/*
-export const getAllClasses = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/clases`);
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener las clases:", error);
-    throw error;
-  }
-};
-*/
+// INSCRIBIR ASISTENCIA A UNA CLASE
+export async function inscribirAsistencia(claseId: string) {
+  const res = await axios.post(
+    `${API_URL}/asistencia/${claseId}`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    }
+  );
+  return res.data;
+}
+
+export async function cancelarAsistencia(id_asistencia: number) {
+  const API_URL = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_URL}/asistencia/${id_asistencia}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Error al cancelar asistencia");
+  return res.json();
+}
+

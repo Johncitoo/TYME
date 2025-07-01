@@ -12,7 +12,7 @@ import { Ejercicio } from '../entities/ejercicio.entity';
 @Entity('rutina_ejercicio')
 export class RutinaEjercicio {
   @PrimaryGeneratedColumn({ name: 'id_rutina_ejercicio' })
-  id: number;
+  id_rutina_ejercicio: number; // mejor que sea igual al nombre DB
 
   @ManyToOne(() => Rutina, (rutina) => rutina.rutinaEjercicios, {
     onDelete: 'CASCADE',
@@ -20,7 +20,7 @@ export class RutinaEjercicio {
   @JoinColumn({ name: 'id_rutina' })
   rutina: Rutina;
 
-  @ManyToOne(() => Ejercicio, (ejer) => ejer.rutinaEjercicios, {
+  @ManyToOne(() => Ejercicio, (ejercicio) => ejercicio.rutinaEjercicios, {
     eager: true,
     onDelete: 'CASCADE',
   })
@@ -42,6 +42,6 @@ export class RutinaEjercicio {
   @Column({ nullable: true })
   descanso?: number;
 
-  @Column({ type: 'text', nullable: true, name: 'observacion' })
+  @Column({ type: 'text', nullable: true })
   observacion?: string;
 }
