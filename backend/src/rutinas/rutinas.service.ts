@@ -1,5 +1,3 @@
-// src/rutinas/rutinas.service.ts
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,13 +10,15 @@ import { UpdateRutinaDto } from './dto/updateRutina.dto';
 import { Entrenador } from '../entities/entrenador.entity';
 import { RutinaEjercicio } from '../entities/rutinaEjercicio.entity';
 import { RutinaEjercicioService } from '../rutinaEjercicio/rutinaEjercicioService';
-import { CreateRutinaEjercicioDto } from '../rutinaEjercicio/dto/createRutinaEjercicio.dto'; // <-- IMPORTANTE
+import { CreateRutinaEjercicioDto } from '../rutinaEjercicio/dto/createRutinaEjercicio.dto';
 
 @Injectable()
 export class RutinasService {
   constructor(
     @InjectRepository(Rutina)
     private readonly rutinaRepo: Repository<Rutina>,
+    @InjectRepository(RutinaEjercicio)
+    private readonly rutinaEjercRepo: Repository<RutinaEjercicio>,
     private readonly rutinaEjercicioService: RutinaEjercicioService,
 
     @InjectRepository(Cliente)
@@ -28,7 +28,7 @@ export class RutinasService {
     private readonly crRepo: Repository<ClienteRutina>,
   ) {}
 
-  // ── CRUD estándar ──────────────────────────────────────────────────────
+  // ── CRUD estándar ──────────────────────────────
 
   async create(dto: CreateRutinaDto): Promise<Rutina> {
     // (A) Guardar la rutina y obtener su ID
@@ -122,7 +122,6 @@ export class RutinasService {
               descanso: ej.descanso,
               observacion: ej.observacion,
               ejercicio: { id_ejercicio: ej.id_ejercicio },
-              // NO incluyas rutina ni id_rutina aquí, para no dejarlo en null
             },
           );
         } else {
@@ -151,13 +150,11 @@ export class RutinasService {
     await this.rutinaRepo.remove(rutina);
   }
 
-  // ── Métodos específicos de cliente ────────────────────────────────────
+  // ── Métodos específicos de cliente ─────────────────────
 
   async obtenerRutinaCliente(usuarioId: number): Promise<Rutina | null> {
-  // Nueva función para obtener rutina completa del cliente logueado
-  async obtenerRutinaCompletaCliente(id_usuario: number): Promise<Rutina | null> {
     const cliente = await this.clienteRepo.findOne({
-      where: { usuario: { id_usuario } },
+      where: { usuario: { id_usuario: usuarioId } },
       relations: ['usuario'],
     });
     if (!cliente) return null;
@@ -177,6 +174,11 @@ export class RutinasService {
     return clienteRutina ? clienteRutina.rutina : null;
   }
 
+  async obtenerRutinaCompletaCliente(id_usuario: number): Promise<Rutina | null> {
+    // Puede ser igual a obtenerRutinaCliente, según la lógica de tu frontend
+    return this.obtenerRutinaCliente(id_usuario);
+  }
+
   async obtenerRutinasCliente(usuarioId: number): Promise<Rutina[]> {
     const cliente = await this.clienteRepo.findOne({
       where: { usuario: { id_usuario: usuarioId } },
@@ -192,5 +194,4 @@ export class RutinasService {
 
     return crs.map((cr) => cr.rutina);
   }
-
 }
