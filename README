@@ -1,83 +1,53 @@
-# TYME - Sistema de Gestión de Gimnasio
+# ------------------------------------------------------
+#   TYME - Plataforma de Gestión de Gimnasio (Windows)
+# ------------------------------------------------------
 
-Proyecto de plataforma web para gestión de gimnasios, con frontend en **React + Vite**, backend en **NestJS + TypeORM** y base de datos **PostgreSQL**, todo desplegado con **Docker Compose**.
+# 1. Instala Docker Desktop (si aún no lo tienes)
+#    Descarga desde: https://www.docker.com/products/docker-desktop/
+#    Asegúrate que Docker esté corriendo (icono verde, "Running")
 
----
-
-## 🖥️ Requisitos para Windows
-
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y ejecutándose correctamente (verifica que muestre "Docker is running")
-- Acceso a la terminal **CMD** de Windows
-- Puertos libres: `5173` (frontend), `3000` (backend), `5432` (base de datos)
-
----
-
-## 🚀 Instrucciones de Montaje (Windows)
-
-### 1. Clonar el repositorio
-
-Abre una ventana de **CMD** y ejecuta:
-
-```bash
+# 2. Clona el repositorio desde GitHub
 git clone https://github.com/Johncitoo/TYME.git
 cd TYME
-2. Abrir Docker Desktop
-Asegúrate de abrir Docker Desktop y que el icono muestre que está corriendo (Running).
 
-3. Abrir CMD en la carpeta del proyecto
-Desde el Explorador de archivos de Windows, navega a la carpeta TYME.
+# 3. Abre Docker Desktop y deja la aplicación abierta en segundo plano
 
-Haz clic en la barra de direcciones, escribe cmd y presiona Enter.
+# 4. Desde la carpeta TYME, abre la terminal CMD:
+#    - Navega a la carpeta con el Explorador de Archivos
+#    - Haz clic en la barra de direcciones y escribe: cmd
+#    - Presiona ENTER (se abrirá CMD en la ruta de TYME)
 
-Se abrirá una ventana de CMD en esa ruta (debe decir algo como C:\Users\TuUsuario\Desktop\TYME>).
-
-4. Levantar la aplicación con Docker Compose
-En la ventana de CMD, ejecuta:
-
-bash
-Copiar
-Editar
+# 5. Levanta toda la aplicación con Docker Compose
 docker-compose up --build
-Esto descargará las imágenes y levantará automáticamente la base de datos, backend y frontend.
-Nota: El primer inicio puede demorar varios minutos.
 
-5. Acceder a la plataforma
-Cuando veas mensajes como Nest application successfully started y que Docker Desktop muestra los contenedores en verde, abre tu navegador preferido y entra a:
+#    - Espera a que finalicen los mensajes: el primer build puede demorar varios minutos.
+#    - Verifica en Docker Desktop que los contenedores estén "healthy" (saludables).
 
-arduino
-Copiar
-Editar
-http://localhost:5173
-🔑 Credenciales de Acceso (Prueba)
-Rol	Usuario	Contraseña
-Admin	admin@tyme.com	AdminPass123!
-Cliente	cliente@tyme.com	ClientePass123!
-Entrenador	entrenador@tyme.com	EntrenadorPass123!
+# 6. Accede al sistema desde tu navegador en:
+#    http://localhost:5173
 
-Puedes probar todas las funciones de cada usuario desde la pantalla de login.
+# 7. Credenciales de prueba (login)
+# --------------------------------------------------
+# |    Rol      |      Usuario         |  Contraseña         |
+# |-------------|---------------------|---------------------|
+# |   Admin     |  admin@tyme.com     |  AdminPass123!      |
+# |   Cliente   |  cliente@tyme.com   |  ClientePass123!    |
+# | Entrenador  |  entrenador@tyme.com|  EntrenadorPass123! |
+# --------------------------------------------------
 
-🛠️ Tips y Problemas Frecuentes (Windows)
-Si sale “puerto ocupado”:
-Cambia el puerto en el archivo docker-compose.yml o cierra el programa que lo está usando (ej: otro proyecto, PgAdmin, etc.).
-
-¿No ves datos de prueba?
-Si necesitas restablecer la base de datos y recargar los datos de ejemplo, ejecuta en CMD:
-
-bash
-Copiar
-Editar
+# 8. ¿Problemas comunes?
+# - Si te sale "puerto ocupado", cambia el puerto en docker-compose.yml o cierra el programa que lo use.
+# - Si no ves datos de prueba: ejecuta
 docker-compose down -v
 docker-compose up --build
-¿No carga el frontend?
-Espera a que todos los contenedores estén en estado saludable. Si usas antivirus/firewall, verifica que no bloquee Docker o los puertos.
+# - Si no carga el frontend: espera a que todos los servicios estén "healthy" en Docker Desktop.
+# - Si tienes problemas de permisos, abre CMD como administrador.
 
-📋 Notas finales
-Puedes detener la app con Ctrl + C en la terminal y, si quieres, luego usar:
-
-bash
-Copiar
-Editar
+# 9. Detener todo (opcional)
+# Presiona Ctrl + C en la terminal donde se está ejecutando Docker Compose,
+# o usa:
 docker-compose down
-Si tienes problemas con permisos o volúmenes, ejecuta CMD como administrador.
 
-Para dudas, sugerencias o errores, usa la sección Issues del repositorio.
+# 10. Dudas o errores: usa la sección Issues en el repositorio de GitHub.
+
+# ¡Listo! Ya puedes usar la plataforma TYME desde Windows 🚀
