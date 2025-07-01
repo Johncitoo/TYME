@@ -1,25 +1,25 @@
 // src/rutinas/rutinas.service.ts
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectRepository }              from '@nestjs/typeorm';
+import { Repository }                    from 'typeorm';
 
-import { Rutina } from '../entities/rutina.entity';
-import { Cliente } from '../entities/cliente.entity';
-import { ClienteRutina } from '../entities/clienteRutina.entity';
-import { CreateRutinaDto } from './dto/createRutina.dto';
-import { UpdateRutinaDto } from './dto/updateRutina.dto';
-import { Entrenador } from '../entities/entrenador.entity';
-import { RutinaEjercicio } from '../entities/rutinaEjercicio.entity';
-import { RutinaEjercicioService } from '../rutinaEjercicio/rutinaEjercicioService';
-import { CreateRutinaEjercicioDto } from '../rutinaEjercicio/dto/createRutinaEjercicio.dto'; // <-- IMPORTANTE
+import { Rutina }           from '../entities/rutina.entity';
+import { Cliente }          from '../entities/cliente.entity';
+import { ClienteRutina }    from '../entities/clienteRutina.entity';
+import { Entrenador }       from '../entities/entrenador.entity';
+import { RutinaEjercicio }  from '../entities/rutinaEjercicio.entity';
+
+import { CreateRutinaDto }          from './dto/createRutina.dto';
+import { UpdateRutinaDto }          from './dto/updateRutina.dto';
+import { CreateRutinaEjercicioDto } from '../rutinaEjercicio/dto/createRutinaEjercicio.dto';
+import { RutinaEjercicioService }   from '../rutinaEjercicio/rutinaEjercicioService';
 
 @Injectable()
 export class RutinasService {
   constructor(
     @InjectRepository(Rutina)
     private readonly rutinaRepo: Repository<Rutina>,
-    private readonly rutinaEjercicioService: RutinaEjercicioService,
 
     @InjectRepository(Cliente)
     private readonly clienteRepo: Repository<Cliente>,
@@ -29,12 +29,13 @@ export class RutinasService {
 
     @InjectRepository(RutinaEjercicio)
     private readonly rutinaEjercRepo: Repository<RutinaEjercicio>,
+
+    private readonly rutinaEjercicioService: RutinaEjercicioService,
   ) {}
 
   // ── CRUD estándar ──────────────────────────────────────────────────────
 
   async create(dto: CreateRutinaDto): Promise<Rutina> {
-    // (A) Guardar la rutina y obtener su ID
     const rutina = await this.rutinaRepo.save({
       entrenador: { id_entrenador: dto.id_entrenador },
       fecha_inicio: dto.fecha_inicio,
@@ -42,13 +43,11 @@ export class RutinasService {
       descripcion: dto.descripcion,
     });
 
-    // (B) Recorrer ejercicios y asignarles el FK antes de crear
     for (const ej of dto.ejercicios) {
-      const ejercicioDto: CreateRutinaEjercicioDto = {
+      await this.rutinaEjercicioService.create({
         ...ej,
-        id_rutina: rutina.id_rutina, // ← aquí el FK que faltaba
-      };
-      await this.rutinaEjercicioService.create(ejercicioDto);
+        id_rutina: rutina.id_rutina,
+      });
     }
 
     return rutina;
@@ -82,66 +81,49 @@ export class RutinasService {
   async update(id: number, dto: UpdateRutinaDto): Promise<Rutina> {
     const rutina = await this.findOne(id);
 
-    // Actualiza datos básicos
-    if (dto.nombre !== undefined) rutina.nombre = dto.nombre;
-    if (dto.descripcion !== undefined) rutina.descripcion = dto.descripcion;
-    if (dto.fecha_inicio) rutina.fecha_inicio = new Date(dto.fecha_inicio);
+    if (dto.nombre !== undefined)       rutina.nombre        = dto.nombre;
+    if (dto.descripcion !== undefined)  rutina.descripcion   = dto.descripcion;
+    if (dto.fecha_inicio)               rutina.fecha_inicio = new Date(dto.fecha_inicio);
     if (dto.id_entrenador) {
-      const entrenador = new Entrenador();
-      entrenador.id_entrenador = dto.id_entrenador;
-      rutina.entrenador = entrenador;
+      rutina.entrenador = { id_entrenador: dto.id_entrenador } as Entrenador;
     }
 
-    // Si hay ejercicios en el dto, sincronizarlos
     if (dto.ejercicios) {
-      // 1. Trae todos los ejercicios actuales de la rutina
-      const actuales = await this.rutinaEjercRepo.find({
-        where: { rutina: { id_rutina: id } },
-      });
+      // Eliminar los ejercicios que ya no vienen
+      const actuales = await this.rutinaEjercRepo.find({ where: { rutina: { id_rutina: id } } });
+      const enviados = dto.ejercicios
+        .filter(e => e.id_rutina_ejercicio != null)
+        .map(e => e.id_rutina_ejercicio!) as number[];
 
-      // 2. Identifica ids existentes y nuevos
-      const idsEnviado = dto.ejercicios
-        .filter((e) => e.id_rutina_ejercicio !== undefined)
-        .map((e) => e.id_rutina_ejercicio as number);
-
-      // 3. Quitar ejercicios que no estén en la nueva lista
-      for (const ejActual of actuales) {
-        if (!idsEnviado.includes(ejActual.id_rutina_ejercicio)) {
-          await this.rutinaEjercRepo.remove(ejActual);
+      for (const act of actuales) {
+        if (!enviados.includes(act.id_rutina_ejercicio)) {
+          await this.rutinaEjercRepo.remove(act);
         }
       }
 
-      // 4. Agrega/actualiza los ejercicios enviados
+      // Crear o actualizar los ejercicios enviados
       for (const ej of dto.ejercicios) {
         if (ej.id_rutina_ejercicio) {
-          // Update ejercicio existente (NO toques id_rutina aquí)
-          await this.rutinaEjercRepo.update(
-            { id_rutina_ejercicio: ej.id_rutina_ejercicio },
-            {
-              dia: Number(ej.dia),
-              orden: ej.orden,
-              series: ej.series,
-              peso: ej.peso,
-              descanso: ej.descanso,
-              observacion: ej.observacion,
-              ejercicio: { id_ejercicio: ej.id_ejercicio },
-              // NO incluyas rutina ni id_rutina aquí, para no dejarlo en null
-            },
-          );
+          await this.rutinaEjercRepo.update(ej.id_rutina_ejercicio, {
+            dia: ej.dia,
+            orden: ej.orden,
+            series: ej.series,
+            peso: ej.peso,
+            descanso: ej.descanso,
+            observacion: ej.observacion,
+            ejercicio: { id_ejercicio: ej.id_ejercicio },
+          });
         } else {
-          // Nuevo ejercicio: SIEMPRE asigna la rutina
-          await this.rutinaEjercRepo.save(
-            this.rutinaEjercRepo.create({
-              rutina: { id_rutina: id },
-              ejercicio: { id_ejercicio: ej.id_ejercicio },
-              dia: Number(ej.dia),
-              orden: ej.orden,
-              series: ej.series,
-              peso: ej.peso,
-              descanso: ej.descanso,
-              observacion: ej.observacion,
-            }),
-          );
+          await this.rutinaEjercRepo.save({
+            rutina: { id_rutina: id } as any,
+            ejercicio: { id_ejercicio: ej.id_ejercicio } as any,
+            dia: ej.dia,
+            orden: ej.orden,
+            series: ej.series,
+            peso: ej.peso,
+            descanso: ej.descanso,
+            observacion: ej.observacion,
+          });
         }
       }
     }
@@ -156,6 +138,7 @@ export class RutinasService {
 
   // ── Métodos específicos de cliente ────────────────────────────────────
 
+  /** Rutina activa de un cliente */
   async obtenerRutinaCliente(usuarioId: number): Promise<Rutina | null> {
     const cliente = await this.clienteRepo.findOne({
       where: { usuario: { id_usuario: usuarioId } },
@@ -163,18 +146,27 @@ export class RutinasService {
     });
     if (!cliente) return null;
 
-    const cr = await this.crRepo.findOne({
-      where: {
-        cliente: { id_cliente: cliente.id_cliente },
-        estado: 'Activa',
-      },
-      relations: ['rutina', 'rutina.entrenador', 'rutina.clientesRutinas'],
-      order: { id: 'DESC' },
-    });
+    const cr = await this.crRepo
+      .createQueryBuilder('cr')
+      .leftJoinAndSelect('cr.rutina', 'rutina')
+      .leftJoinAndSelect('rutina.entrenador', 'entrenador')
+      .leftJoinAndSelect('rutina.rutinaEjercicios', 'rutinaEjercicios')
+      .leftJoinAndSelect('rutinaEjercicios.ejercicio', 'ejercicio')
+      .where('cr.cliente = :c', { c: cliente.id_cliente })
+      .andWhere('cr.estado = :e', { e: 'Activa' })
+      .orderBy('rutinaEjercicios.dia', 'ASC')
+      .addOrderBy('rutinaEjercicios.orden', 'ASC')
+      .getOne();
 
-    return cr ? cr.rutina : null;
+    return cr?.rutina ?? null;
   }
 
+  /** Alias para compatibilidad con el controller */
+  async obtenerRutinaCompletaCliente(usuarioId: number): Promise<Rutina | null> {
+    return this.obtenerRutinaCliente(usuarioId);
+  }
+
+  /** Historial completo de rutinas de un cliente */
   async obtenerRutinasCliente(usuarioId: number): Promise<Rutina[]> {
     const cliente = await this.clienteRepo.findOne({
       where: { usuario: { id_usuario: usuarioId } },
@@ -188,6 +180,7 @@ export class RutinasService {
       order: { id: 'DESC' },
     });
 
-    return crs.map((cr) => cr.rutina);
+    return crs.map(cr => cr.rutina);
   }
 }
+

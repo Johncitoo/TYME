@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import type { FC } from 'react';
+
+// src/components/AdminDashboard.tsx
+
+import React, { useState, FC } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Search, ArrowLeft, ArrowRight } from 'lucide-react';
@@ -21,8 +23,8 @@ const dummyMembers: Member[] = [
 
 const AdminDashboard: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [search, setSearch] = useState('');
-  const filtered = dummyMembers.filter(m =>
+  const [search, setSearch] = useState<string>('');
+  const filteredMembers = dummyMembers.filter(m =>
     m.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -52,7 +54,7 @@ const AdminDashboard: FC = () => {
           </div>
           <div className="bg-white p-6 rounded-2xl shadow">
             <h3 className="text-xl font-semibold mb-2">Miembros Activos</h3>
-            <p className="text-2xl font-bold">12</p>
+            <p className="text-2xl font-bold">{dummyMembers.length}</p>
           </div>
         </div>
 
@@ -62,7 +64,9 @@ const AdminDashboard: FC = () => {
           <div className="bg-white p-6 rounded-2xl shadow">
             <div className="flex justify-between items-center mb-4">
               <button><ArrowLeft /></button>
-              <span className="font-medium">{selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
+              <span className="font-medium">
+                {selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+              </span>
               <button><ArrowRight /></button>
             </div>
             <DayPicker
@@ -105,7 +109,7 @@ const AdminDashboard: FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map(m => (
+                  {filteredMembers.map(m => (
                     <tr key={m.id} className="hover:bg-gray-100">
                       <td className="py-2">{m.name}</td>
                       <td className="py-2">{m.datePaid}</td>
@@ -124,5 +128,4 @@ const AdminDashboard: FC = () => {
 };
 
 export default AdminDashboard;
-
 
