@@ -29,6 +29,10 @@ export default function LoginPage() {
       const usuario = await res.json();
       login(usuario);
 
+      // ✅ GUARDAR EN LOCALSTORAGE
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+
+
       // 1) Extrae el rol en minúsculas
       let tipo = "";
       if (typeof usuario.tipo_usuario === "string") {
