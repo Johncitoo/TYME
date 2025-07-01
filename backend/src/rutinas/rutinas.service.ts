@@ -14,6 +14,7 @@ import { RutinaEjercicio } from '../entities/rutinaEjercicio.entity';
 import { RutinaEjercicioService } from '../rutinaEjercicio/rutinaEjercicioService';
 import { CreateRutinaEjercicioDto } from '../rutinaEjercicio/dto/createRutinaEjercicio.dto'; // <-- IMPORTANTE
 
+
 @Injectable()
 export class RutinasService {
   constructor(
@@ -26,9 +27,6 @@ export class RutinasService {
 
     @InjectRepository(ClienteRutina)
     private readonly crRepo: Repository<ClienteRutina>,
-
-    @InjectRepository(RutinaEjercicio)
-    private readonly rutinaEjercRepo: Repository<RutinaEjercicio>,
   ) {}
 
   // ── CRUD estándar ──────────────────────────────────────────────────────
@@ -157,23 +155,29 @@ export class RutinasService {
   // ── Métodos específicos de cliente ────────────────────────────────────
 
   async obtenerRutinaCliente(usuarioId: number): Promise<Rutina | null> {
+  // Nueva función para obtener rutina completa del cliente logueado
+  async obtenerRutinaCompletaCliente(id_usuario: number): Promise<Rutina | null> {
     const cliente = await this.clienteRepo.findOne({
-      where: { usuario: { id_usuario: usuarioId } },
+      where: { usuario: { id_usuario } },
       relations: ['usuario'],
     });
     if (!cliente) return null;
 
-    const cr = await this.crRepo.findOne({
-      where: {
-        cliente: { id_cliente: cliente.id_cliente },
-        estado: 'Activa',
-      },
-      relations: ['rutina', 'rutina.entrenador', 'rutina.clientesRutinas'],
-      order: { id: 'DESC' },
-    });
+    const clienteRutina = await this.crRepo
+      .createQueryBuilder('cr')
+      .leftJoinAndSelect('cr.rutina', 'rutina')
+      .leftJoinAndSelect('rutina.entrenador', 'entrenador')
+      .leftJoinAndSelect('rutina.rutinaEjercicios', 'rutinaEjercicios')
+      .leftJoinAndSelect('rutinaEjercicios.ejercicio', 'ejercicio')
+      .where('cr.cliente = :clienteId', { clienteId: cliente.id_cliente })
+      .andWhere('cr.estado = :estado', { estado: 'Activa' })
+      .orderBy('rutinaEjercicios.dia', 'ASC')
+      .addOrderBy('rutinaEjercicios.orden', 'ASC')
+      .getOne();
 
-    return cr ? cr.rutina : null;
+    return clienteRutina ? clienteRutina.rutina : null;
   }
+
 
   async obtenerRutinasCliente(usuarioId: number): Promise<Rutina[]> {
     const cliente = await this.clienteRepo.findOne({
@@ -190,4 +194,6 @@ export class RutinasService {
 
     return crs.map((cr) => cr.rutina);
   }
+
+  // ...otros métodos que tengas...
 }

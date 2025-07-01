@@ -1,7 +1,6 @@
 -- ========================================
--- 1) Primero las tablas de lookup (sin dependencias)
+-- 1) Borrar tablas (en orden inverso a dependencias)
 -- ========================================
--- Drop tables if they exist (en orden inverso a las dependencias)
 DROP TABLE IF EXISTS asistencia;
 DROP TABLE IF EXISTS clase;
 DROP TABLE IF EXISTS boleta;
@@ -25,7 +24,7 @@ DROP TABLE IF EXISTS tipo_sexo;
 DROP TABLE IF EXISTS tipo_usuario;
 
 -- ========================================
--- 2) Crear tablas de lookup
+-- 2) Tablas de lookup y población
 -- ========================================
 CREATE TABLE IF NOT EXISTS tipo_usuario (
   id_tipo_usuario SERIAL PRIMARY KEY,
@@ -76,9 +75,7 @@ CREATE TABLE IF NOT EXISTS membresia (
   duracion_dias  INTEGER NOT NULL
 );
 
--- ========================================
--- 3) Población inicial de lookup
--- ========================================
+-- -- Inserts tipos
 INSERT INTO tipo_usuario (nombre) VALUES
   ('admin'),
   ('cliente'),
@@ -113,19 +110,27 @@ INSERT INTO membresia (nombre, descripcion, precio, duracion_dias) VALUES
   ('Plan Anual Premium', 'Acceso total + clases ilimitadas', 280000, 365)
 ON CONFLICT DO NOTHING;
 
+-- Amplía los tipos para los usados en rutina
 INSERT INTO tipo_ejercicio (nombre) VALUES
-  ('Cardiovascular'),
   ('Fuerza'),
+  ('Cardio'),
   ('Flexibilidad'),
-  ('Funcional')
+  ('Resistencia'),
+  ('Potencia'),
+  ('Velocidad'),
+  ('Equilibrio')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO tipo_grupo_muscular (nombre) VALUES
+  ('Piernas'),
   ('Pecho'),
   ('Espalda'),
-  ('Piernas'),
   ('Brazos'),
-  ('Core')
+  ('Hombros'),
+  ('Espalda baja'),
+  ('Core'),
+  ('Tríceps'),
+  ('Femoral')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO tipo_metodo_pago (nombre) VALUES
@@ -143,7 +148,7 @@ INSERT INTO tipo_especialidad (nombre) VALUES
 ON CONFLICT DO NOTHING;
 
 -- ========================================
--- 4) Tablas con dependencias en orden
+-- 3) Entidades principales y relaciones
 -- ========================================
 CREATE TABLE IF NOT EXISTS contacto_emergencia (
   id_contacto    SERIAL PRIMARY KEY,
@@ -181,13 +186,12 @@ CREATE TABLE IF NOT EXISTS usuario (
 );
 
 INSERT INTO usuario (
-  id_tipo_usuario, correo, contrasena, primer_nombre, segundo_nombre,
+  id_usuario, id_tipo_usuario, correo, contrasena, primer_nombre, segundo_nombre,
   primer_apellido, segundo_apellido, telefono, cuerpo_rut, dv_rut,
   direccion, fecha_nacimiento, id_tipo_genero, id_tipo_sexo, id_contacto_emergencia
 ) VALUES 
-  ((SELECT id_tipo_usuario FROM tipo_usuario WHERE nombre='admin'),     'admin@tyme.com',     'AdminPass123!', 'Admin',       'System', 'Master',  'Control', '+56912345678', '11111111', '1', 'Dirección Admin 123',    '1990-01-01', 1, 1, 1),
-  ((SELECT id_tipo_usuario FROM tipo_usuario WHERE nombre='cliente'),   'cliente@tyme.com',   'ClientePass123!','Cliente',     'Test',   'Prueba',  'Demo',    '+56923456789', '22222222', '2', 'Dirección Cliente 456',  '1995-05-05', 2, 2, 2),
-  ((SELECT id_tipo_usuario FROM tipo_usuario WHERE nombre='entrenador'),'entrenador@tyme.com','EntrenadorPass123!','Entrenador','Expert', 'Pro',     'Trainer', '+56934567890', '33333333', '3', 'Dirección Entrenador 789','1985-10-10', 1, 1, 3)
+  (1, 3, 'entrenador@tyme.com', 'EntrenadorPass123!', 'Entrenador', 'Expert', 'Pro', 'Trainer', '+56934567890', '33333333', '3', 'Dirección Entrenador 789', '1985-10-10', 1, 1, 3),
+  (2, 2, 'cliente@tyme.com', 'ClientePass123!','Cliente', 'Test', 'Prueba', 'Demo', '+56923456789', '22222222', '2', 'Dirección Cliente 456', '1995-05-05', 2, 2, 2)
 ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS entrenador (
@@ -195,27 +199,19 @@ CREATE TABLE IF NOT EXISTS entrenador (
   id_usuario    INTEGER UNIQUE NOT NULL REFERENCES usuario(id_usuario)
 );
 
-INSERT INTO entrenador (id_usuario)
-SELECT id_usuario FROM usuario WHERE correo='entrenador@tyme.com'
+INSERT INTO entrenador (id_entrenador, id_usuario)
+VALUES (1, 1)
 ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS cliente (
   id_cliente        SERIAL PRIMARY KEY,
   id_usuario        INTEGER UNIQUE NOT NULL REFERENCES usuario(id_usuario),
-  id_tipo_membresia INTEGER NOT NULL REFERENCES tipo_membresia(id_tipo_membresia),
+  id_tipo_membresia INTEGER NOT NULL DEFAULT 1 REFERENCES tipo_membresia(id_tipo_membresia),
   id_entrenador     INTEGER NOT NULL REFERENCES entrenador(id_entrenador)
 );
 
--- CORRECCIÓN: usar CROSS JOIN para asegurar la inserción de cliente
-INSERT INTO cliente (id_usuario, id_tipo_membresia, id_entrenador)
-SELECT 
-  u.id_usuario,
-  1,  -- Mensual
-  e.id_entrenador
-FROM usuario u
-CROSS JOIN entrenador e
-WHERE u.correo = 'cliente@tyme.com'
-  AND e.id_usuario = (SELECT id_usuario FROM usuario WHERE correo='entrenador@tyme.com')
+INSERT INTO cliente (id_cliente, id_usuario, id_tipo_membresia, id_entrenador)
+VALUES (1, 2, 1, 1)
 ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS entrenador_tipo (
@@ -225,14 +221,11 @@ CREATE TABLE IF NOT EXISTS entrenador_tipo (
 );
 
 INSERT INTO entrenador_tipo (id_entrenador, id_tipo_especialidad)
-SELECT e.id_entrenador, te.id_tipo_especialidad
-FROM entrenador e
-CROSS JOIN tipo_especialidad te
-WHERE e.id_usuario = (SELECT id_usuario FROM usuario WHERE correo='entrenador@tyme.com')
+VALUES (1, 2)
 ON CONFLICT DO NOTHING;
 
 -- ========================================
--- 5) Tablas de rutinas y ejercicios
+-- 4) Tablas de rutinas y ejercicios
 -- ========================================
 CREATE TABLE IF NOT EXISTS rutina (
   id_rutina     SERIAL PRIMARY KEY,
@@ -242,9 +235,9 @@ CREATE TABLE IF NOT EXISTS rutina (
   nombre        VARCHAR(100) NOT NULL
 );
 
-INSERT INTO rutina (id_entrenador, fecha_inicio, descripcion, nombre) VALUES
-  (1, '2025-06-01', 'Rutina de fuerza enfocada en pecho y espalda', 'Fuerza Plus'),
-  (1, '2025-06-02', 'Rutina de cardio y resistencia',         'Cardio Express')
+-- Rutina principal de ejemplo (id_rutina=3)
+INSERT INTO rutina (id_rutina, id_entrenador, fecha_inicio, descripcion, nombre)
+VALUES (3, 1, CURRENT_DATE, 'Rutina personalizada 3 días x 5 ejercicios', 'Rutina completa de fuerza')
 ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS cliente_rutina (
@@ -254,9 +247,8 @@ CREATE TABLE IF NOT EXISTS cliente_rutina (
   id_cliente        INTEGER NOT NULL REFERENCES cliente(id_cliente)
 );
 
-INSERT INTO cliente_rutina (estado, id_rutina, id_cliente) VALUES
-  ('Activa',    1, 1),
-  ('Pendiente', 2, 1)
+INSERT INTO cliente_rutina (id_cliente_rutina, estado, id_rutina, id_cliente)
+VALUES (1, 'Activa', 3, 1)
 ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS ejercicio (
@@ -269,9 +261,23 @@ CREATE TABLE IF NOT EXISTS ejercicio (
   id_tipo_ejercicio INTEGER REFERENCES tipo_ejercicio(id_tipo_ejercicio)
 );
 
-INSERT INTO ejercicio (nombre, descripcion, video_url, imagen_url, id_grupo_muscular, id_tipo_ejercicio) VALUES
-  ('Press de banca', 'Ejercicio de fuerza para pecho', 'http://video1', 'http://img1', 1, 2),
-  ('Sentadilla',     'Ejercicio de fuerza para piernas', 'http://video2', 'http://img2', 3, 2)
+-- Ejercicios, usando IDs específicos para la rutina (16-30)
+INSERT INTO ejercicio (id_ejercicio, nombre, descripcion, video_url, imagen_url, id_grupo_muscular, id_tipo_ejercicio) VALUES
+(16, 'Sentadillas', 'Ejercicio de piernas', NULL, NULL, 1, 1),
+(17, 'Press de banca', 'Ejercicio de pecho', NULL, NULL, 2, 1),
+(18, 'Remo con barra', 'Ejercicio de espalda', NULL, NULL, 3, 1),
+(19, 'Curl de bíceps', 'Ejercicio de brazos', NULL, NULL, 4, 1),
+(20, 'Press militar', 'Ejercicio de hombros', NULL, NULL, 5, 1),
+(21, 'Peso muerto', 'Ejercicio de espalda baja', NULL, NULL, 6, 1),
+(22, 'Elevaciones laterales', 'Ejercicio de hombros', NULL, NULL, 5, 1),
+(23, 'Fondos en paralelas', 'Ejercicio de tríceps', NULL, NULL, 8, 1),
+(24, 'Jalón al pecho', 'Ejercicio de espalda', NULL, NULL, 3, 1),
+(25, 'Extensiones de tríceps', 'Ejercicio de brazos', NULL, NULL, 4, 1),
+(26, 'Abdominales', 'Ejercicio de core', NULL, NULL, 7, 1),
+(27, 'Prensa de piernas', 'Ejercicio de piernas', NULL, NULL, 1, 1),
+(28, 'Curl femoral', 'Ejercicio de piernas', NULL, NULL, 9, 1),
+(29, 'Remo sentado', 'Ejercicio de espalda', NULL, NULL, 3, 1),
+(30, 'Plancha', 'Ejercicio de core', NULL, NULL, 7, 1)
 ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS rutina_ejercicio (
@@ -286,13 +292,30 @@ CREATE TABLE IF NOT EXISTS rutina_ejercicio (
   observacion         TEXT
 );
 
-INSERT INTO rutina_ejercicio (id_rutina, id_ejercicio, dia, orden, series, peso, descanso, observacion) VALUES
-  (1, 1, 1, 1, 4,  60,  90, 'Mantener control de la barra'),
-  (1, 2, 1, 2, 4,  80, 120, '')
-ON CONFLICT DO NOTHING;
+-- Día 1
+INSERT INTO rutina_ejercicio (id_rutina_ejercicio, id_rutina, id_ejercicio, dia, orden, series, peso, descanso, observacion) VALUES
+(21, 3, 16, 1, 1, 4, 60, 90, 'Mantener control de la barra'),
+(22, 3, 17, 1, 2, 4, 80, 120, ''),
+(23, 3, 18, 1, 3, 3, 50, 60, NULL),
+(24, 3, 19, 1, 4, 3, 40, 45, NULL),
+(25, 3, 20, 1, 5, 3, 30, 30, 'Calentamiento');
+-- Día 2
+INSERT INTO rutina_ejercicio (id_rutina_ejercicio, id_rutina, id_ejercicio, dia, orden, series, peso, descanso, observacion) VALUES
+(26, 3, 21, 2, 1, 4, 55, 60, NULL),
+(27, 3, 22, 2, 2, 4, 45, 45, NULL),
+(28, 3, 23, 2, 3, 4, 60, 90, NULL),
+(29, 3, 24, 2, 4, 3, 35, 30, NULL),
+(30, 3, 25, 2, 5, 3, 50, 60, NULL);
+-- Día 3
+INSERT INTO rutina_ejercicio (id_rutina_ejercicio, id_rutina, id_ejercicio, dia, orden, series, peso, descanso, observacion) VALUES
+(31, 3, 26, 3, 1, 4, 55, 60, NULL),
+(32, 3, 27, 3, 2, 4, 45, 45, NULL),
+(33, 3, 28, 3, 3, 3, 65, 90, NULL),
+(34, 3, 29, 3, 4, 4, 35, 30, NULL),
+(35, 3, 30, 3, 5, 3, 50, 60, NULL);
 
 -- ========================================
--- 6) Tablas de pago y boletas
+-- 5) Tablas de pago, boleta, clase, asistencia (opcional)
 -- ========================================
 CREATE TABLE IF NOT EXISTS boleta (
   id_boleta    SERIAL PRIMARY KEY,
@@ -304,13 +327,6 @@ CREATE TABLE IF NOT EXISTS boleta (
   id_membresia INTEGER NOT NULL REFERENCES membresia(id_membresia)
 );
 
-INSERT INTO boleta (fecha_pago, metodo_pago, monto, observacion, id_cliente, id_membresia) VALUES
-  ('2025-06-05', 2, 30000, 'Pago mensual', 1, 1)
-ON CONFLICT DO NOTHING;
-
--- ========================================
--- 7) Tablas de clases y asistencia
--- ========================================
 CREATE TABLE IF NOT EXISTS clase (
   id_clase      SERIAL PRIMARY KEY,
   fecha_clase   DATE NOT NULL,
@@ -322,20 +338,9 @@ CREATE TABLE IF NOT EXISTS clase (
   id_entrenador INTEGER NOT NULL REFERENCES entrenador(id_entrenador)
 );
 
-INSERT INTO clase (fecha_clase, nombre, descripcion, hora_inicio, hora_fin, cupo_maximo, id_entrenador) VALUES
-  ('2025-06-30','Yoga Matutino', 'Clase suave de yoga',               '08:00', '09:00', 15, 1),
-  ('2025-06-29','HIIT',           'Entrenamiento intervalico de alta intensidad', '18:00', '18:45', 10, 1)
-ON CONFLICT DO NOTHING;
-
 CREATE TABLE IF NOT EXISTS asistencia (
   id_asistencia SERIAL PRIMARY KEY,
   id_cliente    INTEGER NOT NULL REFERENCES cliente(id_cliente),
   id_clase      INTEGER NOT NULL REFERENCES clase(id_clase),
   fecha         DATE NOT NULL
 );
-
-INSERT INTO asistencia (id_cliente, id_clase, fecha) VALUES
-  (1, 1, '2025-06-06'),
-  (1, 2, '2025-06-07')
-ON CONFLICT DO NOTHING;
-

@@ -21,6 +21,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "dayjs": "^1.11.13",
     "framer-motion": "^12.18.1",
     "lucide-react": "^0.509.0",
     "react": "^19.1.0",
@@ -28,6 +29,7 @@
     "react-dom": "^19.1.0",
     "react-feather": "^2.0.10",
     "react-router-dom": "^7.6.1",
+    "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.0",
     "vaul": "^1.1.2",
     "zustand": "^5.0.4"

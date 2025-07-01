@@ -187,3 +187,8 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+.react-calendar__tile {
+  padding: 0.4rem 0.6rem !important;
+  min-width: 2.5rem !important;
+  text-align: center !important;
+}

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import type { FC } from 'react';
 import { DayPicker } from 'react-day-picker';
@@ -13,6 +14,7 @@ interface Member {
   status: string;
 }
 
+
 const dummyMembers: Member[] = [
   { id: 1, name: 'James Medalla', datePaid: '2025-06-01', dateExpiry: '2025-07-01', status: 'Activo' },
   { id: 2, name: 'Kent Charl Mabutus', datePaid: '2025-06-05', dateExpiry: '2025-07-05', status: 'Activo' },
@@ -21,8 +23,10 @@ const dummyMembers: Member[] = [
 
 const AdminDashboard: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
   const [search, setSearch] = useState('');
   const filtered = dummyMembers.filter(m =>
+
     m.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -55,6 +59,8 @@ const AdminDashboard: FC = () => {
             <p className="text-2xl font-bold">12</p>
           </div>
         </div>
+
+
 
         {/* Main content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

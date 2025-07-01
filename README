@@ -1,0 +1,53 @@
+# ------------------------------------------------------
+#   TYME - Plataforma de Gestión de Gimnasio (Windows)
+# ------------------------------------------------------
+
+# 1. Instala Docker Desktop (si aún no lo tienes)
+#    Descarga desde: https://www.docker.com/products/docker-desktop/
+#    Asegúrate que Docker esté corriendo (icono verde, "Running")
+
+# 2. Clona el repositorio desde GitHub
+git clone https://github.com/Johncitoo/TYME.git
+cd TYME
+
+# 3. Abre Docker Desktop y deja la aplicación abierta en segundo plano
+
+# 4. Desde la carpeta TYME, abre la terminal CMD:
+#    - Navega a la carpeta con el Explorador de Archivos
+#    - Haz clic en la barra de direcciones y escribe: cmd
+#    - Presiona ENTER (se abrirá CMD en la ruta de TYME)
+
+# 5. Levanta toda la aplicación con Docker Compose
+docker-compose up --build
+
+#    - Espera a que finalicen los mensajes: el primer build puede demorar varios minutos.
+#    - Verifica en Docker Desktop que los contenedores estén "healthy" (saludables).
+
+# 6. Accede al sistema desde tu navegador en:
+#    http://localhost:5173
+
+# 7. Credenciales de prueba (login)
+# --------------------------------------------------
+# |    Rol      |      Usuario         |  Contraseña         |
+# |-------------|---------------------|---------------------|
+# |   Admin     |  admin@tyme.com     |  AdminPass123!      |
+# |   Cliente   |  cliente@tyme.com   |  ClientePass123!    |
+# | Entrenador  |  entrenador@tyme.com|  EntrenadorPass123! |
+# --------------------------------------------------
+
+# 8. ¿Problemas comunes?
+# - Si te sale "puerto ocupado", cambia el puerto en docker-compose.yml o cierra el programa que lo use.
+# - Si no ves datos de prueba: ejecuta
+docker-compose down -v
+docker-compose up --build
+# - Si no carga el frontend: espera a que todos los servicios estén "healthy" en Docker Desktop.
+# - Si tienes problemas de permisos, abre CMD como administrador.
+
+# 9. Detener todo (opcional)
+# Presiona Ctrl + C en la terminal donde se está ejecutando Docker Compose,
+# o usa:
+docker-compose down
+
+# 10. Dudas o errores: usa la sección Issues en el repositorio de GitHub.
+
+# ¡Listo! Ya puedes usar la plataforma TYME desde Windows 🚀
