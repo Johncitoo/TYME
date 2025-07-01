@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RutinaEjercicio } from './rutinaEjercicio.entity';
 import { CreateRutinaEjercicioDto } from './dto/createRutinaEjercicio.dto';
-import { UpdateRutinaEjercicioDto } from './dto/updateRutinaEjercicio.dto';
+import { UpdateRutinaEjercicioDto } from './dto/updateRutinaEjercicio.dto';  // <-- Importa este DTO
 
 @Injectable()
 export class RutinaEjercicioService {
@@ -21,7 +21,6 @@ export class RutinaEjercicioService {
       peso: dto.peso,
       descanso: dto.descanso,
       observacion: dto.observacion,
-      // aquí vinculamos explícitamente la rutina y el ejercicio
       rutina: { id_rutina: dto.id_rutina },
       ejercicio: { id_ejercicio: dto.id_ejercicio },
     });
@@ -32,6 +31,7 @@ export class RutinaEjercicioService {
     return this.repo.find({
       where: { rutina: { id_rutina } },
       order: { dia: 'ASC', orden: 'ASC' },
+      relations: ['ejercicio'], // agrego relación ejercicio para traer detalles
     });
   }
 
@@ -41,5 +41,20 @@ export class RutinaEjercicioService {
 
   async remove(id: number) {
     return this.repo.delete(id);
+  }
+
+  async findRutinaCompletaByCliente(id_cliente: number) {
+    const ejercicios = await this.repo
+      .createQueryBuilder('re')
+      .innerJoinAndSelect('re.rutina', 'rutina')
+      .innerJoin('rutina.clientes', 'cliente')  // Ajusta el nombre de la relación según tu entidad
+      .innerJoinAndSelect('re.ejercicio', 'ejercicio')
+      .where('cliente.id_cliente = :id_cliente', { id_cliente })
+      .andWhere('rutina.estado = :estado', { estado: 'Activa' })
+      .orderBy('re.dia', 'ASC')
+      .addOrderBy('re.orden', 'ASC')
+      .getMany();
+
+    return ejercicios;
   }
 }

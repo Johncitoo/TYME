@@ -1,18 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
+// src/services/user.service.ts
+import axios from "axios";
 
-describe('UsersService', () => {
-  let service: UsersService;
+const API_URL = "http://localhost:3000";
+const getToken = () => localStorage.getItem("token");
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
-    }).compile();
-
-    service = module.get<UsersService>(UsersService);
+// Obtener perfil actual
+export async function getPerfilUsuario() {
+  const res = await axios.get(`${API_URL}/users/me`, {
+    headers: { Authorization: `Bearer ${getToken()}` }
   });
+  return res.data;
+}
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+// Actualizar perfil actual
+export async function updatePerfilUsuario(updateData: any) {
+  const res = await axios.put(`${API_URL}/users/me`, updateData, {
+    headers: { Authorization: `Bearer ${getToken()}` }
   });
-});
+  return res.data;
+}

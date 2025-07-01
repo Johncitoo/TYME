@@ -13,7 +13,7 @@ import { Entrenador } from '../entities/entrenador.entity';
       Usuario,
       Cliente,
       TipoMembresia,
-      Entrenador, // ← Asegúrate de agregar aquí estas dos entidades
+      Entrenador,
     ]),
   ],
   controllers: [UsersController],

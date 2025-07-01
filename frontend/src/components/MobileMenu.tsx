@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Home, Dumbbell, CalendarCheck, User, LogOut, Menu } from "lucide-react";
 import clsx from "clsx";
 
+// Arreglado: perfil ahora apunta a /editar-perfil
 const MENU_OPTIONS = [
   {
     label: "Inicio",
@@ -24,15 +25,24 @@ const MENU_OPTIONS = [
   {
     label: "Perfil",
     icon: <User className="w-6 h-6 mr-3" />,
-    to: "/perfil",
+    to: "/editar-perfil", // <-- ESTA ES LA RUTA CORRECTA
   },
 ];
 
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate(); // <-- Usamos esto para navegar
 
   const handleClick = () => setOpen(false);
+
+  // Logout REAL
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setOpen(false);
+    // Puedes limpiar otros datos aquí si usas Zustand o Context para Auth.
+    navigate("/");
+  };
 
   return (
     <header className="w-full flex items-center justify-between px-3 py-4">
@@ -80,10 +90,7 @@ export default function MobileMenu() {
           <div className="border-t border-cyan-900 my-2" />
           <button
             className="flex items-center py-4 px-4 w-full rounded-2xl font-semibold text-lg text-red-500 hover:bg-red-800/10 transition-all mt-2 mb-10"
-            onClick={() => {
-              setOpen(false);
-              alert("Cerrar sesión");
-            }}
+            onClick={handleLogout} // <-- Logout real
           >
             <LogOut className="w-6 h-6 mr-3" />
             Cerrar sesión

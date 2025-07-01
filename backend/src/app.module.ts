@@ -68,6 +68,8 @@ import { ClienteRutina } from './entities/clienteRutina.entity';
         Clase,
         Asistencia,
         ClienteRutina,
+        AuthModule,
+        RutinasModule,
       ],
       synchronize: false, // en producción siempre false
       autoLoadEntities: true,
