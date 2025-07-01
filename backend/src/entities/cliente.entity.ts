@@ -10,7 +10,7 @@ import { Usuario } from './user.entity';
 import { TipoMembresia } from './tipo_membresia.entity';
 import { Entrenador } from './entrenador.entity';
 import { ClienteRutina } from './clienteRutina.entity';
-import { Boleta } from './boleta.entity';
+
 @Entity({ name: 'cliente' })
 @Unique(['usuario'])
 export class Cliente {
@@ -31,7 +31,4 @@ export class Cliente {
 
   @OneToMany(() => ClienteRutina, (cr) => cr.cliente)
   clientesRutinas: ClienteRutina[];
-
-  @OneToMany(() => Boleta, (boleta) => boleta.cliente)
-  boletas: Boleta[];
 }

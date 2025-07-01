@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { CreateEjercicioNestedDto } from './createEjercicioNested.dto';
+import { CreateRutinaEjercicioDto } from '../../rutinaEjercicio/dto/createRutinaEjercicio.dto';
 
 export class CreateRutinaDto {
   @IsNotEmpty()
@@ -33,6 +33,6 @@ export class CreateRutinaDto {
   @IsArray()
   @ArrayMinSize(1) // opcional: si quieres al menos 1 elemento
   @ValidateNested({ each: true })
-  @Type(() => CreateEjercicioNestedDto)
-  ejercicios: CreateEjercicioNestedDto[];
+  @Type(() => CreateRutinaEjercicioDto)
+  ejercicios?: CreateRutinaEjercicioDto[];
 }

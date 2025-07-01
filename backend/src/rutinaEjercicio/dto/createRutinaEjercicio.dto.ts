@@ -8,9 +8,9 @@ import {
 } from 'class-validator';
 
 export class CreateRutinaEjercicioDto {
-  @IsOptional()
+  @IsNotEmpty()
   @IsInt()
-  id_rutina?: number;
+  id_rutina: number;
 
   @IsNotEmpty()
   @IsInt()

@@ -190,11 +190,9 @@ INSERT INTO usuario (
   primer_apellido, segundo_apellido, telefono, cuerpo_rut, dv_rut,
   direccion, fecha_nacimiento, id_tipo_genero, id_tipo_sexo, id_contacto_emergencia
 ) VALUES 
-  (1, 1, 'admin@tyme.com',      'AdminPass123!',      'Admin',      'System', 'Master',  'Control', '+56912345678', '11111111', '1', 'Dirección Admin 123',    '1990-01-01', 1, 1, 1),
-  (2, 3, 'entrenador@tyme.com', 'EntrenadorPass123!', 'Entrenador', 'Expert', 'Pro',     'Trainer', '+56934567890', '33333333', '3', 'Dirección Entrenador 789','1985-10-10', 1, 1, 3),
-  (3, 2, 'cliente@tyme.com',    'ClientePass123!',    'Cliente',    'Test',   'Prueba',  'Demo',    '+56923456789', '22222222', '2', 'Dirección Cliente 456',  '1995-05-05', 2, 2, 2)
+  (1, 3, 'entrenador@tyme.com', 'EntrenadorPass123!', 'Entrenador', 'Expert', 'Pro', 'Trainer', '+56934567890', '33333333', '3', 'Dirección Entrenador 789', '1985-10-10', 1, 1, 3),
+  (2, 2, 'cliente@tyme.com', 'ClientePass123!','Cliente', 'Test', 'Prueba', 'Demo', '+56923456789', '22222222', '2', 'Dirección Cliente 456', '1995-05-05', 2, 2, 2)
 ON CONFLICT DO NOTHING;
-
 
 CREATE TABLE IF NOT EXISTS entrenador (
   id_entrenador SERIAL PRIMARY KEY,

@@ -113,7 +113,7 @@ export default function RutinasPage() {
                   <td className="px-6 py-4">
                     <button
                       className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-                      onClick={() => navigate(`/admin/rutinas/editar/${r.id_rutina}`)}
+                      onClick={() => navigate(`/admin/rutinas/${r.id_rutina}/editar`)}
                     >
                       Editar
                     </button>
