@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import {
   Calendar as HomeIcon,
   BookCheck,
-  School2,
   Users,
   LogOut,
   RefreshCcw,
 } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import EjerciciosContent from '../components/EjerciciosContent';
+import RutinasContent from '../components/RutinasContent';
 
 // --- Frases motivacionales ---
 const frasesMotivacionales = [
@@ -16,7 +17,7 @@ const frasesMotivacionales = [
 ];
 
 // --- Pantalla de Inicio ---
-const HomeContent = () => {
+const HomeContent: React.FC<{ setSelectedItem: (item: SidebarItem) => void }> = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [frase, setFrase] = useState("");
 
@@ -26,16 +27,14 @@ const HomeContent = () => {
   };
 
   useEffect(() => {
-    generarFrase(); // Al cargar
-    const intervalId = setInterval(generarFrase, 15000); // Cada 15 segundos
-    return () => clearInterval(intervalId); // Limpieza al desmontar
+    generarFrase();
+    const intervalId = setInterval(generarFrase, 15000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <section className="p-10 flex flex-col gap-6">
       <h2 className="text-2xl font-bold mb-2">Pantalla de Inicio</h2>
-
-      {/* Frase motivacional */}
       <div className="bg-[#F3E8FF] text-purple-800 p-4 rounded-lg shadow text-center font-medium italic relative">
         {frase}
         <button
@@ -46,8 +45,6 @@ const HomeContent = () => {
           <RefreshCcw size={18} />
         </button>
       </div>
-
-      {/* Calendario */}
       <div className="bg-white p-6 rounded-lg shadow w-fit">
         <DayPicker
           mode="single"
@@ -60,43 +57,18 @@ const HomeContent = () => {
   );
 };
 
-// --- Crear Clases ---
-const CrearClaseContent = () => (
-  <section className="p-10">
-    <h2 className="text-2xl font-bold mb-4">Crear Clase</h2>
-    <p>Formulario o funcionalidades para crear una nueva clase.</p>
-  </section>
-);
-
-// --- Crear Rutinas ---
-const CrearRutinaContent = () => (
-  <section className="p-10">
-    <h2 className="text-2xl font-bold mb-4">Crear Rutina</h2>
-    <p>Formulario o funcionalidades para crear una nueva rutina.</p>
-  </section>
-);
-
-// --- Profesor ---
-const ProfesorContent = () => (
-  <section className="p-10">
-    <h2 className="text-2xl font-bold mb-4">Profesores</h2>
-    <p>Listado o gestión de profesores.</p>
-  </section>
-);
-
 // --- Tipo de ítem del sidebar ---
-interface SidebarItem {
+export interface SidebarItem {
   label: string;
   icon: React.ReactNode;
-  component: React.FC;
+  component: React.FC<{ setSelectedItem: (item: SidebarItem) => void }>;
 }
 
 // --- Items del sidebar ---
 const sidebarItems: SidebarItem[] = [
   { label: "Inicio", icon: <HomeIcon size={20} />, component: HomeContent },
-  { label: "Clases", icon: <BookCheck size={20} />, component: CrearClaseContent },
-  { label: "Rutinas", icon: <BookCheck size={20} />, component: CrearRutinaContent },
-  { label: "Profesor", icon: <School2 size={20} />, component: ProfesorContent },
+  { label: "Ejercicios", icon: <BookCheck size={20} />, component: EjerciciosContent },
+  { label: "Rutinas", icon: <BookCheck size={20} />, component: RutinasContent },
 ];
 
 // --- Componente principal ---
@@ -117,6 +89,8 @@ const TrainerDashboard: React.FC = () => {
       }
     }
   }, []);
+
+  const SelectedComponent = selectedItem.component;
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -170,8 +144,8 @@ const TrainerDashboard: React.FC = () => {
           </h1>
         </header>
 
-        {/* Render dinámico del componente */}
-        <selectedItem.component />
+        {/* Render dinámico con prop setSelectedItem */}
+        <SelectedComponent setSelectedItem={setSelectedItem} />
       </main>
     </div>
   );
