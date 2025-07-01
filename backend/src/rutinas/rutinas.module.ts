@@ -7,6 +7,7 @@ import { Cliente } from '../entities/cliente.entity';
 import { ClienteRutina } from '../entities/clienteRutina.entity';
 import { RutinaEjercicio } from '../entities/rutinaEjercicio.entity';
 import { Ejercicio } from '../entities/ejercicio.entity';
+import { RutinaEjercicioModule } from '../rutinaEjercicio/rutinaEjercicio.module';
 
 @Module({
   imports: [
