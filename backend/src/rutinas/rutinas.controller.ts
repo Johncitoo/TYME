@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-
   Post,
   Patch,
   Put,
@@ -12,10 +11,16 @@ import {
   UseGuards,
   UnauthorizedException,
   NotFoundException,
+  HttpCode,
+  HttpStatus,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { RutinasService } from './rutinas.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
+import { CreateRutinaDto } from './dto/create-rutina.dto';
+import { UpdateRutinaDto } from './dto/update-rutina.dto';
+import { Rutina } from '../entities/rutina.entity';
 
 @Controller('rutinas')
 export class RutinasController {
