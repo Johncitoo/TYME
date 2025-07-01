@@ -9,7 +9,7 @@ import { CreateRutinaDto } from './dto/createRutina.dto';
 import { UpdateRutinaDto } from './dto/updateRutina.dto';
 import { Entrenador } from '../entities/entrenador.entity';
 import { RutinaEjercicio } from '../entities/rutinaEjercicio.entity';
-import { RutinaEjercicioService } from '../rutinaEjercicio/rutinaEjercicioService';
+import { RutinaEjercicioService } from '../rutinaEjercicio/rutinaEjercicio.service';
 import { CreateRutinaEjercicioDto } from '../rutinaEjercicio/dto/createRutinaEjercicio.dto';
 
 @Injectable()
