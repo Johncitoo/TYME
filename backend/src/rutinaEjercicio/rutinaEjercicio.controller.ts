@@ -9,13 +9,13 @@ import {
   Delete,
   ParseIntPipe,
 } from '@nestjs/common';
-import { RutinaEjercicioService } from './rutinaEjercicioService';
+import { RutinaEjercicioService } from './rutinaEjercicio.service';
 import { CreateRutinaEjercicioDto } from './dto/createRutinaEjercicio.dto';
 import { UpdateRutinaEjercicioDto } from './dto/updateRutinaEjercicio.dto';
 
 @Controller('rutina-ejercicios')
 export class RutinaEjercicioController {
-  constructor(private svc: RutinaEjercicioService) {}
+  constructor(private readonly svc: RutinaEjercicioService) {}
 
   @Post()
   create(@Body() dto: CreateRutinaEjercicioDto) {
@@ -38,5 +38,13 @@ export class RutinaEjercicioController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.svc.remove(id);
+  }
+
+  // NUEVO: Obtener rutina completa activa de un cliente
+  @Get('cliente/:id_cliente')
+  findRutinaCompletaByCliente(
+    @Param('id_cliente', ParseIntPipe) id_cliente: number,
+  ) {
+    return this.svc.findRutinaCompletaByCliente(id_cliente);
   }
 }

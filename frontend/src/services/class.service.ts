@@ -30,3 +30,15 @@ export async function inscribirAsistencia(claseId: string) {
   );
   return res.data;
 }
+
+export async function cancelarAsistencia(id_asistencia: number) {
+  const API_URL = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_URL}/asistencia/${id_asistencia}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Error al cancelar asistencia");
+  return res.json();
+}
+

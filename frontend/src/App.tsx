@@ -6,10 +6,8 @@ import Trainer from './pages/TrainerDashboard';
 
 import DashboardInicioCliente from './pages/DashboardInicioCliente';
 import DashboardRutinaCliente from './pages/DashboardRutinaCliente';
-
 import ClasesCliente from './pages/ClasesCliente';
-
-
+import EditarPerfilCliente from './pages/EditarPerfilCliente'; // <- Asegúrate de tener este archivo
 
 import Plan from './pages/Plan';
 
@@ -47,7 +45,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        {/* Ruta de Rutina del Cliente */}
         <Route
           path="/rutina"
           element={
@@ -56,12 +53,20 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        {/* Ruta de Clases para Cliente */}
         <Route
           path="/clases"
           element={
             <ProtectedRoute allowedRoles={['cliente']}>
               <ClasesCliente />
+            </ProtectedRoute>
+          }
+        />
+        {/* Ruta para editar perfil (ahora con clientes, admins y entrenadores) */}
+        <Route
+          path="/editar-perfil"
+          element={
+            <ProtectedRoute allowedRoles={['cliente', 'admin', 'entrenador']}>
+              <EditarPerfilCliente />
             </ProtectedRoute>
           }
         />
@@ -121,7 +126,7 @@ export default function App() {
           path="/admin/profesores/crearRutina"
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <CreateRoutine/>
+              <CreateRoutine />
             </ProtectedRoute>
           }
         />
@@ -149,20 +154,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-
-
-
-
-        <Route
-          path="/admin/plan"
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <Plan />
-            </ProtectedRoute>
-          }
-        />
-
         <Route
           path="/admin/ejercicios"
           element={
@@ -179,7 +170,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin/ejercicios/:id/editar"
           element={
@@ -188,7 +178,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin/rutinas"
           element={
@@ -197,7 +186,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin/rutinas/:id/ejercicios"
           element={
@@ -206,7 +194,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin/rutinas/crear"
           element={
@@ -215,7 +202,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
         {/* Catch-all: redirige al login */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

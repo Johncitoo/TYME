@@ -29,6 +29,14 @@ export default function LoginPage() {
       const usuario = await res.json();
       login(usuario);
 
+      // 💡 GUARDAR EL TOKEN EN LOCAL STORAGE
+      // Ajusta el nombre aquí si tu backend lo envía como 'access_token' o algo diferente
+      if (usuario.token) {
+        localStorage.setItem("token", usuario.token);
+      } else if (usuario.access_token) {
+        localStorage.setItem("token", usuario.access_token);
+      }
+
       // 1) Extrae el rol en minúsculas
       let tipo = "";
       if (typeof usuario.tipo_usuario === "string") {
@@ -95,4 +103,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

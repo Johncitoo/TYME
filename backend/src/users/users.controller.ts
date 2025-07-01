@@ -1,8 +1,8 @@
-// users.controller.ts
-
-import { Controller, Get, Post, Body } from '@nestjs/common'; // Add Post and Body to imports
+import { Controller, Get, Post, Put, Body, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -17,5 +17,22 @@ export class UsersController {
   async create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
-  // ...otros endpoints
+
+  // GET perfil del usuario autenticado
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getMe(@Req() req) {
+    const id_usuario = req.user.sub;
+    return this.usersService.findById(id_usuario);
+  }
+
+  // PUT actualizar perfil del usuario autenticado
+  @UseGuards(JwtAuthGuard)
+  @Put('me')
+  async updateMe(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    const id_usuario = req.user.sub;
+    return this.usersService.updateUser(id_usuario, updateUserDto);
+  }
+
+  
 }
