@@ -17,6 +17,7 @@ import { Ejercicio } from '../entities/ejercicio.entity';
       RutinaEjercicio,
       Ejercicio,
     ]),
+    RutinaEjercicioModule,
   ],
   controllers: [RutinasController],
   providers: [RutinasService],
