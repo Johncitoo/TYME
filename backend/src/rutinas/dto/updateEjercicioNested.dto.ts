@@ -1,16 +1,16 @@
-// src/rutinas/dto/create-rutina-ejercicio.dto.ts
+// src/rutinas/dto/update-ejercicio-nested.dto.ts
 import {
   IsInt,
-  IsNotEmpty,
   IsOptional,
+  IsNotEmpty,
   IsNumber,
   IsString,
 } from 'class-validator';
 
-export class CreateRutinaEjercicioDto {
-  @IsOptional()
+export class UpdateEjercicioNestedDto {
+  @IsOptional() // ← Puede o no estar presente (para agregar/actualizar)
   @IsInt()
-  id_rutina?: number;
+  id_rutina_ejercicio?: number;
 
   @IsNotEmpty()
   @IsInt()

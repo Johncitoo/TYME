@@ -4,6 +4,7 @@ import {
   Get,
   Post,
   Patch,
+  Put,
   Delete,
   Param,
   Body,
@@ -54,6 +55,14 @@ export class RutinasController {
 
   @Patch(':id')
   async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateRutinaDto,
+  ): Promise<any> {
+    return await this.rutinasService.update(id, dto);
+  }
+
+  @Put(':id')
+  async updateFull(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateRutinaDto,
   ): Promise<any> {

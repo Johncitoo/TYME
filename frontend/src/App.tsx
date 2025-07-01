@@ -23,6 +23,9 @@ import CreateExercisePage from "./pages/CreateExercisePage";
 import EditExercisePage from "./pages/EditExercisePage";
 import RutinaDetailPage from '@/pages/RutinaDetailPage';
 import CreateRutinaPage from './pages/CreateRoutine';
+import EditRutinaPage from '@/pages/EditRutinaPage';
+import PagosPage from './pages/PagosPage';
+import CreatePagoPage from '@/pages/CreatePagoPage';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -193,6 +196,33 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <CreateRutinaPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/rutinas/editar/:id"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <EditRutinaPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/pagos"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <PagosPage/>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/pagos/crear"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <CreatePagoPage/>
             </ProtectedRoute>
           }
         />

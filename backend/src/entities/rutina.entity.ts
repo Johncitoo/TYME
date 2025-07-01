@@ -35,6 +35,8 @@ export class Rutina {
   clientesRutinas: ClienteRutina[];
 
   /** Relación a ejercicios de la rutina */
-  @OneToMany(() => RutinaEjercicio, (re) => re.rutina, { cascade: true })
+  @OneToMany(() => RutinaEjercicio, (re) => re.rutina, {
+    cascade: ['insert', 'update'],
+  })
   rutinaEjercicios: RutinaEjercicio[];
 }

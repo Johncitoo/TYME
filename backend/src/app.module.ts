@@ -16,6 +16,7 @@ import { EntrenadorModule } from './entrenador/entrenador.module';
 import { EjercicioModule } from 'ejercicio/ejercicio.module';
 import { TipoGrupoMuscularModule } from './tipoGrupoMuscular/tipoGrupoMuscular.module';
 import { TipoEjercicioModule } from './tipoEjercicio/tipoEjercicio.module';
+import { PagosModule } from './pagos/pagos.module';
 
 // Entidades
 import { Usuario } from './entities/user.entity';
@@ -81,6 +82,7 @@ import { ClienteRutina } from './entities/clienteRutina.entity';
     EjercicioModule,
     TipoGrupoMuscularModule,
     TipoEjercicioModule,
+    PagosModule,
   ],
 })
 export class AppModule {}
