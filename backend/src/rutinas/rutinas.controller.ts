@@ -18,8 +18,8 @@ import {
 import { RutinasService } from './rutinas.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
-import { CreateRutinaDto } from './dto/create-rutina.dto';
-import { UpdateRutinaDto } from './dto/update-rutina.dto';
+import { CreateRutinaDto } from './dto/createRutina.dto';
+import { UpdateRutinaDto } from './dto/updateRutina.dto';
 import { Rutina } from '../entities/rutina.entity';
 
 @Controller('rutinas')
