@@ -10,10 +10,37 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import EjerciciosContent from '../components/EjerciciosContent';
 import RutinasContent from '../components/RutinasContent';
+import ClasesContent from '../components/ClasesContent';
+
 
 // --- Frases motivacionales ---
 const frasesMotivacionales = [
-  "No cuentes los días, haz que los días cuenten. – Muhammad Ali"
+  "No cuentes los días, haz que los días cuenten. – Muhammad Ali",
+  "La motivación es lo que te pone en marcha, el hábito es lo que hace que sigas. – Jim Ryun",
+  "El dolor es temporal, el orgullo es para siempre.",
+  "Entrena duro o vete a casa.",
+  "El éxito no es para los que creen que pueden hacerlo, sino para los que lo hacen.",
+  "Hazlo por la versión de ti que dijiste que no se rendiría.",
+  "Los cuerpos de verano se construyen en invierno.",
+  "La única forma de hacer un gran trabajo es amar lo que haces. – Steve Jobs",
+  "Cree que puedes y ya estarás a medio camino. – Theodore Roosevelt",
+  "No te detengas cuando estés cansado. Detente cuando hayas terminado.",
+  "Tu cuerpo puede soportar casi cualquier cosa. Es tu mente la que tienes que convencer.",
+  "La disciplina es el puente entre las metas y los logros. – Jim Rohn",
+  "Si no hay lucha, no hay progreso. – Frederick Douglass",
+  "El único entrenamiento malo es el que no se hace.",
+  "El éxito es la suma de pequeños esfuerzos repetidos día tras día. – Robert Collier",
+  "La fuerza no viene de la capacidad física, sino de una voluntad indomable. – Mahatma Gandhi",
+  "Caerse siete veces y levantarse ocho. – Proverbio japonés",
+  "Un campeón tiene miedo de perder. Todos los demás tienen miedo de ganar. – Billie Jean King",
+  "La diferencia entre lo imposible y lo posible reside en la determinación de una persona. – Tommy Lasorda",
+  "Nunca es demasiado tarde para ser lo que podrías haber sido. – George Eliot",
+  "Empieza donde estás. Usa lo que tienes. Haz lo que puedas. – Arthur Ashe",
+  "No deseo el éxito, trabajo para él.",
+  "Lo que te falta en talento lo puedes compensar con deseo, ajetreo y entregando el 110% todo el tiempo. – Don Zimmer",
+  "La vida empieza al final de tu zona de confort. – Neale Donald Walsch",
+  "Si quieres algo que nunca has tenido, tendrás que hacer algo que nunca has hecho.",
+  "El dolor que sientes hoy es la fuerza que sentirás mañana."
 ];
 
 // --- Pantalla de Inicio ---
@@ -67,8 +94,9 @@ export interface SidebarItem {
 // --- Items del sidebar ---
 const sidebarItems: SidebarItem[] = [
   { label: "Inicio", icon: <HomeIcon size={20} />, component: HomeContent },
-  { label: "Ejercicios", icon: <BookCheck size={20} />, component: EjerciciosContent },
   { label: "Rutinas", icon: <BookCheck size={20} />, component: RutinasContent },
+  { label: "Ejercicios", icon: <BookCheck size={20} />, component: EjerciciosContent },
+  { label: "Clases", icon: <BookCheck size={20} />, component: ClasesContent }, 
 ];
 
 // --- Componente principal ---

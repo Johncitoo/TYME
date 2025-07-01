@@ -19,7 +19,7 @@ export default function EjerciciosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_BASE = 'http://localhost:3000'; // o tu constante de entorno
+  const API_BASE = 'http://localhost:3000'; 
 
   const fetchList = () => {
     setLoading(true);

@@ -27,10 +27,14 @@ export default function LoginPage() {
       }
 
       const usuario = await res.json();
-      login(usuario);
+login(usuario);
 
-      // ✅ GUARDAR EN LOCALSTORAGE
-      localStorage.setItem("usuario", JSON.stringify(usuario));
+// ✅ GUARDAR EN LOCALSTORAGE
+localStorage.setItem("usuario", JSON.stringify(usuario));
+if (usuario.token) {
+  localStorage.setItem("token", usuario.token); 
+}
+
 
 
       // 1) Extrae el rol en minúsculas

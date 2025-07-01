@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Trash2 } from 'lucide-react';
-import type { SidebarItem } from '../pages/TrainerDashboard'; // Ajusta ruta
+import type { SidebarItem } from '../pages/TrainerDashboard'; 
 
 interface Props {
   setSelectedItem: (item: SidebarItem) => void;
@@ -70,12 +70,14 @@ const EjerciciosContent: React.FC<Props> = ({ setSelectedItem }) => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-teal-500">Ejercicios</h1>
         <div className="flex gap-2">
+            {/*
           <button
             className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full shadow transition"
-            onClick={() => navigate('/admin/ejercicios/crear')}
+            onClick={() => navigate('/pages/CrearEjercicioContent')}
           >
             Crear ejercicio
           </button>
+          */}
         </div>
       </div>
 
@@ -152,7 +154,7 @@ const EjerciciosContent: React.FC<Props> = ({ setSelectedItem }) => {
       </div>
       
     </div>
-     {/* Paginación simple */}
+        {/* Paginación simple */}
         <div className="flex justify-end mt-6 space-x-4">
           <button className="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-md transition">Anterior</button>
           <button className="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-md transition">Siguiente</button>

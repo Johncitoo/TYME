@@ -27,7 +27,6 @@ import CreateExercisePage from "./pages/CreateExercisePage";
 import EditExercisePage from "./pages/EditExercisePage";
 import RutinaDetailPage from '@/pages/RutinaDetailPage';
 import CreateRutinaPage from './pages/CreateRoutine';
-
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 
@@ -149,11 +148,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-
-
-
-
         <Route
           path="/admin/plan"
           element={
