@@ -65,6 +65,7 @@ const EjerciciosContent: React.FC<Props> = ({ setSelectedItem }) => {
   if (error) return <p className="p-10 text-red-600">{error}</p>;
 
   return (
+    <main className="flex-1 overflow-y-auto bg-[#f4f4f6] p-8">
     <div className="p-10 space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-teal-500">Ejercicios</h1>
@@ -74,19 +75,6 @@ const EjerciciosContent: React.FC<Props> = ({ setSelectedItem }) => {
             onClick={() => navigate('/admin/ejercicios/crear')}
           >
             Crear ejercicio
-          </button>
-          <button
-            className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full shadow transition"
-            onClick={() => {
-              // Cambiar a Rutinas en el dashboard
-              setSelectedItem({
-                label: "Rutinas",
-                icon: <></>, // icono vacío o ajusta si quieres
-                component: () => null, // temporal, el componente real lo pone el dashboard
-              });
-            }}
-          >
-            Ver rutinas
           </button>
         </div>
       </div>
@@ -162,7 +150,14 @@ const EjerciciosContent: React.FC<Props> = ({ setSelectedItem }) => {
           </tbody>
         </table>
       </div>
+      
     </div>
+     {/* Paginación simple */}
+        <div className="flex justify-end mt-6 space-x-4">
+          <button className="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-md transition">Anterior</button>
+          <button className="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-md transition">Siguiente</button>
+        </div>
+    </main>
   );
 };
 
