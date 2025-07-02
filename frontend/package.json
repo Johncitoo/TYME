@@ -29,6 +29,7 @@
     "react-dom": "^19.1.0",
     "react-feather": "^2.0.10",
     "react-router-dom": "^7.6.1",
+    "recharts": "^3.0.2",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.0",
     "vaul": "^1.1.2",

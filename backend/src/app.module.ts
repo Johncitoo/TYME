@@ -39,6 +39,7 @@ import { Clase } from './clase/clase.entity';
 import { Asistencia } from 'asistencia/asistencia.entity';
 
 import { ClienteRutina } from './entities/clienteRutina.entity';
+import { MetodoPagoModule } from './metodo/metodoPago.module';
 
 @Module({
   imports: [
@@ -97,6 +98,7 @@ import { ClienteRutina } from './entities/clienteRutina.entity';
     TipoEjercicioModule,
     PagosModule,
     ClienteModule,
+    MetodoPagoModule,
   ],
 })
 export class AppModule {}
