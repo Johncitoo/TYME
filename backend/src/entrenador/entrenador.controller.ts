@@ -37,4 +37,9 @@ export class EntrenadorController {
   async crear(@Body() dto: DtoCrearEntrenador): Promise<Entrenador> {
     return this.entrenadorService.create(dto);
   }
+
+  @Get('activos')
+  async findAllActivos(): Promise<Entrenador[]> {
+    return this.entrenadorService.findAllActivos();
+  }
 }

@@ -1,25 +1,30 @@
-// src/clase/dto/create-clase.dto.ts
-import { IsNotEmpty, IsString, IsOptional, IsInt } from 'class-validator';
+import { IsInt, IsDateString, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 
 export class CreateClaseDto {
-  @IsNotEmpty()
-  fecha_clase: string; // formato YYYY-MM-DD
+  @IsDateString()
+  fecha_clase: string;
 
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   nombre: string;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   descripcion?: string;
 
+  @IsString()
   @IsNotEmpty()
-  hora_inicio: string; // formato HH:mm:ss
+  hora_inicio: string;
 
+  @IsString()
   @IsNotEmpty()
-  hora_fin: string; // formato HH:mm:ss
+  hora_fin: string;
 
   @IsInt()
-  @IsNotEmpty()
+  @Min(1)
   cupo_maximo: number;
+
+  @IsInt()
+  @Min(1)
+  id_entrenador: number; // <-- Obligatorio y mayor a 0
 }

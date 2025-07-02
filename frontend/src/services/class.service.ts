@@ -19,27 +19,15 @@ export async function getAsistenciasCliente() {
   return res.data;
 }
 
-// INSCRIBIR ASISTENCIA EN UNA CLASE
-export async function inscribirAsistencia({ id_clase }: { id_clase: number }) {
-  const res = await axios.post(`${API_URL}/asistencia`, { id_clase }, {
-    headers: { Authorization: `Bearer ${getToken()}` }
-  });
-  return res.data;
-}
-
-// CREAR UNA CLASE (para admin/entrenador)
-export async function createClass(classData: {
-  nombre: string;
-  descripcion?: string;
-  fecha_clase: string;
-  hora_inicio: string;
-  hora_fin: string;
-  cupo_maximo: number;
-  // puedes agregar otros campos según tu DTO
-}) {
-  const res = await axios.post(`${API_URL}/clase`, classData, {
-    headers: { Authorization: `Bearer ${getToken()}` }
-  });
+// INSCRIBIR ASISTENCIA A UNA CLASE
+export async function inscribirAsistencia(claseId: string) {
+  const res = await axios.post(
+    `${API_URL}/asistencia/${claseId}`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    }
+  );
   return res.data;
 }
 

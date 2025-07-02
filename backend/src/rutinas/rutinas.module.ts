@@ -7,7 +7,8 @@ import { Cliente } from '../entities/cliente.entity';
 import { ClienteRutina } from '../entities/clienteRutina.entity';
 import { RutinaEjercicio } from '../entities/rutinaEjercicio.entity';
 import { Ejercicio } from '../entities/ejercicio.entity';
-
+// Importa el módulo que exporta RutinaEjercicioService:
+import { RutinaEjercicioModule } from '../rutinaEjercicio/rutinaEjercicio.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -17,6 +18,7 @@ import { Ejercicio } from '../entities/ejercicio.entity';
       RutinaEjercicio,
       Ejercicio,
     ]),
+    RutinaEjercicioModule,
   ],
   controllers: [RutinasController],
   providers: [RutinasService],

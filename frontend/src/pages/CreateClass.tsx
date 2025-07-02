@@ -1,16 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarAdmin from "../components/AdminSidebar";
 import { Check } from "lucide-react";
 import axios from "axios";
 
+interface EntrenadorOption {
+  id_entrenador: number;
+  usuario: {
+    primer_nombre: string;
+    primer_apellido: string;
+    correo: string;
+  };
+}
+
 interface ClassFormData {
   nombre: string;
   descripcion: string;
-  fecha_clase: string;      // YYYY-MM-DD
-  hora_inicio: string;      // HH:mm
-  hora_fin: string;         // HH:mm
+  fecha_clase: string;
+  hora_inicio: string;
+  hora_fin: string;
   cupo_maximo: number;
+  id_entrenador: number | "";
 }
 
 const CreateClass: React.FC = () => {
@@ -22,40 +32,72 @@ const CreateClass: React.FC = () => {
     hora_inicio: "",
     hora_fin: "",
     cupo_maximo: 1,
+    id_entrenador: "",
   });
 
+  const [entrenadores, setEntrenadores] = useState<EntrenadorOption[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  // Cargar entrenadores activos al iniciar
+  useEffect(() => {
+    const fetchEntrenadores = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:3000/entrenador/activos", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        setEntrenadores(res.data);
+      } catch (e) {
+        setError("No se pudieron cargar los entrenadores.");
+      }
+    };
+    fetchEntrenadores();
+  }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: type === "number" ? Number(value) : value,
+      [name]:
+        name === "id_entrenador"
+          ? Number(value)
+          : type === "number"
+          ? Number(value)
+          : value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccess(false);
 
+    // Validación básica de campos obligatorios
     if (
       !form.nombre.trim() ||
       !form.descripcion.trim() ||
       !form.fecha_clase.trim() ||
       !form.hora_inicio.trim() ||
       !form.hora_fin.trim() ||
-      form.cupo_maximo <= 0
+      !form.cupo_maximo ||
+      !form.id_entrenador ||
+      isNaN(Number(form.id_entrenador)) ||
+      Number(form.id_entrenador) < 1
     ) {
-      setError("Por favor completa todos los campos obligatorios.");
+      setError("Por favor completa todos los campos obligatorios y selecciona un entrenador válido.");
+      return;
+    }
+    if (form.hora_inicio >= form.hora_fin) {
+      setError("La hora de inicio debe ser menor que la hora de término.");
       return;
     }
 
     setSaving(true);
 
-    // Arma el payload que espera el backend
     const payload = {
       nombre: form.nombre.trim(),
       descripcion: form.descripcion.trim(),
@@ -63,24 +105,30 @@ const CreateClass: React.FC = () => {
       hora_inicio: form.hora_inicio,
       hora_fin: form.hora_fin,
       cupo_maximo: form.cupo_maximo,
+      id_entrenador: form.id_entrenador,
     };
 
     try {
-      // createClass: tu función de servicios para crear clase
       const token = localStorage.getItem("token");
       await axios.post("http://localhost:3000/clase", payload, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
-      alert("Clase creada correctamente.");
-      navigate("/admin/clases"); // Cambia si tu ruta es diferente
+      setSuccess(true);
+      setTimeout(() => {
+        navigate("/admin/profesores"); // <-- Ruta corregida, asegúrate que exista
+      }, 1200);
     } catch (err: unknown) {
-      console.error(err);
       if (axios.isAxiosError(err) && err.response?.data?.message) {
-        setError(err.response.data.message);
+        // Puede venir un array de mensajes o un solo string
+        const msg = Array.isArray(err.response.data.message)
+          ? err.response.data.message.join(", ")
+          : err.response.data.message;
+        setError(msg);
       } else {
         setError("Ocurrió un error al crear la clase.");
       }
+    } finally {
       setSaving(false);
     }
   };
@@ -88,7 +136,6 @@ const CreateClass: React.FC = () => {
   return (
     <div className="flex h-screen">
       <SidebarAdmin />
-
       <main className="flex-1 overflow-y-auto bg-[#f4f4f6] p-8">
         <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
           <h1 className="text-3xl font-bold text-teal-500 mb-6">
@@ -101,8 +148,35 @@ const CreateClass: React.FC = () => {
             </div>
           )}
 
+          {success && (
+            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
+              Clase creada correctamente.
+            </div>
+          )}
+
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              {/* Entrenador */}
+              <div className="md:col-span-2">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Entrenador a cargo *
+                </label>
+                <select
+                  name="id_entrenador"
+                  value={form.id_entrenador}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-3 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-300"
+                >
+                  <option value="">Selecciona un entrenador</option>
+                  {entrenadores.map((ent) => (
+                    <option key={ent.id_entrenador} value={ent.id_entrenador}>
+                      {ent.usuario.primer_nombre} {ent.usuario.primer_apellido} ({ent.usuario.correo})
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {/* Nombre */}
               <div>
@@ -190,7 +264,7 @@ const CreateClass: React.FC = () => {
                   value={form.cupo_maximo}
                   onChange={handleChange}
                   required
-                  min="1"
+                  min={1}
                   className="w-full p-3 rounded-md bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-300"
                 />
               </div>
@@ -208,7 +282,7 @@ const CreateClass: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => navigate("/admin/clases")}
+                onClick={() => navigate("/admin/profesores")}
                 className="bg-gray-200 text-gray-700 px-6 py-2 rounded-md font-medium hover:bg-gray-300 transition"
               >
                 Cancelar

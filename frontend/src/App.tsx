@@ -2,11 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
+import Trainer from './pages/TrainerDashboard';
 
 import DashboardInicioCliente from './pages/DashboardInicioCliente';
 import DashboardRutinaCliente from './pages/DashboardRutinaCliente';
 import ClasesCliente from './pages/ClasesCliente';
-import EditarPerfilCliente from './pages/EditarPerfilCliente'; // <- Asegúrate de tener este archivo
+import EditarPerfilCliente from './pages/EditarPerfilCliente';
 
 import Plan from './pages/Plan';
 
@@ -20,10 +21,13 @@ import CreateRoutine from './pages/CreateRoutine';
 import CreateClass from './pages/CreateClass';
 import EjerciciosPage from './pages/ExercisePage';
 import RutinasPage from './pages/RoutinesPage';
-import CreateExercisePage from "./pages/CreateExercisePage";
-import EditExercisePage from "./pages/EditExercisePage";
+import CreateExercisePage from './pages/CreateExercisePage';
+import EditExercisePage from './pages/EditExercisePage';
 import RutinaDetailPage from '@/pages/RutinaDetailPage';
 import CreateRutinaPage from './pages/CreateRoutine';
+import EditRutinaPage from '@/pages/EditRutinaPage';
+import PagosPage from './pages/PagosPage';
+import CreatePagoPage from '@/pages/CreatePagoPage';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -38,7 +42,7 @@ export default function App() {
         <Route
           path="/home"
           element={
-            <ProtectedRoute allowedRoles={['cliente']}>
+            <ProtectedRoute allowedRoles={[ 'cliente' ]}>
               <DashboardInicioCliente />
             </ProtectedRoute>
           }
@@ -46,7 +50,7 @@ export default function App() {
         <Route
           path="/rutina"
           element={
-            <ProtectedRoute allowedRoles={['cliente']}>
+            <ProtectedRoute allowedRoles={[ 'cliente' ]}>
               <DashboardRutinaCliente />
             </ProtectedRoute>
           }
@@ -54,17 +58,26 @@ export default function App() {
         <Route
           path="/clases"
           element={
-            <ProtectedRoute allowedRoles={['cliente']}>
+            <ProtectedRoute allowedRoles={[ 'cliente' ]}>
               <ClasesCliente />
             </ProtectedRoute>
           }
         />
-        {/* Ruta para editar perfil (ahora con clientes, admins y entrenadores) */}
         <Route
           path="/editar-perfil"
           element={
-            <ProtectedRoute allowedRoles={['cliente', 'admin', 'entrenador']}>
+            <ProtectedRoute allowedRoles={[ 'cliente', 'admin', 'entrenador' ]}>
               <EditarPerfilCliente />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Ruta de Entrenador */}
+        <Route
+          path="/trainer"
+          element={
+            <ProtectedRoute allowedRoles={[ 'entrenador' ]}>
+              <Trainer />
             </ProtectedRoute>
           }
         />
@@ -73,7 +86,7 @@ export default function App() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <AdminDashboard />
             </ProtectedRoute>
           }
@@ -81,7 +94,7 @@ export default function App() {
         <Route
           path="/admin/profile"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <AdminProfile />
             </ProtectedRoute>
           }
@@ -89,7 +102,7 @@ export default function App() {
         <Route
           path="/admin/users"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <UsersPage />
             </ProtectedRoute>
           }
@@ -97,7 +110,7 @@ export default function App() {
         <Route
           path="/admin/RegisterUsers"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <RegisterUser />
             </ProtectedRoute>
           }
@@ -105,7 +118,7 @@ export default function App() {
         <Route
           path="/admin/profesores"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <Teachers />
             </ProtectedRoute>
           }
@@ -113,7 +126,7 @@ export default function App() {
         <Route
           path="/admin/profesores/crearRutina"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <CreateRoutine />
             </ProtectedRoute>
           }
@@ -121,7 +134,7 @@ export default function App() {
         <Route
           path="/admin/profesores/crearClase"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <CreateClass />
             </ProtectedRoute>
           }
@@ -129,7 +142,7 @@ export default function App() {
         <Route
           path="/admin/profesores/crear"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <CreateTeacher />
             </ProtectedRoute>
           }
@@ -137,7 +150,7 @@ export default function App() {
         <Route
           path="/admin/plan"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <Plan />
             </ProtectedRoute>
           }
@@ -145,7 +158,7 @@ export default function App() {
         <Route
           path="/admin/ejercicios"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <EjerciciosPage />
             </ProtectedRoute>
           }
@@ -153,7 +166,7 @@ export default function App() {
         <Route
           path="/admin/ejercicios/crear"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <CreateExercisePage />
             </ProtectedRoute>
           }
@@ -161,7 +174,7 @@ export default function App() {
         <Route
           path="/admin/ejercicios/:id/editar"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <EditExercisePage />
             </ProtectedRoute>
           }
@@ -169,7 +182,7 @@ export default function App() {
         <Route
           path="/admin/rutinas"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <RutinasPage />
             </ProtectedRoute>
           }
@@ -177,7 +190,7 @@ export default function App() {
         <Route
           path="/admin/rutinas/:id/ejercicios"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <RutinaDetailPage />
             </ProtectedRoute>
           }
@@ -185,14 +198,40 @@ export default function App() {
         <Route
           path="/admin/rutinas/crear"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <CreateRutinaPage />
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/rutinas/editar/:id"
+          element={
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
+              <EditRutinaPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/pagos"
+          element={
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
+              <PagosPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/pagos/crear"
+          element={
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
+              <CreatePagoPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Catch-all: redirige al login */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
