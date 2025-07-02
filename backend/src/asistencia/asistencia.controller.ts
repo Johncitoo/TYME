@@ -36,4 +36,5 @@ export class AsistenciaController {
     await this.asistenciaService.remove(id, id_usuario);
     return { message: 'Asistencia cancelada' };
   }
+  
 }
