@@ -71,6 +71,17 @@ export class PagosService {
         .groupBy('tmp.nombre')
         .getRawMany();
 
+    // 4. Pagos por día
+    const pagosPorDiaRaw: Array<{ fecha: string; monto: string | number }> =
+      await this.boletaRepo.query(`
+    SELECT 
+      TO_CHAR(fecha_pago, 'YYYY-MM-DD') as fecha,
+      SUM(monto)::int as monto
+    FROM boleta
+    GROUP BY 1
+    ORDER BY 1
+  `);
+
     return {
       ventas_totales: Number(total?.ventas_totales ?? 0),
       pagos_totales: Number(total?.pagos_totales ?? 0),
@@ -81,6 +92,10 @@ export class PagosService {
       ventas_por_metodo: ventasPorMetodo.map((v) => ({
         metodo: v.metodo,
         total: Number(v.total),
+      })),
+      pagos_por_dia: pagosPorDiaRaw.map((v) => ({
+        fecha: v.fecha,
+        total: Number(v.monto),
       })),
     };
   }
@@ -122,5 +137,16 @@ export class PagosService {
     });
 
     return this.boletaRepo.save(boleta);
+  }
+
+  async resumenPorDia(): Promise<Array<{ fecha: string; monto: number }>> {
+    return await this.boletaRepo.query(`
+    SELECT 
+      TO_CHAR(fecha_pago, 'YYYY-MM-DD') as fecha,
+      SUM(monto)::int as monto
+    FROM boleta
+    GROUP BY 1
+    ORDER BY 1
+  `);
   }
 }
