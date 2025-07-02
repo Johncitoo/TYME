@@ -29,4 +29,12 @@ export class PagosController {
   ): Promise<any> {
     return await this.pagosService.registrarPago(data);
   }
+  @Get('resumen1')
+  getResumenPagos() {
+    return this.pagosService.resumenPorDia();
+  }
+  @Get('resumen')
+  resumen() {
+    return this.pagosService.resumenPagos();
+  }
 }
