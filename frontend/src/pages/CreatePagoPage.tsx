@@ -9,10 +9,12 @@ import { getAllMembresias } from '@/services/membresias.service';
 export default function CreatePagoPage() {
   const navigate = useNavigate();
 
+  // Tipos
   type Membresia = { id_membresia: number; nombre: string; precio: number };
   type Cliente = { id_cliente: number; usuario: { primer_nombre: string; primer_apellido: string } };
   type MetodoPago = { id_metodo: number; nombre: string };
 
+  // Formulario
   const [fechaPago, setFechaPago] = useState('');
   const [monto, setMonto] = useState<number>(0);
   const [metodoPago, setMetodoPago] = useState<number>();
@@ -20,8 +22,8 @@ export default function CreatePagoPage() {
   const [idMembresia, setIdMembresia] = useState<number>();
   const [observacion, setObservacion] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
+  // Catálogos
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [metodos, setMetodos] = useState<MetodoPago[]>([]);
   const [membresias, setMembresias] = useState<Membresia[]>([]);
@@ -45,7 +47,6 @@ export default function CreatePagoPage() {
       setError('Todos los campos obligatorios');
       return;
     }
-
     crearPago({
       fecha_pago: fechaPago,
       monto,
@@ -54,10 +55,7 @@ export default function CreatePagoPage() {
       id_membresia: idMembresia,
       observacion: observacion || undefined,
     })
-      .then(() => {
-        setSuccess(true);
-        setTimeout(() => navigate('/admin/pagos'), 1800); // redirige tras mostrar éxito
-      })
+      .then(() => navigate('/admin/pagos'))
       .catch(() => setError('Error al registrar pago'));
   };
 
@@ -67,11 +65,6 @@ export default function CreatePagoPage() {
       <main className="flex-1 p-6 md:p-10 overflow-y-auto">
         <h1 className="text-3xl font-bold text-cyan-400 mb-6">Registrar Pago</h1>
         {error && <p className="text-red-400 mb-4">{error}</p>}
-        {success && (
-          <p className="text-green-400 text-lg mb-4 animate-pulse transition-all duration-300">
-            ✅ ¡Pago registrado correctamente!
-          </p>
-        )}
 
         <form onSubmit={handleSubmit} className="bg-[#2b2b3d] p-6 rounded-xl shadow space-y-5 max-w-xl">
           <div>
@@ -151,11 +144,10 @@ export default function CreatePagoPage() {
             type="submit"
             className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-2 rounded font-semibold transition"
           >
-            Confirmar Pago
+            Guardar Pago
           </button>
         </form>
       </main>
     </div>
   );
 }
-
