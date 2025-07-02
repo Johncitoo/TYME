@@ -20,7 +20,7 @@ import { EjercicioModule } from 'ejercicio/ejercicio.module';
 import { TipoGrupoMuscularModule } from './tipoGrupoMuscular/tipoGrupoMuscular.module';
 import { TipoEjercicioModule } from './tipoEjercicio/tipoEjercicio.module';
 import { PagosModule } from './pagos/pagos.module';
-
+import { ClienteModule } from './cliente/cliente.module';
 
 // Entidades
 import { Usuario } from './entities/user.entity';
@@ -39,7 +39,6 @@ import { Clase } from './clase/clase.entity';
 import { Asistencia } from 'asistencia/asistencia.entity';
 
 import { ClienteRutina } from './entities/clienteRutina.entity';
-
 
 @Module({
   imports: [
@@ -97,6 +96,7 @@ import { ClienteRutina } from './entities/clienteRutina.entity';
     TipoGrupoMuscularModule,
     TipoEjercicioModule,
     PagosModule,
+    ClienteModule,
   ],
 })
 export class AppModule {}

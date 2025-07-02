@@ -226,12 +226,20 @@ export class RutinasService {
     });
     if (!cliente) return [];
 
+    // 2) Obtenemos los enlaces ClienteRutina, con la rutina + su estado
     const crs = await this.crRepo.find({
       where: { cliente: { id_cliente: cliente.id_cliente } },
       order: { id: 'DESC' },
-      relations: ['rutina'],
+      relations: [
+        'rutina',
+        'rutina.entrenador',
+        'rutina.rutinaEjercicios',
+        'rutina.rutinaEjercicios.ejercicio',
+        'rutina.clientesRutinas', // para ver el estado
+      ],
     });
 
+    // 3) Devolvemos solo las rutinas
     return crs.map((cr) => cr.rutina);
   }
 }
