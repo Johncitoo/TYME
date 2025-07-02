@@ -1,19 +1,19 @@
 // src/rutinas/rutinas.service.ts
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository }              from '@nestjs/typeorm';
-import { Repository }                    from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { Rutina }           from '../entities/rutina.entity';
-import { Cliente }          from '../entities/cliente.entity';
-import { ClienteRutina }    from '../entities/clienteRutina.entity';
-import { Entrenador }       from '../entities/entrenador.entity';
-import { RutinaEjercicio }  from '../entities/rutinaEjercicio.entity';
+import { Rutina } from '../entities/rutina.entity';
+import { Cliente } from '../entities/cliente.entity';
+import { ClienteRutina } from '../entities/clienteRutina.entity';
+import { Entrenador } from '../entities/entrenador.entity';
+import { RutinaEjercicio } from '../entities/rutinaEjercicio.entity';
 
-import { CreateRutinaDto }          from './dto/createRutina.dto';
-import { UpdateRutinaDto }          from './dto/updateRutina.dto';
-import { CreateRutinaEjercicioDto } from '../rutinaEjercicio/dto/createRutinaEjercicio.dto';
-import { RutinaEjercicioService }   from '../rutinaEjercicio/rutinaEjercicioService';
+import { CreateRutinaDto } from './dto/createRutina.dto';
+import { UpdateRutinaDto } from './dto/updateRutina.dto';
+// Removed unused CreateRutinaEjercicioDto import
+import { RutinaEjercicioService } from '../rutinaEjercicio/rutinaEjercicio.service';
 
 @Injectable()
 export class RutinasService {
@@ -81,19 +81,21 @@ export class RutinasService {
   async update(id: number, dto: UpdateRutinaDto): Promise<Rutina> {
     const rutina = await this.findOne(id);
 
-    if (dto.nombre !== undefined)       rutina.nombre        = dto.nombre;
-    if (dto.descripcion !== undefined)  rutina.descripcion   = dto.descripcion;
-    if (dto.fecha_inicio)               rutina.fecha_inicio = new Date(dto.fecha_inicio);
+    if (dto.nombre !== undefined) rutina.nombre = dto.nombre;
+    if (dto.descripcion !== undefined) rutina.descripcion = dto.descripcion;
+    if (dto.fecha_inicio) rutina.fecha_inicio = new Date(dto.fecha_inicio);
     if (dto.id_entrenador) {
       rutina.entrenador = { id_entrenador: dto.id_entrenador } as Entrenador;
     }
 
     if (dto.ejercicios) {
       // Eliminar los ejercicios que ya no vienen
-      const actuales = await this.rutinaEjercRepo.find({ where: { rutina: { id_rutina: id } } });
+      const actuales = await this.rutinaEjercRepo.find({
+        where: { rutina: { id_rutina: id } },
+      });
       const enviados = dto.ejercicios
-        .filter(e => e.id_rutina_ejercicio != null)
-        .map(e => e.id_rutina_ejercicio!) as number[];
+        .filter((e) => e.id_rutina_ejercicio != null)
+        .map((e) => e.id_rutina_ejercicio as number);
 
       for (const act of actuales) {
         if (!enviados.includes(act.id_rutina_ejercicio)) {
@@ -115,8 +117,10 @@ export class RutinasService {
           });
         } else {
           await this.rutinaEjercRepo.save({
-            rutina: { id_rutina: id } as any,
-            ejercicio: { id_ejercicio: ej.id_ejercicio } as any,
+            rutina: { id_rutina: id } as Rutina,
+            ejercicio: { id_ejercicio: ej.id_ejercicio } as {
+              id_ejercicio: number;
+            },
             dia: ej.dia,
             orden: ej.orden,
             series: ej.series,
@@ -160,9 +164,9 @@ export class RutinasService {
 
     return cr?.rutina ?? null;
   }
-
-  /** Alias para compatibilidad con el controller */
-  async obtenerRutinaCompletaCliente(usuarioId: number): Promise<Rutina | null> {
+  async obtenerRutinaCompletaCliente(
+    usuarioId: number,
+  ): Promise<Rutina | null> {
     return this.obtenerRutinaCliente(usuarioId);
   }
 
@@ -176,11 +180,10 @@ export class RutinasService {
 
     const crs = await this.crRepo.find({
       where: { cliente: { id_cliente: cliente.id_cliente } },
-      relations: ['rutina', 'rutina.entrenador', 'rutina.clientesRutinas'],
       order: { id: 'DESC' },
+      relations: ['rutina'],
     });
 
-    return crs.map(cr => cr.rutina);
+    return crs.map((cr) => cr.rutina);
   }
 }
-

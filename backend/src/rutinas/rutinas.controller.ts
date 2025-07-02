@@ -1,5 +1,3 @@
-// src/rutinas/rutinas.controller.ts
-
 import {
   Controller,
   Get,
@@ -29,8 +27,45 @@ import { Rutina } from '../entities/rutina.entity';
 export class RutinasController {
   constructor(private readonly rutinasService: RutinasService) {}
 
-  // ── CRUD estándar ──────────────────────────────────────────────────────
+  // ── Endpoints de cliente: RUTINA DEL USUARIO ────────────────────────────
+  @UseGuards(JwtAuthGuard)
+  @Get('mi-rutina')
+  async getRutinaClienteLogueado(
+    @Req() req: Request & { user?: { id_usuario: number } },
+  ): Promise<Rutina> {
+    if (!req.user?.id_usuario) {
+      throw new UnauthorizedException('No autorizado');
+    }
+    const r = await this.rutinasService.obtenerRutinaCliente(
+      req.user.id_usuario,
+    );
+    if (!r) throw new NotFoundException('No tienes una rutina activa');
+    return r;
+  }
 
+  /** Todas las rutinas de un cliente dado su ID de usuario */
+  @Get('cliente/:usuarioId/todas')
+  async getRutinasDeCliente(
+    @Param('usuarioId', ParseIntPipe) usuarioId: number,
+  ): Promise<Rutina[]> {
+    const rutinas = await this.rutinasService.obtenerRutinasCliente(usuarioId);
+    if (!rutinas.length) {
+      throw new NotFoundException(
+        'No se encontraron rutinas para este usuario',
+      );
+    }
+    return rutinas;
+  }
+
+  /** Rutina activa de un cliente cualquiera */
+  @Get('cliente/:usuarioId')
+  async getRutinaDeCliente(
+    @Param('usuarioId', ParseIntPipe) usuarioId: number,
+  ): Promise<Rutina | null> {
+    return this.rutinasService.obtenerRutinaCliente(usuarioId);
+  }
+
+  // ── CRUD estándar ──────────────────────────────────────────────────────
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateRutinaDto): Promise<Rutina> {
@@ -42,18 +77,9 @@ export class RutinasController {
     return this.rutinasService.findAll();
   }
 
+  // <— Ahora el dinámico ID va después de “mi-rutina” y “cliente/...”
   @Get(':id')
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<Rutina> {
-    return this.rutinasService.findOne(id);
-  }
-
-  // GET /rutinas/:id/ejercicios
-  @Get(':id/ejercicios')
-  async getWithExercises(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<Rutina> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Rutina> {
     return this.rutinasService.findOne(id);
   }
 
@@ -76,41 +102,6 @@ export class RutinasController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    await this.rutinasService.remove(id);
-  }
-
-  // ── Endpoints específicos de cliente ───────────────────────────────────
-
-  /** Rutina activa de un cliente dado su usuario (requiere JWT) */
-  @UseGuards(JwtAuthGuard)
-  @Get('mi-rutina')
-  async getRutinaClienteLogueado(
-    @Req() req: Request & { user?: { id_usuario: number } },
-  ): Promise<Rutina> {
-    const userId = req.user?.id_usuario;
-    if (typeof userId !== 'number') {
-      throw new UnauthorizedException('No autorizado');
-    }
-    const rutina = await this.rutinasService.obtenerRutinaCliente(userId);
-    if (!rutina) {
-      throw new NotFoundException('No tienes una rutina activa');
-    }
-    return rutina;
-  }
-
-  /** Rutina activa de un cliente cualquiera */
-  @Get('cliente/:usuarioId')
-  async getRutinaDeCliente(
-    @Param('usuarioId', ParseIntPipe) usuarioId: number,
-  ): Promise<Rutina | null> {
-    return this.rutinasService.obtenerRutinaCliente(usuarioId);
-  }
-
-  /** Todas las rutinas (activa o no) de un cliente */
-  @Get('cliente/:usuarioId/todas')
-  async getRutinasDeCliente(
-    @Param('usuarioId', ParseIntPipe) usuarioId: number,
-  ): Promise<Rutina[]> {
-    return this.rutinasService.obtenerRutinasCliente(usuarioId);
+    return this.rutinasService.remove(id);
   }
 }
