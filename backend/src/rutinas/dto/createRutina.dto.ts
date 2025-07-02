@@ -35,4 +35,7 @@ export class CreateRutinaDto {
   @ValidateNested({ each: true })
   @Type(() => CreateEjercicioNestedDto)
   ejercicios: CreateEjercicioNestedDto[];
+
+  @IsInt()
+  id_cliente: number;
 }

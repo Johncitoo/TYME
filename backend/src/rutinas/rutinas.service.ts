@@ -1,23 +1,29 @@
 // src/rutinas/rutinas.service.ts
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { Rutina } from '../entities/rutina.entity';
 import { Cliente } from '../entities/cliente.entity';
 import { ClienteRutina } from '../entities/clienteRutina.entity';
 import { Entrenador } from '../entities/entrenador.entity';
 import { RutinaEjercicio } from '../entities/rutinaEjercicio.entity';
+import { Ejercicio } from '../entities/ejercicio.entity';
 
 import { CreateRutinaDto } from './dto/createRutina.dto';
 import { UpdateRutinaDto } from './dto/updateRutina.dto';
-// Removed unused CreateRutinaEjercicioDto import
 import { RutinaEjercicioService } from '../rutinaEjercicio/rutinaEjercicio.service';
 
 @Injectable()
 export class RutinasService {
   constructor(
+    private readonly dataSource: DataSource,
+
     @InjectRepository(Rutina)
     private readonly rutinaRepo: Repository<Rutina>,
 
@@ -36,21 +42,64 @@ export class RutinasService {
   // ── CRUD estándar ──────────────────────────────────────────────────────
 
   async create(dto: CreateRutinaDto): Promise<Rutina> {
-    const rutina = await this.rutinaRepo.save({
-      entrenador: { id_entrenador: dto.id_entrenador },
-      fecha_inicio: dto.fecha_inicio,
-      nombre: dto.nombre,
-      descripcion: dto.descripcion,
-    });
+    const qr = this.dataSource.createQueryRunner();
+    await qr.connect();
+    await qr.startTransaction();
 
-    for (const ej of dto.ejercicios) {
-      await this.rutinaEjercicioService.create({
-        ...ej,
-        id_rutina: rutina.id_rutina,
+    try {
+      // 1) Desactivar rutinas previas activas
+      await qr.manager.update(
+        ClienteRutina,
+        { idCliente: dto.id_cliente, estado: 'Activa' },
+        { estado: 'Inactiva' },
+      );
+
+      // 2) Crear rutina
+      const rutina = qr.manager.create(Rutina, {
+        entrenador: { id_entrenador: dto.id_entrenador } as Entrenador,
+        fecha_inicio: dto.fecha_inicio,
+        nombre: dto.nombre,
+        descripcion: dto.descripcion,
       });
-    }
+      const savedRutina = await qr.manager.save(rutina);
 
-    return rutina;
+      // 3) Asociar rutina->cliente
+      await qr.manager.save(
+        qr.manager.create(ClienteRutina, {
+          idRutina: savedRutina.id_rutina,
+          idCliente: dto.id_cliente,
+          estado: 'Activa',
+        }),
+      );
+
+      // 4) Guardar ejercicios de la rutina
+      for (const ex of dto.ejercicios) {
+        const re = qr.manager.create(RutinaEjercicio, {
+          rutina: { id_rutina: savedRutina.id_rutina } as Rutina, // <— relación
+          ejercicio: { id_ejercicio: ex.id_ejercicio } as Ejercicio, // <— relación
+          dia: ex.dia,
+          orden: ex.orden,
+          series: ex.series,
+          peso: ex.peso,
+          descanso: ex.descanso,
+          observacion: ex.observacion,
+        });
+        await qr.manager.save(re);
+      }
+
+      await qr.commitTransaction();
+      return savedRutina;
+    } catch (error: any) {
+      await qr.rollbackTransaction();
+      throw new InternalServerErrorException(
+        'Error al crear rutina: ' +
+          (typeof error === 'object' && error && 'message' in error
+            ? (error as { message?: string }).message
+            : ''),
+      );
+    } finally {
+      await qr.release();
+    }
   }
 
   findAll(): Promise<Rutina[]> {
@@ -118,9 +167,7 @@ export class RutinasService {
         } else {
           await this.rutinaEjercRepo.save({
             rutina: { id_rutina: id } as Rutina,
-            ejercicio: { id_ejercicio: ej.id_ejercicio } as {
-              id_ejercicio: number;
-            },
+            ejercicio: { id_ejercicio: ej.id_ejercicio } as Ejercicio,
             dia: ej.dia,
             orden: ej.orden,
             series: ej.series,
@@ -164,6 +211,7 @@ export class RutinasService {
 
     return cr?.rutina ?? null;
   }
+
   async obtenerRutinaCompletaCliente(
     usuarioId: number,
   ): Promise<Rutina | null> {

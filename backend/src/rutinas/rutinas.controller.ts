@@ -14,6 +14,7 @@ import {
   ParseIntPipe,
   UnauthorizedException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Request } from 'express';
 
@@ -69,6 +70,19 @@ export class RutinasController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateRutinaDto): Promise<Rutina> {
+    // 1) Validar que idCliente venga en el body
+    // Validación mínima
+    if (!dto.id_entrenador) {
+      throw new BadRequestException('id_entrenador es obligatorio');
+    }
+    if (!dto.id_cliente) {
+      throw new BadRequestException('id_cliente es obligatorio');
+    }
+    if (!dto.fecha_inicio) {
+      throw new BadRequestException('fecha_inicio es obligatorio');
+    }
+
+    // 2) Llamar al servicio con todo el DTO (incluye idCliente)
     return this.rutinasService.create(dto);
   }
 

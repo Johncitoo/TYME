@@ -17,10 +17,16 @@ export class ClienteRutina {
   @Column({ length: 20 })
   estado: string;
 
+  // ← Columna FK explícita para id_rutina
+  @Column({ name: 'id_rutina' })
+  idRutina: number;
   @ManyToOne(() => Rutina, (rutina) => rutina.clientesRutinas)
   @JoinColumn({ name: 'id_rutina' })
   rutina: Rutina;
 
+  // ← Columna FK explícita para id_cliente
+  @Column({ name: 'id_cliente' })
+  idCliente: number;
   @ManyToOne(() => Cliente, (cliente) => cliente.clientesRutinas)
   @JoinColumn({ name: 'id_cliente' })
   cliente: Cliente;
