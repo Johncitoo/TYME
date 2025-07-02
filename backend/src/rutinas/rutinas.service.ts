@@ -1,5 +1,4 @@
 // src/rutinas/rutinas.service.ts
-
 import {
   Injectable,
   NotFoundException,
@@ -63,20 +62,23 @@ export class RutinasService {
       });
       const savedRutina = await qr.manager.save(rutina);
 
-      // 3) Asociar rutina->cliente
-      await qr.manager.save(
-        qr.manager.create(ClienteRutina, {
+      // 3) Asociar rutina->cliente (usando QueryBuilder.insert)
+      await qr.manager
+        .createQueryBuilder()
+        .insert()
+        .into(ClienteRutina)
+        .values({
+          estado: 'Activa',
           idRutina: savedRutina.id_rutina,
           idCliente: dto.id_cliente,
-          estado: 'Activa',
-        }),
-      );
+        })
+        .execute();
 
       // 4) Guardar ejercicios de la rutina
       for (const ex of dto.ejercicios) {
         const re = qr.manager.create(RutinaEjercicio, {
-          rutina: { id_rutina: savedRutina.id_rutina } as Rutina, // <— relación
-          ejercicio: { id_ejercicio: ex.id_ejercicio } as Ejercicio, // <— relación
+          rutina: { id_rutina: savedRutina.id_rutina } as Rutina,
+          ejercicio: { id_ejercicio: ex.id_ejercicio } as Ejercicio,
           dia: ex.dia,
           orden: ex.orden,
           series: ex.series,
@@ -93,9 +95,7 @@ export class RutinasService {
       await qr.rollbackTransaction();
       throw new InternalServerErrorException(
         'Error al crear rutina: ' +
-          (typeof error === 'object' && error && 'message' in error
-            ? (error as { message?: string }).message
-            : ''),
+          (error instanceof Error ? error.message : String(error)),
       );
     } finally {
       await qr.release();
@@ -128,63 +128,141 @@ export class RutinasService {
   }
 
   async update(id: number, dto: UpdateRutinaDto): Promise<Rutina> {
-    const rutina = await this.findOne(id);
+    const qr = this.dataSource.createQueryRunner();
+    await qr.connect();
+    await qr.startTransaction();
 
-    if (dto.nombre !== undefined) rutina.nombre = dto.nombre;
-    if (dto.descripcion !== undefined) rutina.descripcion = dto.descripcion;
-    if (dto.fecha_inicio) rutina.fecha_inicio = new Date(dto.fecha_inicio);
-    if (dto.id_entrenador) {
-      rutina.entrenador = { id_entrenador: dto.id_entrenador } as Entrenador;
-    }
+    try {
+      // 1) Si viene id_cliente, desactivar y volver a asociar
+      if (dto.id_cliente) {
+        // Desactivar previas
+        await qr.manager.update(
+          ClienteRutina,
+          { idCliente: dto.id_cliente, estado: 'Activa' },
+          { estado: 'Inactiva' },
+        );
 
-    if (dto.ejercicios) {
-      // Eliminar los ejercicios que ya no vienen
-      const actuales = await this.rutinaEjercRepo.find({
-        where: { rutina: { id_rutina: id } },
-      });
-      const enviados = dto.ejercicios
-        .filter((e) => e.id_rutina_ejercicio != null)
-        .map((e) => e.id_rutina_ejercicio as number);
+        // Crear nueva asociación activa
+        await qr.manager
+          .createQueryBuilder()
+          .insert()
+          .into(ClienteRutina)
+          .values({
+            estado: 'Activa',
+            idRutina: id,
+            idCliente: dto.id_cliente,
+          })
+          .execute();
+      }
 
-      for (const act of actuales) {
-        if (!enviados.includes(act.id_rutina_ejercicio)) {
-          await this.rutinaEjercRepo.remove(act);
+      // 2) Actualizar campos básicos de rutina
+      const rutina = await this.findOne(id);
+      if (dto.nombre !== undefined) rutina.nombre = dto.nombre;
+      if (dto.descripcion !== undefined) rutina.descripcion = dto.descripcion;
+      if (dto.fecha_inicio) rutina.fecha_inicio = new Date(dto.fecha_inicio);
+      if (dto.id_entrenador) {
+        rutina.entrenador = { id_entrenador: dto.id_entrenador } as Entrenador;
+      }
+      await qr.manager.save(rutina);
+
+      // 3) Sincronizar ejercicios
+      if (dto.ejercicios) {
+        // a) Eliminar los que ya no vienen
+        const actuales = await qr.manager.find(RutinaEjercicio, {
+          where: { rutina: { id_rutina: id } },
+        });
+        const enviados = dto.ejercicios
+          .filter((e) => e.id_rutina_ejercicio != null)
+          .map((e) => e.id_rutina_ejercicio as number);
+
+        for (const act of actuales) {
+          if (!enviados.includes(act.id_rutina_ejercicio)) {
+            await qr.manager.remove(RutinaEjercicio, act);
+          }
+        }
+
+        // b) Crear o actualizar los enviados
+        for (const ex of dto.ejercicios) {
+          if (ex.id_rutina_ejercicio) {
+            await qr.manager.update(RutinaEjercicio, ex.id_rutina_ejercicio, {
+              dia: ex.dia,
+              orden: ex.orden,
+              series: ex.series,
+              peso: ex.peso,
+              descanso: ex.descanso,
+              observacion: ex.observacion,
+              ejercicio: { id_ejercicio: ex.id_ejercicio },
+            });
+          } else {
+            await qr.manager.save(
+              qr.manager.create(RutinaEjercicio, {
+                rutina: { id_rutina: id } as Rutina,
+                ejercicio: { id_ejercicio: ex.id_ejercicio },
+                dia: ex.dia,
+                orden: ex.orden,
+                series: ex.series,
+                peso: ex.peso,
+                descanso: ex.descanso,
+                observacion: ex.observacion,
+              }),
+            );
+          }
         }
       }
 
-      // Crear o actualizar los ejercicios enviados
-      for (const ej of dto.ejercicios) {
-        if (ej.id_rutina_ejercicio) {
-          await this.rutinaEjercRepo.update(ej.id_rutina_ejercicio, {
-            dia: ej.dia,
-            orden: ej.orden,
-            series: ej.series,
-            peso: ej.peso,
-            descanso: ej.descanso,
-            observacion: ej.observacion,
-            ejercicio: { id_ejercicio: ej.id_ejercicio },
-          });
-        } else {
-          await this.rutinaEjercRepo.save({
-            rutina: { id_rutina: id } as Rutina,
-            ejercicio: { id_ejercicio: ej.id_ejercicio } as Ejercicio,
-            dia: ej.dia,
-            orden: ej.orden,
-            series: ej.series,
-            peso: ej.peso,
-            descanso: ej.descanso,
-            observacion: ej.observacion,
-          });
-        }
-      }
+      await qr.commitTransaction();
+      return this.findOne(id);
+    } catch (err: any) {
+      await qr.rollbackTransaction();
+      throw new InternalServerErrorException(
+        'Error al actualizar rutina: ' +
+          (err instanceof Error ? err.message : String(err)),
+      );
+    } finally {
+      await qr.release();
     }
-
-    return this.rutinaRepo.save(rutina);
   }
 
   async remove(id: number): Promise<void> {
-    const rutina = await this.findOne(id);
-    await this.rutinaRepo.remove(rutina);
+    const qr = this.dataSource.createQueryRunner();
+    await qr.connect();
+    await qr.startTransaction();
+
+    try {
+      // 1) Borrar todas las asociaciones en cliente_rutina
+      await qr.manager
+        .createQueryBuilder()
+        .delete()
+        .from(ClienteRutina)
+        .where('rutina = :rid', { rid: id })
+        .execute();
+
+      // 2) Borrar todos los ejercicios de la rutina
+      await qr.manager
+        .createQueryBuilder()
+        .delete()
+        .from(RutinaEjercicio)
+        .where('rutina = :rid', { rid: id })
+        .execute();
+
+      // 3) Finalmente borrar la propia Rutina
+      await qr.manager
+        .createQueryBuilder()
+        .delete()
+        .from(Rutina)
+        .where('id_rutina = :rid', { rid: id })
+        .execute();
+
+      await qr.commitTransaction();
+    } catch (err: any) {
+      await qr.rollbackTransaction();
+      throw new InternalServerErrorException(
+        'Error al eliminar rutina: ' +
+          (err instanceof Error ? err.message : String(err)),
+      );
+    } finally {
+      await qr.release();
+    }
   }
 
   // ── Métodos específicos de cliente ────────────────────────────────────
@@ -212,12 +290,6 @@ export class RutinasService {
     return cr?.rutina ?? null;
   }
 
-  async obtenerRutinaCompletaCliente(
-    usuarioId: number,
-  ): Promise<Rutina | null> {
-    return this.obtenerRutinaCliente(usuarioId);
-  }
-
   /** Historial completo de rutinas de un cliente */
   async obtenerRutinasCliente(usuarioId: number): Promise<Rutina[]> {
     const cliente = await this.clienteRepo.findOne({
@@ -226,7 +298,6 @@ export class RutinasService {
     });
     if (!cliente) return [];
 
-    // 2) Obtenemos los enlaces ClienteRutina, con la rutina + su estado
     const crs = await this.crRepo.find({
       where: { cliente: { id_cliente: cliente.id_cliente } },
       order: { id: 'DESC' },
@@ -235,11 +306,10 @@ export class RutinasService {
         'rutina.entrenador',
         'rutina.rutinaEjercicios',
         'rutina.rutinaEjercicios.ejercicio',
-        'rutina.clientesRutinas', // para ver el estado
+        'rutina.clientesRutinas',
       ],
     });
 
-    // 3) Devolvemos solo las rutinas
     return crs.map((cr) => cr.rutina);
   }
 }
