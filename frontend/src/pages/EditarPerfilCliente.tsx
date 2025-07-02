@@ -41,31 +41,32 @@ export default function EditarPerfilCliente() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-const limpiarPayload = (obj: Record<string, unknown>) => {
-  const limpio: Record<string, string> = {};
-  Object.entries(obj).forEach(([k, v]) => {
-    if (v !== undefined && v !== null && v !== "") limpio[k] = v as string;
-  });
-  return limpio;
-};
+  // Limpia el payload para que solo se manden los campos con valores válidos
+  const limpiarPayload = (obj: Record<string, unknown>) => {
+    const limpio: Record<string, string> = {};
+    Object.entries(obj).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") limpio[k] = v as string;
+    });
+    return limpio;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setSaving(true);
-  try {
-    const payload = limpiarPayload(form);
-    console.log("Payload limpio:", payload);
-    await updatePerfilUsuario(payload); // ahora envía sólo lo necesario
-    toast.success("Perfil actualizado correctamente");
-    setTimeout(() => {
-      navigate("/home");
-    }, 1200);
-  } catch (err) {
-    toast.error("Error al actualizar perfil");
-  } finally {
-    setSaving(false);
-  }
-};
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const payload = limpiarPayload(form);
+      console.log("Payload limpio:", payload); // <- Puedes ver en consola exactamente lo que se envía
+      await updatePerfilUsuario(payload);
+      toast.success("Perfil actualizado correctamente");
+      setTimeout(() => {
+        navigate("/home");
+      }, 1200);
+    } catch (err) {
+      toast.error("Error al actualizar perfil");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading)
     return (
