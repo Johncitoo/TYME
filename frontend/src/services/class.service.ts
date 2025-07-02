@@ -20,16 +20,17 @@ export async function getAsistenciasCliente() {
 }
 
 // INSCRIBIR ASISTENCIA A UNA CLASE
-export async function inscribirAsistencia(claseId: string) {
+export async function inscribirAsistencia(claseId: string | number) {
   const res = await axios.post(
-    `${API_URL}/asistencia/${claseId}`,
-    {},
+    `${API_URL}/asistencia`,
+    { id_clase: Number(claseId) }, // <-- debe ir así en el body
     {
       headers: { Authorization: `Bearer ${getToken()}` },
     }
   );
   return res.data;
 }
+
 
 export async function cancelarAsistencia(id_asistencia: number) {
   const API_URL = "http://localhost:3000";
@@ -41,4 +42,6 @@ export async function cancelarAsistencia(id_asistencia: number) {
   if (!res.ok) throw new Error("Error al cancelar asistencia");
   return res.json();
 }
+
+
 

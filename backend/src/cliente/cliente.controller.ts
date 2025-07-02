@@ -1,5 +1,4 @@
-// src/cliente/cliente.controller.ts
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { ClienteService } from './cliente.service';
 import { Cliente } from '../entities/cliente.entity';
 
@@ -10,5 +9,10 @@ export class ClienteController {
   @Get()
   findAll(): Promise<Cliente[]> {
     return this.clienteService.findAll();
+  }
+
+  @Get('entrenador/:id')
+  findByEntrenador(@Param('id', ParseIntPipe) id: number): Promise<Cliente[]> {
+    return this.clienteService.findByEntrenador(id);
   }
 }

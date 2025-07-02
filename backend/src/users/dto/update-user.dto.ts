@@ -26,5 +26,7 @@ export class UpdateUserDto {
   @IsString()
   direccion?: string;
 
-  // Si quieres permitir editar otros campos, agrégalos aquí igual con @IsOptional()
+  @IsOptional()
+  @IsString()
+  password?: string;
 }

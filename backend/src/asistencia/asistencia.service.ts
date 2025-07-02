@@ -20,9 +20,11 @@ export class AsistenciaService {
 
   async create(createDto: CreateAsistenciaDto, id_usuario: number): Promise<Asistencia> {
     // 1. Buscar el cliente por el id_usuario logeado
+    console.log('ID_USUARIO recibido para inscripción:', id_usuario);
     const cliente = await this.clienteRepo.findOne({
       where: { usuario: { id_usuario } },
     });
+    console.log('CLIENTE OBTENIDO:', cliente);
     if (!cliente) throw new BadRequestException('Cliente no encontrado');
 
     // 2. Buscar la clase y contar asistentes
@@ -91,4 +93,6 @@ export class AsistenciaService {
 
     await this.asistenciaRepo.remove(asistencia);
   }
+
+  
 }

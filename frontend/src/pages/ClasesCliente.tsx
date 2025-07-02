@@ -62,7 +62,7 @@ export default function ClasesCliente() {
 
   const handleInscribir = async (id_clase: number) => {
     try {
-      await inscribirAsistencia({ id_clase });
+      await inscribirAsistencia(id_clase.toString());
       toast.success("¡Inscrito correctamente!");
       fetchAsistencias();
       fetchClases();

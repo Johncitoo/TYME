@@ -30,6 +30,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Put('me')
   async updateMe(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    console.log("UpdateUserDto recibido:", updateUserDto);
     const id_usuario = req.user.sub;
     return this.usersService.updateUser(id_usuario, updateUserDto);
   }

@@ -12,14 +12,14 @@ export class AsistenciaController {
   // Inscribir asistencia (el usuario debe ser cliente)
   @Post()
   async inscribir(@Body() dto: CreateAsistenciaDto, @Req() req) {
-    const id_usuario = req.user.sub;
+    const id_usuario = req.user.id_usuario; // <-- Cambiado aquí
     return this.asistenciaService.create(dto, id_usuario);
   }
 
   // Ver asistencias del cliente logeado
   @Get('mis-asistencias')
   async misAsistencias(@Req() req) {
-    const id_usuario = req.user.sub;
+    const id_usuario = req.user.id_usuario; // <-- Cambiado aquí
     return this.asistenciaService.findByCliente(id_usuario);
   }
 
@@ -32,7 +32,7 @@ export class AsistenciaController {
   // Cancelar asistencia del usuario logeado
   @Delete(':id')
   async cancelar(@Param('id', ParseIntPipe) id: number, @Req() req) {
-    const id_usuario = req.user.sub;
+    const id_usuario = req.user.id_usuario; // <-- Cambiado aquí
     await this.asistenciaService.remove(id, id_usuario);
     return { message: 'Asistencia cancelada' };
   }
