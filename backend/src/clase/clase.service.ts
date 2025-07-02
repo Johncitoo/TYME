@@ -11,6 +11,7 @@ import { UpdateClaseDto } from './dto/update-clase.dto';
 import { Entrenador } from '../entities/entrenador.entity';
 import { Usuario } from '../entities/user.entity';
 import { Asistencia } from '../asistencia/asistencia.entity';
+import axios from "axios";
 
 @Injectable()
 export class ClaseService {
@@ -36,12 +37,19 @@ export class ClaseService {
       throw new BadRequestException('El cupo máximo debe ser un número entero positivo.');
     }
 
-    // Buscar entrenador activo
+    console.log('🪓 id_entrenador recibido:', createClaseDto.id_entrenador);
+
+
+    // Buscar entrenador por ID y cargar la relación usuario
     const entrenador = await this.entrenadorRepository.findOne({
-      where: { id_entrenador: createClaseDto.id_entrenador, usuario: { activo: true } },
+      where: { id_entrenador: createClaseDto.id_entrenador },
       relations: ['usuario'],
     });
-    if (!entrenador) throw new NotFoundException('Entrenador no encontrado o inactivo.');
+
+    // Validar si el entrenador existe y si su usuario está activo
+    if (!entrenador || !entrenador.usuario || entrenador.usuario.activo !== true) {
+      throw new NotFoundException('Entrenador no encontrado o inactivo.');
+    }
 
     // Crear clase
     const clase = this.claseRepository.create({
@@ -49,6 +57,8 @@ export class ClaseService {
       entrenador,
     });
     return await this.claseRepository.save(clase);
+
+
   }
 
   findAll(): Promise<Clase[]> {
@@ -90,4 +100,12 @@ export class ClaseService {
 
     return clasesInscritas;
   }
+
+  async findByEntrenador(idEntrenador: number): Promise<Clase[]> {
+    return this.claseRepository.find({
+      where: { entrenador: { id_entrenador: idEntrenador } },
+      relations: ['entrenador', 'entrenador.usuario'],
+    });
+  }
+  
 }

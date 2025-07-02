@@ -141,4 +141,13 @@ export class EntrenadorService {
   });
 }
 
+// ...dentro de la clase EntrenadorService
+async findByUsuario(id_usuario: number) {
+  return this.entrenadorRepo.findOne({
+    where: { usuario: { id_usuario } },
+    relations: ['usuario'],
+  });
+}
+
+
 }
