@@ -15,6 +15,7 @@ export interface CreateRutinaDto {
   fecha_inicio: string; // yyyy-MM-dd
   id_entrenador: number; // puedes tomarlo de tu authStore
   ejercicios: RutinaEjercicioPayload[];
+  id_cliente: number; // ID del cliente al que pertenece la rutina
 }
 
 export function createRutina(payload: CreateRutinaDto) {
