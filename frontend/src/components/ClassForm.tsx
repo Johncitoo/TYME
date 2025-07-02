@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Check } from "lucide-react";
 import axios from "axios";
+import EliminarClasesFuturas from "@/components/EliminarClasesFuturas"; // 👈 IMPORTANTE
 
 interface EntrenadorOption {
   id_entrenador: number;
@@ -11,8 +12,6 @@ interface EntrenadorOption {
   };
 }
 
-
-
 interface ClassFormData {
   nombre: string;
   descripcion: string;
@@ -22,8 +21,6 @@ interface ClassFormData {
   cupo_maximo: number;
   id_entrenador: number | "";
 }
-
-
 
 type Props = {
   /** Si se pasa el id, el campo entrenador se oculta y se usa ese valor. Si no, muestra el select */
@@ -165,7 +162,6 @@ const ClassForm: React.FC<Props> = ({ idEntrenador, onSuccess }) => {
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
           {/* Entrenador */}
           {!idEntrenador && (
             <div className="md:col-span-2">
@@ -298,6 +294,9 @@ const ClassForm: React.FC<Props> = ({ idEntrenador, onSuccess }) => {
           </button>
         </div>
       </form>
+
+      {/* Sección para eliminar clases futuras */}
+      <EliminarClasesFuturas onEliminadas={onSuccess} />
     </div>
   );
 };

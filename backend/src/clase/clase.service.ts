@@ -11,7 +11,6 @@ import { UpdateClaseDto } from './dto/update-clase.dto';
 import { Entrenador } from '../entities/entrenador.entity';
 import { Usuario } from '../entities/user.entity';
 import { Asistencia } from '../asistencia/asistencia.entity';
-import axios from "axios";
 
 @Injectable()
 export class ClaseService {
@@ -27,42 +26,42 @@ export class ClaseService {
   ) {}
 
   async create(createClaseDto: CreateClaseDto): Promise<Clase> {
-    // Validar horas
     if (createClaseDto.hora_inicio >= createClaseDto.hora_fin) {
       throw new BadRequestException('La hora de inicio debe ser menor que la hora de fin.');
     }
-
-    // Validar cupo
     if (!Number.isInteger(createClaseDto.cupo_maximo) || createClaseDto.cupo_maximo <= 0) {
       throw new BadRequestException('El cupo máximo debe ser un número entero positivo.');
     }
-
-    console.log('🪓 id_entrenador recibido:', createClaseDto.id_entrenador);
-
-
-    // Buscar entrenador por ID y cargar la relación usuario
     const entrenador = await this.entrenadorRepository.findOne({
       where: { id_entrenador: createClaseDto.id_entrenador },
       relations: ['usuario'],
     });
-
-    // Validar si el entrenador existe y si su usuario está activo
     if (!entrenador || !entrenador.usuario || entrenador.usuario.activo !== true) {
       throw new NotFoundException('Entrenador no encontrado o inactivo.');
     }
-
-    // Crear clase
     const clase = this.claseRepository.create({
       ...createClaseDto,
       entrenador,
     });
     return await this.claseRepository.save(clase);
-
-
   }
 
-  findAll(): Promise<Clase[]> {
-    return this.claseRepository.find();
+  // MÉTODO CORREGIDO PARA CUPOS OCUPADOS
+  async findAll(): Promise<any[]> {
+    const clases = await this.claseRepository.find({
+      relations: ['entrenador', 'entrenador.usuario'],
+    });
+
+    // Para cada clase, cuenta los inscritos
+    const result = await Promise.all(
+      clases.map(async (clase) => {
+        const cupos_ocupados = await this.asistenciaRepository.count({
+          where: { clase: { id_clase: clase.id_clase } }
+        });
+        return { ...clase, cupos_ocupados };
+      })
+    );
+    return result;
   }
 
   async findOne(id: number): Promise<Clase> {
@@ -86,7 +85,6 @@ export class ClaseService {
       where: { cliente: { id_cliente: clienteId } },
       relations: ['clase', 'clase.entrenador', 'clase.entrenador.usuario'],
     });
-
     const ahora = new Date();
     const clasesInscritas: Clase[] = asistencias
       .map((a) => a.clase)
@@ -97,7 +95,6 @@ export class ClaseService {
         const bDate = new Date(`${b.fecha_clase}T${b.hora_inicio}`);
         return aDate.getTime() - bDate.getTime();
       });
-
     return clasesInscritas;
   }
 
@@ -107,5 +104,4 @@ export class ClaseService {
       relations: ['entrenador', 'entrenador.usuario'],
     });
   }
-  
 }
