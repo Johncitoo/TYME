@@ -221,12 +221,6 @@ export default function App() {
         <Route
           path="/admin/pagos"
           element={
-            <ProtectedRoute allowedRoles={[ 'admin' ]}>
-
-
-        <Route
-          path="/admin/pagos"
-          element={
             <ProtectedRoute allowedRoles={['admin']}>
 
               <PagosPage />
