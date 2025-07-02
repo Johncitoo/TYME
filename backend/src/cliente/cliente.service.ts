@@ -1,4 +1,3 @@
-// src/cliente/cliente.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -24,4 +23,12 @@ export class ClienteService {
       },
     });
   }
+
+  async findByEntrenador(idEntrenador: number): Promise<Cliente[]> {
+  return this.clienteRepo.find({
+    where: { entrenador: { id_entrenador: idEntrenador } },
+    relations: ['usuario', 'tipoMembresia', 'entrenador'], // incluye entrenador si quieres info extra
+  });
+}
+
 }

@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPerfilUsuario, updatePerfilUsuario } from "@/services/users.service";
-import type { PerfilUsuario } from "@/services/users.service";
+import type { PerfilUsuario as OriginalPerfilUsuario } from "@/services/users.service";
 import { toast } from "sonner";
 import MobileMenu from "../components/MobileMenu";
 import { Loader } from "lucide-react";
+
+type PerfilUsuario = OriginalPerfilUsuario & { [key: string]: unknown };
 
 export default function EditarPerfilCliente() {
   const [form, setForm] = useState<PerfilUsuario>({
@@ -39,21 +41,31 @@ export default function EditarPerfilCliente() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+const limpiarPayload = (obj: Record<string, unknown>) => {
+  const limpio: Record<string, string> = {};
+  Object.entries(obj).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== "") limpio[k] = v as string;
+  });
+  return limpio;
+};
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      await updatePerfilUsuario(form);
-      toast.success("Perfil actualizado correctamente");
-      setTimeout(() => {
-        navigate("/home");
-      }, 1200);
-    } catch (err) {
-      toast.error("Error al actualizar perfil");
-    } finally {
-      setSaving(false);
-    }
-  };
+  e.preventDefault();
+  setSaving(true);
+  try {
+    const payload = limpiarPayload(form);
+    console.log("Payload limpio:", payload);
+    await updatePerfilUsuario(payload); // ahora envía sólo lo necesario
+    toast.success("Perfil actualizado correctamente");
+    setTimeout(() => {
+      navigate("/home");
+    }, 1200);
+  } catch (err) {
+    toast.error("Error al actualizar perfil");
+  } finally {
+    setSaving(false);
+  }
+};
 
   if (loading)
     return (

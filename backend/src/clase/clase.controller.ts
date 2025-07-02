@@ -39,4 +39,10 @@ export class ClaseController {
   findClasesInscritasSemana(@Param('id', ParseIntPipe) id: number) {
     return this.claseService.findClasesInscritasSemana(id);
   }
+
+  @Get('entrenador/:id')
+  findByEntrenador(@Param('id', ParseIntPipe) id: number) {
+    return this.claseService.findByEntrenador(id);
+  }
+
 }

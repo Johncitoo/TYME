@@ -1,4 +1,4 @@
-// jwt.strategy.ts
+// src/auth/jwt.strategy.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
@@ -23,9 +23,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super(opts);
   }
 
+  // El método validate define lo que irá en req.user
   validate(payload: JwtPayload) {
+    // Devuelve SIEMPRE id_usuario, para que en los controladores uses req.user.id_usuario
     return {
-      id_usuario: payload.sub,
+      id_usuario: payload.sub,  // <-- OJO: tu token tiene 'sub', pero en runtime será 'id_usuario'
       correo: payload.correo,
       role: payload.role,
     };

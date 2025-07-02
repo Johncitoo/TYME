@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { logout } from "../utils/logout";
 
 export interface SidebarItem {
   id: string;

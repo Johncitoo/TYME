@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, type JSX } from "react";
 import {
   Calendar as HomeIcon,
   BookCheck,
   School2,
   Users,
-  LogOut,
   RefreshCcw,
+  Dumbbell,
+  UserCheck,
 } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+
+import { useAuthStore } from "../store/authStore";
+import ClassForm from "../components/ClassForm";
+import RoutineForm from "../components/RoutineForm";
+import ClientsTrainerDashboard from "../components/ClientsTrainerDashboard";
+import TrainerSidebar from "../components/TrainerSidebar";
 
 // --- Frases motivacionales ---
 const frasesMotivacionales = [
@@ -41,26 +48,25 @@ const frasesMotivacionales = [
 ];
 
 // --- Pantalla de Inicio ---
-const HomeContent = () => {
+const HomeContent: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [frase, setFrase] = useState("");
 
   const generarFrase = () => {
-    const aleatoria = frasesMotivacionales[Math.floor(Math.random() * frasesMotivacionales.length)];
+    const aleatoria =
+      frasesMotivacionales[Math.floor(Math.random() * frasesMotivacionales.length)];
     setFrase(aleatoria);
   };
 
-  useEffect(() => {
-    generarFrase(); // Al cargar
-    const intervalId = setInterval(generarFrase, 15000); // Cada 15 segundos
-    return () => clearInterval(intervalId); // Limpieza al desmontar
+  React.useEffect(() => {
+    generarFrase();
+    const intervalId = setInterval(generarFrase, 15000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <section className="p-10 flex flex-col gap-6">
       <h2 className="text-2xl font-bold mb-2">Pantalla de Inicio</h2>
-
-      {/* Frase motivacional */}
       <div className="bg-[#F3E8FF] text-purple-800 p-4 rounded-lg shadow text-center font-medium italic relative">
         {frase}
         <button
@@ -71,8 +77,6 @@ const HomeContent = () => {
           <RefreshCcw size={18} />
         </button>
       </div>
-
-      {/* Calendario */}
       <div className="bg-white p-6 rounded-lg shadow w-fit">
         <DayPicker
           mode="single"
@@ -85,83 +89,86 @@ const HomeContent = () => {
   );
 };
 
-// --- Crear Clase ---
-const CrearClaseContent = () => (
+const CrearClaseContent: React.FC = () => (
   <section className="p-10">
-    <h2 className="text-2xl font-bold mb-4">Crear Clase</h2>
-    <p>Formulario o funcionalidades para crear una nueva clase.</p>
+    <ClassForm />
   </section>
 );
 
-// --- Profesores ---
-const ProfesoresContent = () => (
+const CrearRutinaContent: React.FC = () => {
+  const usuario = useAuthStore((state) => state.usuario);
+  return (
+    <section className="p-10">
+      <RoutineForm idEntrenador={usuario?.id_usuario ?? 0} />
+    </section>
+  );
+};
+
+const ProfesoresContent: React.FC = () => (
   <section className="p-10">
     <h2 className="text-2xl font-bold mb-4">Profesores</h2>
     <p>Listado o gestión de profesores.</p>
   </section>
 );
 
-// --- Tipo de ítem del sidebar ---
 interface SidebarItem {
   label: string;
   icon: React.ReactNode;
-  component: React.FC;
+  component: React.FC | (() => JSX.Element);
+  path: string;
 }
 
-// --- Items del sidebar ---
-const sidebarItems: SidebarItem[] = [
-  { label: "Inicio", icon: <HomeIcon size={20} />, component: HomeContent },
-  { label: "Crear Clase", icon: <BookCheck size={20} />, component: CrearClaseContent },
-  { label: "Profesores", icon: <School2 size={20} />, component: ProfesoresContent },
-];
-
-// --- Componente principal ---
 const TrainerDashboard: React.FC = () => {
+  const usuario = useAuthStore((state) => state.usuario);
+
+  const sidebarItems: SidebarItem[] = [
+    {
+      label: "Inicio",
+      icon: <HomeIcon size={20} />,
+      path: "inicio",
+      component: HomeContent,
+    },
+    {
+      label: "Crear Clase",
+      icon: <BookCheck size={20} />,
+      path: "crear-clase",
+      component: CrearClaseContent,
+    },
+    {
+      label: "Crear Rutina",
+      icon: <Dumbbell size={20} />,
+      path: "crear-rutina",
+      component: CrearRutinaContent,
+    },
+    {
+      label: "Clientes Asignados",
+      icon: <UserCheck size={20} />,
+      path: "clientes",
+      component: () => {
+        if (!usuario?.id_usuario)
+          return <div className="p-10 text-red-600">Error: entrenador no definido</div>;
+        return <ClientsTrainerDashboard idEntrenador={usuario.id_usuario} />;
+      },
+    },
+    {
+      label: "Profesores",
+      icon: <School2 size={20} />,
+      path: "profesores",
+      component: ProfesoresContent,
+    },
+  ];
+
   const [selectedItem, setSelectedItem] = useState<SidebarItem>(sidebarItems[0]);
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* --- Sidebar --- */}
-      <aside className="w-64 bg-black text-white p-6 flex flex-col justify-between flex-shrink-0">
-        <div>
-          {/* Info del usuario */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="bg-cyan-500 rounded-full p-2 mb-2">
-              <Users className="text-white" />
-            </div>
-            <h2 className="text-xl font-semibold">Trainer Name</h2>
-            <p className="text-sm opacity-80">trainer@example.com</p>
-          </div>
-
-          {/* Botones del menú */}
-          <nav className="space-y-4">
-            {sidebarItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => setSelectedItem(item)}
-                className={`flex items-center gap-2 px-3 py-2 w-full text-left rounded-lg transition-colors ${
-                  selectedItem.label === item.label
-                    ? "bg-cyan-300 text-black"
-                    : "hover:bg-cyan-500 text-white"
-                }`}
-              >
-                {item.icon}
-                {item.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        {/* Logout */}
-        <button
-          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-800 transition-colors text-white"
-          onClick={() => (window.location.href = "/")}
-        >
-          <LogOut /> Desconectarse
-        </button>
-      </aside>
-
-      {/* --- Contenido principal --- */}
+      <TrainerSidebar
+        items={sidebarItems}
+        activeItemPath={selectedItem.path}
+        onSelectItem={setSelectedItem}
+        trainerName={`${usuario?.primer_nombre ?? ""} ${usuario?.primer_apellido ?? ""}`}
+        trainerEmail={usuario?.correo ?? ""}
+      />
       <main className="flex-1 flex flex-col bg-[#f5f5f5] overflow-auto">
         <header className="px-12 py-6 bg-white shadow-md sticky top-0 z-10">
           <h1 className="text-4xl font-bold text-gray-800">
@@ -170,9 +177,20 @@ const TrainerDashboard: React.FC = () => {
               : `Sección de ${selectedItem.label}`}
           </h1>
         </header>
-
-        {/* Render dinámico del componente */}
-        <selectedItem.component />
+        {/* Render dinámico con protección de error */}
+        {(() => {
+          try {
+            // Permite tanto componentes FC como funciones
+            const Comp = selectedItem.component;
+            return <Comp />;
+          } catch (e) {
+            return (
+              <div className="p-10 text-red-500">
+                Error al cargar la sección: {e instanceof Error ? e.message : String(e)}
+              </div>
+            );
+          }
+        })()}
       </main>
     </div>
   );

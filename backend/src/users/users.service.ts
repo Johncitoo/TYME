@@ -86,10 +86,23 @@ export class UsersService {
   }
 
   // Actualiza cualquier campo permitido del usuario autenticado
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.usuarioRepo.findOne({ where: { id_usuario: id } });
-    if (!user) throw new NotFoundException("Usuario no encontrado");
-    Object.assign(user, updateUserDto);
-    return this.usuarioRepo.save(user);
-  }
+async updateUser(id: number, updateUserDto: UpdateUserDto) {
+  const user = await this.usuarioRepo.findOne({ where: { id_usuario: id } });
+  if (!user) throw new NotFoundException("Usuario no encontrado");
+
+  // ELIMINA campos vacíos o null del DTO antes de actualizar
+  Object.keys(updateUserDto).forEach(key => {
+    if (
+      updateUserDto[key] === "" ||
+      updateUserDto[key] === null ||
+      typeof updateUserDto[key] === "undefined"
+    ) {
+      delete updateUserDto[key];
+    }
+  });
+
+  Object.assign(user, updateUserDto);
+  return this.usuarioRepo.save(user);
+}
+
 }
