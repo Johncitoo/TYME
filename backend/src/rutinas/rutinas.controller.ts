@@ -27,7 +27,78 @@ import { Rutina } from '../entities/rutina.entity';
 export class RutinasController {
   constructor(private readonly rutinasService: RutinasService) {}
 
+<<<<<<< HEAD
   // ── Endpoints de cliente: RUTINA DEL USUARIO ────────────────────────────
+=======
+  // ── CRUD estándar ──────────────────────────────────────────────────────
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() dto: CreateRutinaDto): Promise<any> {
+    return await this.rutinasService.create(dto);
+  }
+
+  @Get()
+  async findAll(): Promise<any> {
+    return await this.rutinasService.findAll();
+  }
+
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    return await this.rutinasService.findOne(id);
+  }
+
+  // GET /rutinas/:id/ejercicios
+  @Get(':id/ejercicios')
+  async getWithExercises(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Rutina> {
+    // reutilizamos findOne, que ya trae relations: ['rutinaEjercicios', 'rutinaEjercicios.ejercicio']
+    return this.rutinasService.findOne(id);
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateRutinaDto,
+  ): Promise<any> {
+    return await this.rutinasService.update(id, dto);
+  }
+
+  @Put(':id')
+  async updateFull(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateRutinaDto,
+  ): Promise<any> {
+    return await this.rutinasService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.rutinasService.remove(id);
+  }
+
+  // ── Endpoints específicos de cliente ───────────────────────────────────
+
+  // /rutinas/cliente/:usuarioId
+  @Get('cliente/:usuarioId')
+  async getRutinaDeCliente(
+    @Param('usuarioId', ParseIntPipe) usuarioId: number,
+  ): Promise<any> {
+    return await this.rutinasService.obtenerRutinaCliente(usuarioId);
+  }
+
+  // /rutinas/cliente/:usuarioId/todas
+  @Get('cliente/:usuarioId/todas')
+  async getRutinasDeCliente(
+    @Param('usuarioId', ParseIntPipe) usuarioId: number,
+  ): Promise<any> {
+    return await this.rutinasService.obtenerRutinasCliente(usuarioId);
+  }
+
+  // /rutinas/mi-rutina — para el usuario autenticado
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
   @UseGuards(JwtAuthGuard)
   @Get('mi-rutina')
   async getRutinaClienteLogueado(
@@ -43,6 +114,7 @@ export class RutinasController {
     return r;
   }
 
+<<<<<<< HEAD
   /** Todas las rutinas de un cliente dado su ID de usuario */
   @Get('cliente/:usuarioId/todas')
   async getRutinasDeCliente(
@@ -104,4 +176,7 @@ export class RutinasController {
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.rutinasService.remove(id);
   }
+=======
+  // ...otros endpoints que puedas necesitar...
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
 }

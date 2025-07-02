@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 // src/components/AdminDashboard.tsx
 
@@ -15,6 +16,23 @@ interface Member {
   status: string;
 }
 
+=======
+import React, { useState } from 'react';
+import type { FC } from 'react';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+import { Search, ArrowLeft, ArrowRight } from 'lucide-react';
+import SidebarAdmin from '@/components/AdminSidebar';
+
+interface Member {
+  id: number;
+  name: string;
+  datePaid: string;
+  dateExpiry: string;
+  status: string;
+}
+
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
 const dummyMembers: Member[] = [
   { id: 1, name: 'James Medalla', datePaid: '2025-06-01', dateExpiry: '2025-07-01', status: 'Activo' },
   { id: 2, name: 'Kent Charl Mabutus', datePaid: '2025-06-05', dateExpiry: '2025-07-05', status: 'Activo' },
@@ -23,8 +41,13 @@ const dummyMembers: Member[] = [
 
 const AdminDashboard: FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+<<<<<<< HEAD
   const [search, setSearch] = useState<string>('');
   const filteredMembers = dummyMembers.filter(m =>
+=======
+  const [search, setSearch] = useState('');
+  const filtered = dummyMembers.filter(m =>
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
     m.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -54,7 +77,11 @@ const AdminDashboard: FC = () => {
           </div>
           <div className="bg-white p-6 rounded-2xl shadow">
             <h3 className="text-xl font-semibold mb-2">Miembros Activos</h3>
+<<<<<<< HEAD
             <p className="text-2xl font-bold">{dummyMembers.length}</p>
+=======
+            <p className="text-2xl font-bold">12</p>
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
           </div>
         </div>
 
@@ -64,9 +91,13 @@ const AdminDashboard: FC = () => {
           <div className="bg-white p-6 rounded-2xl shadow">
             <div className="flex justify-between items-center mb-4">
               <button><ArrowLeft /></button>
+<<<<<<< HEAD
               <span className="font-medium">
                 {selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
               </span>
+=======
+              <span className="font-medium">{selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
               <button><ArrowRight /></button>
             </div>
             <DayPicker
@@ -109,7 +140,11 @@ const AdminDashboard: FC = () => {
                   </tr>
                 </thead>
                 <tbody>
+<<<<<<< HEAD
                   {filteredMembers.map(m => (
+=======
+                  {filtered.map(m => (
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
                     <tr key={m.id} className="hover:bg-gray-100">
                       <td className="py-2">{m.name}</td>
                       <td className="py-2">{m.datePaid}</td>
@@ -128,4 +163,5 @@ const AdminDashboard: FC = () => {
 };
 
 export default AdminDashboard;
+
 

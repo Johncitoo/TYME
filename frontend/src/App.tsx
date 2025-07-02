@@ -63,6 +63,10 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+<<<<<<< HEAD
+=======
+        {/* Ruta para editar perfil (clientes, admins y entrenadores) */}
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
         <Route
           path="/editar-perfil"
           element={
@@ -206,15 +210,27 @@ export default function App() {
         <Route
           path="/admin/rutinas/editar/:id"
           element={
+<<<<<<< HEAD
             <ProtectedRoute allowedRoles={[ 'admin' ]}>
+=======
+            <ProtectedRoute allowedRoles={['admin']}>
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
               <EditRutinaPage />
             </ProtectedRoute>
           }
         />
+<<<<<<< HEAD
         <Route
           path="/admin/pagos"
           element={
             <ProtectedRoute allowedRoles={[ 'admin' ]}>
+=======
+
+        <Route
+          path="/admin/pagos"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
               <PagosPage />
             </ProtectedRoute>
           }
@@ -222,7 +238,11 @@ export default function App() {
         <Route
           path="/admin/pagos/crear"
           element={
+<<<<<<< HEAD
             <ProtectedRoute allowedRoles={[ 'admin' ]}>
+=======
+            <ProtectedRoute allowedRoles={['admin']}>
+>>>>>>> 59c662f4bcad158c8d9ea18b4c35b116adba064f
               <CreatePagoPage />
             </ProtectedRoute>
           }
