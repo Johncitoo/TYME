@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   postgres:
@@ -21,6 +21,7 @@ services:
     depends_on:
       - postgres
     environment:
+      PORT: 3000
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_USER: tyme
@@ -37,7 +38,7 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_API_URL: "http://host.docker.internal:3000"
+      VITE_API_URL: "http://host.docker.internal:3001"
     ports:
       - "5173:5173"
 

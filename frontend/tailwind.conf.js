@@ -9,6 +9,10 @@ module.exports = {
       colors: {
         primary: '#71C7E0',  // Color institucional
       },
+      cyan: {
+        300: '#67e8f9',
+        500: '#06b6d4',
+      },
     },
   },
   plugins: [],

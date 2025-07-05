@@ -61,7 +61,9 @@ export function CreateUserModal() {
             </div>
             <div>
               <Label>Email</Label>
-              <Input type="email" name="email" value={form.email} onChange={handleChange} required />
+              <Input type="email" name="email" value={form.email} onChange={handleChange} required /> 
+              {/* Agregar max Input propiedad: Auto complet agregarlo con off,  */}
+              {/* Agregar max length */}
             </div>
             <div>
               <Label>Password</Label>
