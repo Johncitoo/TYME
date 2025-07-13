@@ -5,23 +5,23 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // Habilitar validación automática de DTOs
+
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // elimina propiedades no declaradas en el DTO
-      forbidNonWhitelisted: true, // arroja error si llega algo extra
-      transform: true, // convierte automáticamente tipos (p.ej: strings -> numbers)
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
-  // Habilitar CORS para tu frontend
+  // Permite conexiones desde Expo (RN)
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://host.docker.internal:5173'],
+    origin: '*', // o puedes restringir a IPs locales si lo deseas
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
   const port = parseInt(process.env.PORT ?? '3000', 10);
-  await app.listen(port, '0.0.0.0');
+  await app.listen(port, '0.0.0.0'); // <- necesario para recibir desde fuera del contenedor
 }
 bootstrap();
