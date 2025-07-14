@@ -12,6 +12,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   DashboardInicioCliente: undefined;
+  EntrenadorDashboard: undefined;
   Login: undefined;
 };
 
@@ -36,6 +37,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     setError('');
     setLoading(true);
     await cleanAll();
+
     try {
       console.log("===> Intentando login:", email, password);
       const response = await fetch(`${BACKEND_URL}/auth/login`, {
@@ -62,22 +64,30 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       }
       await AsyncStorage.setItem('user', JSON.stringify(usuario));
 
-      // Solo deja entrar si es cliente
+      // Detección del tipo de usuario
       let tipo = '';
-      if (typeof usuario.tipo_usuario === 'string') tipo = usuario.tipo_usuario.toLowerCase();
-      else if (usuario.tipo_usuario?.nombre) tipo = String(usuario.tipo_usuario.nombre).toLowerCase();
-      else if (usuario.rol) tipo = String(usuario.rol).toLowerCase();
-      else if (usuario.role) tipo = String(usuario.role).toLowerCase();
+      if (typeof usuario.tipo_usuario === 'string') {
+        tipo = usuario.tipo_usuario.toLowerCase();
+      } else if (usuario.tipo_usuario?.nombre) {
+        tipo = String(usuario.tipo_usuario.nombre).toLowerCase();
+      } else if (usuario.rol) {
+        tipo = String(usuario.rol).toLowerCase();
+      } else if (usuario.role) {
+        tipo = String(usuario.role).toLowerCase();
+      }
 
       console.log("===> Tipo usuario detectado:", tipo);
 
       if (tipo === 'cliente') {
-        navigation.replace('DashboardInicioCliente'); // <--- CAMBIA AQUÍ
+        navigation.replace('DashboardInicioCliente');
         console.log("===> Navegando a DashboardInicioCliente");
+      } else if (tipo === 'entrenador') {
+        navigation.replace('EntrenadorDashboard');
+        console.log("===> Navegando a EntrenadorDashboard");
       } else {
-        setError('Solo los clientes pueden usar la app móvil');
+        setError('Solo clientes o entrenadores pueden usar la app móvil');
         await cleanAll();
-        console.log("===> Error: No es cliente");
+        console.log("===> Error: tipo de usuario no permitido");
       }
     } catch (err) {
       setError('No se pudo conectar con el servidor');
@@ -118,15 +128,30 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#eaf2fa', padding: 20,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#eaf2fa',
+    padding: 20,
   },
   title: {
-    fontSize: 24, fontWeight: 'bold', marginBottom: 24, color: '#366ed4',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+    color: '#366ed4',
   },
   input: {
-    width: '100%', height: 48, borderColor: '#999', borderWidth: 1, borderRadius: 8, marginBottom: 16, paddingHorizontal: 12, backgroundColor: '#fff',
+    width: '100%',
+    height: 48,
+    borderColor: '#999',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 16,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
   },
   error: {
-    color: '#d32f2f', marginBottom: 12,
+    color: '#d32f2f',
+    marginBottom: 12,
   },
 });
