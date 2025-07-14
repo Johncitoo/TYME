@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage';
 import TrainerDashboard from './pages/TrainerDashboard'; // Asegúrate que el nombre sea este
 
 import DashboardInicioCliente from './pages/DashboardInicioCliente';

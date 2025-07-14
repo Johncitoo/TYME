@@ -25,10 +25,15 @@ export class ClienteService {
   }
 
   async findByEntrenador(idEntrenador: number): Promise<Cliente[]> {
-  return this.clienteRepo.find({
-    where: { entrenador: { id_entrenador: idEntrenador } },
-    relations: ['usuario', 'tipoMembresia', 'entrenador'], // incluye entrenador si quieres info extra
-  });
-}
-
+    console.log(
+      '🔍 Buscando clientes para el entrenador con ID:',
+      idEntrenador,
+    );
+    const clientes = await this.clienteRepo.find({
+      where: { entrenador: { id_entrenador: idEntrenador } },
+      relations: ['usuario', 'tipoMembresia', 'entrenador'], // incluye entrenador si quieres info extra
+    });
+    console.log('🧾 Clientes encontrados:', clientes);
+    return clientes;
+  }
 }
