@@ -4,16 +4,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import LoginScreen from '../screens/LoginScreen';
 import DashboardInicioCliente from '../screens/DashboardInicioCliente';
-import RutinaActivaScreen from '../screens/RutinaActivaScreen';
 import ClasesDisponibles from '../screens/ClasesDisponibles';
 import MisRutinas from '../screens/MisRutinas';
+import RutinaActivaScreen from '../screens/RutinaActivaScreen';
+import RutinaDetalleScreen from '../screens/RutinaDetalleScreen';
 
 export type RootStackParamList = {
   Login: undefined;
   DashboardInicioCliente: undefined;
-  RutinaActivaScreen: undefined;
   ClasesDisponibles: undefined;
   MisRutinas: undefined;
+  RutinaActiva: undefined;
+  RutinaDetalle: { id: number };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -22,31 +24,12 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="DashboardInicioCliente"
-          component={DashboardInicioCliente}
-          options={{ title: 'Inicio' }}
-        />
-        <Stack.Screen
-          name="RutinaActivaScreen"
-          component={RutinaActivaScreen}
-          options={{ title: 'Mi Rutina Activa' }}
-        />
-        <Stack.Screen
-          name="ClasesDisponibles"
-          component={ClasesDisponibles}
-          options={{ title: 'Clases Disponibles' }}
-        />
-        <Stack.Screen
-          name="MisRutinas"
-          component={MisRutinas}
-          options={{ title: 'Mis Rutinas' }}
-        />
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="DashboardInicioCliente" component={DashboardInicioCliente} options={{ title: 'Inicio' }} />
+        <Stack.Screen name="ClasesDisponibles" component={ClasesDisponibles} options={{ title: 'Clases Disponibles' }} />
+        <Stack.Screen name="MisRutinas" component={MisRutinas} options={{ title: 'Mis Rutinas' }} />
+        <Stack.Screen name="RutinaActiva" component={RutinaActivaScreen} options={{ title: 'Rutina Activa' }} />
+        <Stack.Screen name="RutinaDetalle" component={RutinaDetalleScreen} options={{ title: 'Detalle Rutina' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

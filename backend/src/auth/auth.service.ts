@@ -54,4 +54,6 @@ export class AuthService {
     };
     return this.jwtService.sign(payload, { expiresIn: '12h' });
   }
+
+
 }
