@@ -20,7 +20,9 @@ type LoginScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;
 };
 
-const BACKEND_URL = 'http://192.168.1.140:3000';
+
+const BACKEND_URL = 'http://localhost:3000';
+
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [email, setEmail] = useState('');

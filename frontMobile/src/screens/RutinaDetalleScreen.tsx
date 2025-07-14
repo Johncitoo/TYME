@@ -1,17 +1,17 @@
-// src/screens/RutinaActivaScreen.tsx
-
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ActivityIndicator, ScrollView,
-  TouchableOpacity, Image, useColorScheme
+  TouchableOpacity, Image, Alert, useColorScheme
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// Instala react-native-elements para el CheckBox
 import { CheckBox } from 'react-native-elements';
 import * as Linking from 'expo-linking';
 
 const BACKEND_URL = 'http://localhost:3000';
 
-export default function RutinaActivaScreen() {
+export default function RutinaDetalleScreen({ route }: any) {
+  const { id } = route.params;
   const [rutina, setRutina] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,7 +25,7 @@ export default function RutinaActivaScreen() {
     setError('');
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await fetch(`${BACKEND_URL}/rutinas/mi-rutina`, {
+      const res = await fetch(`${BACKEND_URL}/rutinas/${id}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -45,26 +45,29 @@ export default function RutinaActivaScreen() {
     }
   };
 
-  useEffect(() => { fetchRutina(); }, []);
+  useEffect(() => { fetchRutina(); }, [id]);
 
   if (loading)
     return <View style={styles.center}><ActivityIndicator size="large" color="#366ed4" /></View>;
   if (error || !rutina)
     return (
       <View style={styles.center}>
-        <Text style={styles.error}>{error || 'Sin rutina activa'}</Text>
+        <Text style={styles.error}>{error || 'Rutina no encontrada'}</Text>
         <TouchableOpacity style={styles.btnRecargar} onPress={fetchRutina}>
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>Reintentar</Text>
         </TouchableOpacity>
       </View>
     );
 
+  // Agrupar ejercicios por día
   const ejerciciosPorDia: { [dia: number]: any[] } = {};
   rutina.rutinaEjercicios.forEach((ej: any) => {
     if (!ejerciciosPorDia[ej.dia]) ejerciciosPorDia[ej.dia] = [];
     ejerciciosPorDia[ej.dia].push(ej);
   });
+
   const dias = Object.keys(ejerciciosPorDia).map(Number).sort((a, b) => a - b);
+
   const ejerciciosDelDia = (selectedDia && ejerciciosPorDia[selectedDia]) || [];
 
   const toggleCompletado = (id: number) =>
@@ -157,30 +160,7 @@ const styles = StyleSheet.create({
   bold: { fontWeight: 'bold' },
   obs: { marginTop: 2, fontStyle: 'italic', color: '#396' },
   error: { color: '#c00', textAlign: 'center', marginTop: 20, fontWeight: 'bold' },
-  btnRecargar: {
-    marginTop: 16,
-    backgroundColor: '#366ed4',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 7,
-    alignItems: 'center',
-  },
-  videoBtn: {
-    backgroundColor: '#49C96D',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    marginTop: 8,
-    alignSelf: 'flex-start'
-  },
-  imgEjercicio: {
-    width: 160,
-    height: 110,
-    borderRadius: 8,
-    marginTop: 10,
-    marginBottom: 4,
-    borderWidth: 1,
-    borderColor: '#e5e9f2',
-    alignSelf: 'center'
-  },
+  btnRecargar: { marginTop: 16, backgroundColor: '#366ed4', padding: 10, borderRadius: 6 },
+  videoBtn: { marginTop: 8, backgroundColor: '#366ed4', borderRadius: 5, paddingHorizontal: 12, paddingVertical: 4, alignSelf: 'flex-start' },
+  imgEjercicio: { width: 120, height: 80, marginTop: 8, borderRadius: 8 },
 });
