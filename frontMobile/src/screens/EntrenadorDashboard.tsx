@@ -50,12 +50,11 @@ export default function EntrenadorDashboard() {
           <Text style={styles.buttonText}>Crear Rutina</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('ClientesAsignadosScreen')}
+        >
           <Text style={styles.buttonText}>Clientes Asignados</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Profesores</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

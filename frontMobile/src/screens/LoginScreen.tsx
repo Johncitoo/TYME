@@ -31,6 +31,9 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const cleanAll = async () => {
     await AsyncStorage.removeItem('token');
     await AsyncStorage.removeItem('user');
+    await AsyncStorage.removeItem('id_usuario');
+    await AsyncStorage.removeItem('id_entrenador');
+    await AsyncStorage.removeItem('tipo_usuario');
   };
 
   const handleLogin = async () => {
@@ -59,24 +62,15 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       console.log("===> Usuario recibido:", usuario);
 
       const token = usuario.token || usuario.access_token;
-      if (token) {
-        await AsyncStorage.setItem('token', token);
-      }
-      await AsyncStorage.setItem('user', JSON.stringify(usuario));
+      const tipo = usuario.tipo_usuario?.toLowerCase?.() || '';
 
-      // Detección del tipo de usuario
-      let tipo = '';
-      if (typeof usuario.tipo_usuario === 'string') {
-        tipo = usuario.tipo_usuario.toLowerCase();
-      } else if (usuario.tipo_usuario?.nombre) {
-        tipo = String(usuario.tipo_usuario.nombre).toLowerCase();
-      } else if (usuario.rol) {
-        tipo = String(usuario.rol).toLowerCase();
-      } else if (usuario.role) {
-        tipo = String(usuario.role).toLowerCase();
+      if (token) await AsyncStorage.setItem('token', token);
+      if (usuario.id_usuario) await AsyncStorage.setItem('id_usuario', String(usuario.id_usuario));
+      if (tipo) await AsyncStorage.setItem('tipo_usuario', tipo);
+      if (tipo === 'entrenador' && usuario.id_entrenador) {
+        await AsyncStorage.setItem('id_entrenador', String(usuario.id_entrenador));
+        console.log("===> ID de entrenador guardado:", usuario.id_entrenador);
       }
-
-      console.log("===> Tipo usuario detectado:", tipo);
 
       if (tipo === 'cliente') {
         navigation.replace('DashboardInicioCliente');
@@ -89,6 +83,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         await cleanAll();
         console.log("===> Error: tipo de usuario no permitido");
       }
+
     } catch (err) {
       setError('No se pudo conectar con el servidor');
       console.log("===> Error en fetch:", err);
