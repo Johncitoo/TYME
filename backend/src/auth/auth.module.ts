@@ -9,27 +9,18 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { RolesGuard } from './roles.guard';
-
+import { Entrenador } from 'entities/entrenador.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Usuario]),
+    TypeOrmModule.forFeature([Usuario, Entrenador]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'mi_clave_secreta',
       signOptions: { expiresIn: '12h' }, // <-- EXPIRACIÓN GLOBAL DE 12 HORAS
     }),
   ],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    RolesGuard,
-  ],
+  providers: [AuthService, JwtStrategy, RolesGuard],
   controllers: [AuthController],
-  exports: [
-    PassportModule,
-    JwtModule,
-    AuthService,
-    RolesGuard,
-  ],
+  exports: [PassportModule, JwtModule, AuthService, RolesGuard],
 })
 export class AuthModule {}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+ import React, { useState, useEffect } from "react";
 import { Check } from "lucide-react";
 import axios from "axios";
 import EliminarClasesFuturas from "@/components/EliminarClasesFuturas"; // 👈 IMPORTANTE
@@ -58,7 +58,7 @@ const ClassForm: React.FC<Props> = ({ idEntrenador, onSuccess }) => {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         setEntrenadores(res.data);
-      } catch (e) {
+      } catch {
         setError("No se pudieron cargar los entrenadores.");
       }
     };
@@ -301,4 +301,4 @@ const ClassForm: React.FC<Props> = ({ idEntrenador, onSuccess }) => {
   );
 };
 
-export default ClassForm;
+export default ClassForm;  

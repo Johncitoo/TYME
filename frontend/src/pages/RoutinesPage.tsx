@@ -18,17 +18,15 @@ interface Rutina {
 export default function RutinasPage() {
   const [rutinas, setRutinas] = useState<Rutina[]>([]);
   const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState<string|null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(10);
   const navigate = useNavigate();
 
-  // 1) Carga inicial y recarga al cambiar search o limit
   useEffect(() => {
     setCargando(true);
     getAllRutinas()
       .then(data => {
-        // opcionalmente filtras por search/limit aquí
         setRutinas(data);
       })
       .catch(() => {
@@ -39,7 +37,6 @@ export default function RutinasPage() {
       });
   }, [search, limit]);
 
-  // 2) Manejador de borrado
   const handleDelete = async (id: number) => {
     if (!window.confirm('¿Seguro que quieres eliminar esta rutina?')) return;
     try {
@@ -50,18 +47,18 @@ export default function RutinasPage() {
     }
   };
 
-  if (cargando) return <div className="p-8">Cargando rutinas…</div>;
-  if (error) return <div className="p-8 text-red-500">{error}</div>;
+  if (cargando) return <div className="p-8 text-white">Cargando rutinas…</div>;
+  if (error) return <div className="p-8 text-red-400">{error}</div>;
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-[#1c1e26] text-white">
       <SidebarAdmin />
 
-      <main className="flex-1 p-8 bg-gray-50">
+      <main className="flex-1 p-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-teal-600">Rutinas</h1>
+          <h1 className="text-3xl font-bold text-cyan-400">Rutinas</h1>
           <button
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
             onClick={() => navigate('/admin/rutinas/crear')}
           >
             Crear rutina
@@ -69,16 +66,16 @@ export default function RutinasPage() {
         </div>
 
         {/* Filtros */}
-        <div className="bg-white p-4 rounded-lg shadow mb-4">
+        <div className="bg-[#2b2d3c] p-4 rounded-xl shadow mb-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
-              <label>Mostrar</label>
+              <label className="text-sm">Mostrar</label>
               <select
-                className="border px-2 py-1 rounded"
+                className="border border-gray-600 bg-[#1f212d] text-white px-2 py-1 rounded"
                 value={limit}
                 onChange={e => setLimit(Number(e.target.value))}
               >
-                {[10,20,50].map(n => (
+                {[10, 20, 50].map(n => (
                   <option key={n} value={n}>
                     {n}
                   </option>
@@ -89,21 +86,21 @@ export default function RutinasPage() {
               <input
                 type="text"
                 placeholder="Buscar..."
-                className="border px-3 py-1 rounded flex-1"
+                className="border border-gray-600 bg-[#1f212d] text-white px-3 py-1 rounded"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
-              <button onClick={() => {/* trigger useEffect */}}>
-                <Search size={18} />
+              <button>
+                <Search size={18} className="text-gray-400" />
               </button>
             </div>
           </div>
         </div>
 
         {/* Tabla */}
-        <div className="overflow-x-auto bg-white rounded-lg shadow">
+        <div className="overflow-x-auto bg-[#2b2d3c] rounded-xl shadow">
           <table className="min-w-full">
-            <thead className="bg-teal-600 text-white">
+            <thead className="bg-cyan-700 text-white">
               <tr>
                 <th className="px-6 py-3 text-left">Nombre</th>
                 <th className="px-6 py-3 text-left">Descripción</th>
@@ -111,9 +108,9 @@ export default function RutinasPage() {
                 <th className="px-6 py-3 text-left">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-gray-700">
               {rutinas.map(r => (
-                <tr key={r.id_rutina}>
+                <tr key={r.id_rutina} className="hover:bg-[#3a3d4f]">
                   <td className="px-6 py-4">{r.nombre}</td>
                   <td className="px-6 py-4">{r.descripcion || '–'}</td>
                   <td className="px-6 py-4">
@@ -121,7 +118,7 @@ export default function RutinasPage() {
                   </td>
                   <td className="px-6 py-4 space-x-2">
                     <button
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
                       onClick={() =>
                         navigate(`/admin/rutinas/editar/${r.id_rutina}`)
                       }
@@ -129,17 +126,15 @@ export default function RutinasPage() {
                       Editar
                     </button>
                     <button
-                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded"
                       onClick={() =>
-                        navigate(
-                          `/admin/rutinas/${r.id_rutina}/ejercicios`
-                        )
+                        navigate(`/admin/rutinas/${r.id_rutina}/ejercicios`)
                       }
                     >
                       Ver ejercicios
                     </button>
                     <button
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
                       onClick={() => handleDelete(r.id_rutina)}
                     >
                       Eliminar
@@ -150,9 +145,7 @@ export default function RutinasPage() {
             </tbody>
           </table>
         </div>
-        {/* aquí podrías añadir paginación */}
       </main>
     </div>
   );
 }
-

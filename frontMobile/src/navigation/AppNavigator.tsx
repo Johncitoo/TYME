@@ -7,13 +7,21 @@ import DashboardInicioCliente from '../screens/DashboardInicioCliente';
 import RutinaActivaScreen from '../screens/RutinaActivaScreen';
 import ClasesDisponibles from '../screens/ClasesDisponibles';
 import MisRutinas from '../screens/MisRutinas';
-
+import EntrenadorDashboard from '../screens/EntrenadorDashboard';
+import CrearClaseScreen from '../screens/CrearClaseScreen';
+import CrearRutinaScreen from '../screens/CrearRutinaScreen';
+import ClientesAsignadosScreen
+ from '../screens/ClientesAsignadosScreen';
 export type RootStackParamList = {
   Login: undefined;
   DashboardInicioCliente: undefined;
   RutinaActivaScreen: undefined;
   ClasesDisponibles: undefined;
   MisRutinas: undefined;
+  EntrenadorDashboard: undefined;
+  CrearClaseScreen: undefined;
+  CrearRutinaScreen: undefined;
+  ClientesAsignadosScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,6 +55,26 @@ export default function AppNavigator() {
           component={MisRutinas}
           options={{ title: 'Mis Rutinas' }}
         />
+        <Stack.Screen
+          name="EntrenadorDashboard"
+          component={EntrenadorDashboard}
+          options={{ title: 'Dashboard Entrenador' }}
+        />
+        <Stack.Screen
+          name="CrearClaseScreen"
+          component={CrearClaseScreen}
+          options={{ title: 'Crear Clase' }}
+        />
+        <Stack.Screen
+          name="CrearRutinaScreen"
+          component={CrearRutinaScreen}
+          options={{ title: 'Crear Rutina' }}
+        />
+        <Stack.Screen
+          name="ClientesAsignadosScreen"
+          component={ClientesAsignadosScreen}
+          options={{ title: 'Clientes Asignados' }}
+        />  
       </Stack.Navigator>
     </NavigationContainer>
   );
