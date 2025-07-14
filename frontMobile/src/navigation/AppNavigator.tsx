@@ -11,8 +11,8 @@ import RutinaDetalleScreen from '../screens/RutinaDetalleScreen';
 import EntrenadorDashboard from '../screens/EntrenadorDashboard';
 import CrearClaseScreen from '../screens/CrearClaseScreen';
 import CrearRutinaScreen from '../screens/CrearRutinaScreen';
-import ClientesAsignadosScreen
- from '../screens/ClientesAsignadosScreen';
+import ClientesAsignadosScreen from '../screens/ClientesAsignadosScreen';
+
 export type RootStackParamList = {
   Login: undefined;
   DashboardInicioCliente: undefined;
@@ -38,52 +38,12 @@ export default function AppNavigator() {
         <Stack.Screen name="MisRutinas" component={MisRutinas} options={{ title: 'Mis Rutinas' }} />
         <Stack.Screen name="RutinaActiva" component={RutinaActivaScreen} options={{ title: 'Rutina Activa' }} />
         <Stack.Screen name="RutinaDetalle" component={RutinaDetalleScreen} options={{ title: 'Detalle Rutina' }} />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="DashboardInicioCliente"
-          component={DashboardInicioCliente}
-          options={{ title: 'Inicio' }}
-        />
-        <Stack.Screen
-          name="RutinaActivaScreen"
-          component={RutinaActivaScreen}
-          options={{ title: 'Mi Rutina Activa' }}
-        />
-        <Stack.Screen
-          name="ClasesDisponibles"
-          component={ClasesDisponibles}
-          options={{ title: 'Clases Disponibles' }}
-        />
-        <Stack.Screen
-          name="MisRutinas"
-          component={MisRutinas}
-          options={{ title: 'Mis Rutinas' }}
-        />
-        <Stack.Screen
-          name="EntrenadorDashboard"
-          component={EntrenadorDashboard}
-          options={{ title: 'Dashboard Entrenador' }}
-        />
-        <Stack.Screen
-          name="CrearClaseScreen"
-          component={CrearClaseScreen}
-          options={{ title: 'Crear Clase' }}
-        />
-        <Stack.Screen
-          name="CrearRutinaScreen"
-          component={CrearRutinaScreen}
-          options={{ title: 'Crear Rutina' }}
-        />
-        <Stack.Screen
-          name="ClientesAsignadosScreen"
-          component={ClientesAsignadosScreen}
-          options={{ title: 'Clientes Asignados' }}
-        />  
+        <Stack.Screen name="EntrenadorDashboard" component={EntrenadorDashboard} options={{ title: 'Dashboard Entrenador' }} />
+        <Stack.Screen name="CrearClaseScreen" component={CrearClaseScreen} options={{ title: 'Crear Clase' }} />
+        <Stack.Screen name="CrearRutinaScreen" component={CrearRutinaScreen} options={{ title: 'Crear Rutina' }} />
+        <Stack.Screen name="ClientesAsignadosScreen" component={ClientesAsignadosScreen} options={{ title: 'Clientes Asignados' }} />  
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+

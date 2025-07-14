@@ -1,39 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getMisRutinas } from '../services/clienteService';
 import RutinaCard from '../components/RutinaCard';
 import MenuCliente from '../components/MenuCliente';
-import { getMisRutinas } from '../services/clienteService';
 
 export default function MisRutinas({ navigation }: any) {
   const [rutinas, setRutinas] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
+    const fetchRutinas = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const user = JSON.parse(await AsyncStorage.getItem('user') || '{}');
         const token = await AsyncStorage.getItem('token');
-        if (!user.id_usuario || !token) throw new Error('No autenticado');
-        const rutinasData = await getMisRutinas(token, user.id_usuario);
-        setRutinas(rutinasData);
-      } catch (e: any) {
-        setError(e.message);
+        const idCliente = await AsyncStorage.getItem('id_usuario');
+        if (!token || !idCliente) {
+          setError('No autenticado');
+          setLoading(false);
+          return;
+        }
+        const data = await getMisRutinas(token, Number(idCliente));
+        setRutinas(data);
+      } catch (err) {
+        setError('Error al cargar las rutinas');
       } finally {
         setLoading(false);
       }
-    })();
+    };
+    fetchRutinas();
   }, []);
 
-  // Rutina actual: la de fecha_inicio más reciente
-  let idRutinaActual: number | null = null;
-  if (rutinas.length > 0) {
-    idRutinaActual = rutinas.reduce((maxId, r) =>
-      new Date(r.fecha_inicio) > new Date(rutinas.find(x => x.id_rutina === maxId)?.fecha_inicio)
-        ? r.id_rutina
-        : maxId, rutinas[0].id_rutina);
-  }
+  // ✅ Identificar la rutina activa buscando en clientesRutinas[0].estado === "Activa"
+  const rutinaActiva = rutinas.find(
+    (r: any) => r.clientesRutinas?.[0]?.estado === 'Activa'
+  );
+
+  const idRutinaActual = rutinaActiva?.id_rutina || null;
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
@@ -41,13 +46,13 @@ export default function MisRutinas({ navigation }: any) {
       <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 12 }}>Mis Rutinas</Text>
       {loading && <ActivityIndicator />}
       {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
-      {idRutinaActual &&
+      {idRutinaActual && (
         <Button
           title="Ver Rutina Actual ⭐"
           color="#366ed4"
           onPress={() => navigation.navigate('RutinaDetalle', { id: idRutinaActual })}
         />
-      }
+      )}
       <FlatList
         style={{ marginTop: 10 }}
         data={rutinas}
