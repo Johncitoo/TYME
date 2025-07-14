@@ -31,9 +31,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const cleanAll = async () => {
     await AsyncStorage.removeItem('token');
     await AsyncStorage.removeItem('user');
+
     await AsyncStorage.removeItem('id_usuario');
     await AsyncStorage.removeItem('id_entrenador');
     await AsyncStorage.removeItem('tipo_usuario');
+
   };
 
   const handleLogin = async () => {
@@ -62,6 +64,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       console.log("===> Usuario recibido:", usuario);
 
       const token = usuario.token || usuario.access_token;
+
       const tipo = usuario.tipo_usuario?.toLowerCase?.() || '';
 
       if (token) await AsyncStorage.setItem('token', token);

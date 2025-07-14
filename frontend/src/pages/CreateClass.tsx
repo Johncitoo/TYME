@@ -17,3 +17,5 @@ const CreateClass: React.FC = () => {
 };
 
 export default CreateClass;
+
+

@@ -45,7 +45,7 @@ export default function MobileMenu() {
             variant="ghost"
             size="icon"
             className="bg-zinc-900 border border-cyan-600 shadow-xl w-14 h-14 rounded-2xl text-cyan-300 hover:bg-cyan-950/70 transition
-              fixed top-4 left-4 z-50" // 👈 Esto lo deja siempre flotante
+              fixed top-4 left-4 z-50" // 👈
             aria-label="Abrir menú"
           >
             <Menu className="w-9 h-9" />
