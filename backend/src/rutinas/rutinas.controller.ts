@@ -97,6 +97,11 @@ export class RutinasController {
     return this.rutinasService.findOne(id);
   }
 
+  @Get(':id/for-edit')
+  async findOneForEdit(@Param('id') id: number) {
+    return this.rutinasService.findOneWithActiveClient(id);
+  }
+
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,

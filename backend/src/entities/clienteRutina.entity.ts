@@ -19,17 +19,25 @@ export class ClienteRutina {
   @Column({ length: 20 })
   estado: string;
 
-  // ← Columna FK explícita para id_rutina
-  @Column({ name: 'id_rutina' })
+  // FK explícita para rutina
+  @Column({ name: 'id_rutina', nullable: false })
   idRutina: number;
-  @ManyToOne(() => Rutina, (rutina) => rutina.clientesRutinas)
+
+  @ManyToOne(() => Rutina, (rutina) => rutina.clientesRutinas, {
+    eager: false,
+    nullable: false,
+  })
   @JoinColumn({ name: 'id_rutina' })
   rutina: Rutina;
 
-  // ← Columna FK explícita para id_cliente
-  @Column({ name: 'id_cliente' })
+  // FK explícita para cliente
+  @Column({ name: 'id_cliente', nullable: false })
   idCliente: number;
-  @ManyToOne(() => Cliente, (cliente) => cliente.clientesRutinas)
+
+  @ManyToOne(() => Cliente, (cliente) => cliente.clientesRutinas, {
+    eager: false,
+    nullable: false,
+  })
   @JoinColumn({ name: 'id_cliente' })
   cliente: Cliente;
 }

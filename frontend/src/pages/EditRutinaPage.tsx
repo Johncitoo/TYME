@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import SidebarAdmin from '@/components/AdminSidebar';
-import { getRutinaById, getAllEjercicios, updateRutina } from '@/services/routine.service';
+import { getRutinaForEdit, getAllEjercicios, updateRutina } from '@/services/routine.service';
 import { getAllEntrenadores } from '@/services/entrenador.service';
-import { getAllClientes } from '@/services/clientes.Service'; // 👈 IMPORTANTE
+import { getAllClientes } from '@/services/clientes.Service';
 
-// TIPOS
 interface EntrenadorOption {
   id_entrenador: number;
   usuario: {
@@ -44,60 +43,49 @@ export default function EditRutinaPage() {
   const [descripcion, setDescripcion] = useState('');
   const [fecha_inicio, setFechaInicio] = useState('');
   const [id_entrenador, setIdEntrenador] = useState<number>();
-  const [id_cliente, setIdCliente] = useState<number>(); // 👈 NUEVO
+  const [id_cliente, setIdCliente] = useState<number>();
   const [lineas, setLineas] = useState<Linea[]>([]);
   const [ejercicios, setEjercicios] = useState<EjercicioOption[]>([]);
   const [entrenadores, setEntrenadores] = useState<EntrenadorOption[]>([]);
-  const [clientes, setClientes] = useState<ClienteOption[]>([]); // 👈 NUEVO
+  const [clientes, setClientes] = useState<ClienteOption[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  interface Rutina {
-    id_rutina: number;
-    nombre: string;
-    descripcion?: string;
-    fecha_inicio?: string;
-    id_cliente: number;
-    entrenador?: {
-      id_entrenador: number;
-      usuario: {
-        primer_nombre: string;
-        primer_apellido: string;
-      };
-    };
-    rutinaEjercicios: Array<{
-      id_rutina_ejercicio: number;
-      ejercicio: { id_ejercicio: number };
-      dia: number | string;
-      orden: number | string;
-      series: number | string;
-      peso: number | string;
-      descanso: number | string;
-      observacion?: string;
-    }>;
-  }
-
   useEffect(() => {
-    getRutinaById(Number(id)).then(rutina => {
-      setNombre(rutina.nombre);
-      setDescripcion(rutina.descripcion || '');
-      setFechaInicio(rutina.fecha_inicio?.slice(0, 10) || '');
-      setIdEntrenador(rutina.entrenador?.id_entrenador);
-      setIdCliente(rutina.id_cliente); // 👈 nuevo
-      setLineas(rutina.rutinaEjercicios.map((re: Rutina['rutinaEjercicios'][number]) => ({
-        id_rutina_ejercicio: re.id_rutina_ejercicio,
-        id_ejercicio: re.ejercicio.id_ejercicio,
-        dia: Number(re.dia),
-        orden: Number(re.orden),
-        series: Number(re.series),
-        peso: Number(re.peso),
-        descanso: Number(re.descanso),
-        observacion: re.observacion || '',
-      })));
-    }).catch(() => setError('No se pudo cargar la rutina'));
+    // Usa el endpoint correcto
+    getRutinaForEdit(Number(id))
+      .then(rutina => {
+        setNombre(rutina.nombre || '');
+        setDescripcion(rutina.descripcion || '');
+        setFechaInicio(rutina.fecha_inicio?.slice(0, 10) || '');
+        setIdEntrenador(rutina.entrenador?.id_entrenador);
+        setIdCliente(rutina.id_cliente ?? undefined);
+        setLineas(
+          (rutina.rutinaEjercicios || []).map((re: {
+            id_rutina_ejercicio: number;
+            ejercicio: { id_ejercicio: number };
+            dia: number | string;
+            orden: number | string;
+            series: number | string;
+            peso: number | string;
+            descanso: number | string;
+            observacion?: string;
+          }) => ({
+            id_rutina_ejercicio: re.id_rutina_ejercicio,
+            id_ejercicio: re.ejercicio.id_ejercicio,
+            dia: Number(re.dia),
+            orden: Number(re.orden),
+            series: Number(re.series),
+            peso: Number(re.peso),
+            descanso: Number(re.descanso),
+            observacion: re.observacion || '',
+          }))
+        );
+      })
+      .catch(() => setError('No se pudo cargar la rutina'));
 
-    getAllEjercicios().then(setEjercicios);
-    getAllEntrenadores().then(setEntrenadores);
-    getAllClientes().then(setClientes); // 👈 cargar clientes
+    getAllEjercicios().then(setEjercicios).catch(() => setEjercicios([]));
+    getAllEntrenadores().then(setEntrenadores).catch(() => setEntrenadores([]));
+    getAllClientes().then(setClientes).catch(() => setClientes([]));
   }, [id]);
 
   const handleLineaChange = (
@@ -146,7 +134,7 @@ export default function EditRutinaPage() {
         fecha_inicio,
         id_entrenador,
         ejercicios: lineas,
-        id_cliente, // 👈 ahora editable
+        id_cliente,
       });
       navigate('/admin/rutinas');
     } catch {
@@ -163,19 +151,39 @@ export default function EditRutinaPage() {
         <form className="bg-white p-6 rounded shadow space-y-6" onSubmit={handleSubmit}>
           <div>
             <label>Nombre</label>
-            <input className="w-full border p-2 rounded" value={nombre} onChange={e => setNombre(e.target.value)} />
+            <input
+              className="w-full border p-2 rounded"
+              value={nombre}
+              onChange={e => setNombre(e.target.value)}
+              required
+            />
           </div>
           <div>
             <label>Descripción</label>
-            <input className="w-full border p-2 rounded" value={descripcion} onChange={e => setDescripcion(e.target.value)} />
+            <input
+              className="w-full border p-2 rounded"
+              value={descripcion}
+              onChange={e => setDescripcion(e.target.value)}
+            />
           </div>
           <div>
             <label>Fecha inicio</label>
-            <input type="date" className="w-full border p-2 rounded" value={fecha_inicio} onChange={e => setFechaInicio(e.target.value)} />
+            <input
+              type="date"
+              className="w-full border p-2 rounded"
+              value={fecha_inicio}
+              onChange={e => setFechaInicio(e.target.value)}
+              required
+            />
           </div>
           <div>
             <label>Entrenador</label>
-            <select className="w-full border p-2 rounded" value={id_entrenador} onChange={e => setIdEntrenador(Number(e.target.value))}>
+            <select
+              className="w-full border p-2 rounded"
+              value={id_entrenador ?? ''}
+              onChange={e => setIdEntrenador(Number(e.target.value))}
+              required
+            >
               <option value="">Selecciona un entrenador…</option>
               {entrenadores.map(ent => (
                 <option key={ent.id_entrenador} value={ent.id_entrenador}>
@@ -187,7 +195,12 @@ export default function EditRutinaPage() {
 
           <div>
             <label>Cliente asignado</label>
-            <select className="w-full border p-2 rounded" value={id_cliente} onChange={e => setIdCliente(Number(e.target.value))}>
+            <select
+              className="w-full border p-2 rounded"
+              value={id_cliente ?? ''}
+              onChange={e => setIdCliente(Number(e.target.value))}
+              required
+            >
               <option value="">Selecciona un cliente…</option>
               {clientes.map(c => (
                 <option key={c.id_cliente} value={c.id_cliente}>
@@ -199,7 +212,11 @@ export default function EditRutinaPage() {
 
           <div>
             <h2 className="text-xl font-semibold mb-2">Ejercicios</h2>
-            <button type="button" className="mb-4 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" onClick={handleAddLinea}>
+            <button
+              type="button"
+              className="mb-4 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+              onClick={handleAddLinea}
+            >
               + Añadir ejercicio
             </button>
             <div className="space-y-4">
@@ -207,7 +224,11 @@ export default function EditRutinaPage() {
                 <div key={idx} className="grid grid-cols-8 gap-2 items-end">
                   <div className="col-span-2">
                     <label>Ejercicio</label>
-                    <select className="w-full border p-2 rounded" value={l.id_ejercicio} onChange={e => handleLineaChange(idx, 'id_ejercicio', Number(e.target.value))}>
+                    <select
+                      className="w-full border p-2 rounded"
+                      value={l.id_ejercicio}
+                      onChange={e => handleLineaChange(idx, 'id_ejercicio', Number(e.target.value))}
+                    >
                       <option value={0}>Selecciona...</option>
                       {ejercicios.map(ex => (
                         <option key={ex.id_ejercicio} value={ex.id_ejercicio}>
@@ -216,18 +237,76 @@ export default function EditRutinaPage() {
                       ))}
                     </select>
                   </div>
-                  <div><label>Día</label><input type="number" className="w-full border p-2 rounded" value={l.dia} onChange={e => handleLineaChange(idx, 'dia', Number(e.target.value))} /></div>
-                  <div><label>Orden</label><input type="number" className="w-full border p-2 rounded" value={l.orden} onChange={e => handleLineaChange(idx, 'orden', Number(e.target.value))} /></div>
-                  <div><label>Series</label><input type="number" className="w-full border p-2 rounded" value={l.series} onChange={e => handleLineaChange(idx, 'series', Number(e.target.value))} /></div>
-                  <div><label>Peso</label><input type="number" className="w-full border p-2 rounded" value={l.peso} onChange={e => handleLineaChange(idx, 'peso', Number(e.target.value))} /></div>
-                  <div><label>Descanso</label><input type="number" className="w-full border p-2 rounded" value={l.descanso} onChange={e => handleLineaChange(idx, 'descanso', Number(e.target.value))} /></div>
-                  <div><label>Obs.</label><input className="w-full border p-2 rounded" value={l.observacion} onChange={e => handleLineaChange(idx, 'observacion', e.target.value)} /></div>
-                  <button type="button" className="text-red-500 ml-2" onClick={() => handleRemoveLinea(idx)}>Eliminar</button>
+                  <div>
+                    <label>Día</label>
+                    <input
+                      type="number"
+                      className="w-full border p-2 rounded"
+                      value={l.dia}
+                      onChange={e => handleLineaChange(idx, 'dia', Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <label>Orden</label>
+                    <input
+                      type="number"
+                      className="w-full border p-2 rounded"
+                      value={l.orden}
+                      onChange={e => handleLineaChange(idx, 'orden', Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <label>Series</label>
+                    <input
+                      type="number"
+                      className="w-full border p-2 rounded"
+                      value={l.series}
+                      onChange={e => handleLineaChange(idx, 'series', Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <label>Peso</label>
+                    <input
+                      type="number"
+                      className="w-full border p-2 rounded"
+                      value={l.peso}
+                      onChange={e => handleLineaChange(idx, 'peso', Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <label>Descanso</label>
+                    <input
+                      type="number"
+                      className="w-full border p-2 rounded"
+                      value={l.descanso}
+                      onChange={e => handleLineaChange(idx, 'descanso', Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <label>Obs.</label>
+                    <input
+                      className="w-full border p-2 rounded"
+                      value={l.observacion}
+                      onChange={e => handleLineaChange(idx, 'observacion', e.target.value)}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="text-red-500 ml-2"
+                    onClick={() => handleRemoveLinea(idx)}
+                  >
+                    Eliminar
+                  </button>
                 </div>
               ))}
             </div>
           </div>
-          <button type="submit" className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded">Guardar cambios</button>
+          <button
+            type="submit"
+            className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded"
+          >
+            Guardar cambios
+          </button>
         </form>
       </main>
     </div>

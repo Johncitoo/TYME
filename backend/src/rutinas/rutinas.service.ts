@@ -1,4 +1,4 @@
-// src/rutinas/rutinas.service.ts
+// backend/src/rutinas/rutinas.service.ts
 import {
   Injectable,
   NotFoundException,
@@ -44,6 +44,8 @@ export class RutinasService {
     await qr.startTransaction();
 
     try {
+      console.log('🟢 Creando rutina con DTO:', dto);
+
       await qr.manager.update(
         ClienteRutina,
         { idCliente: dto.id_cliente, estado: 'Activa' },
@@ -57,17 +59,22 @@ export class RutinasService {
         descripcion: dto.descripcion,
       });
       const savedRutina = await qr.manager.save(rutina);
+      console.log('✅ Rutina guardada con ID:', savedRutina.id_rutina);
 
-      await qr.manager
-        .createQueryBuilder()
-        .insert()
-        .into(ClienteRutina)
-        .values({
-          estado: 'Activa',
-          idRutina: savedRutina.id_rutina,
-          idCliente: dto.id_cliente,
-        })
-        .execute();
+      console.log(
+        '📥 Insertando ClienteRutina con rutina:',
+        savedRutina.id_rutina,
+        'y cliente:',
+        dto.id_cliente,
+      );
+      const nuevaCR = new ClienteRutina();
+      nuevaCR.estado = 'Activa';
+      nuevaCR.idCliente = dto.id_cliente;
+      nuevaCR.idRutina = savedRutina.id_rutina;
+      nuevaCR.rutina = { id_rutina: savedRutina.id_rutina } as Rutina;
+      nuevaCR.cliente = { id_cliente: dto.id_cliente } as Cliente;
+
+      await qr.manager.save(ClienteRutina, nuevaCR);
 
       for (const ex of dto.ejercicios) {
         const re = qr.manager.create(RutinaEjercicio, {
@@ -121,12 +128,44 @@ export class RutinasService {
     return rutina;
   }
 
+  /**
+   * Devuelve la rutina igual que findOne, pero con el campo id_cliente
+   * seteado con el cliente 'Activa', o null si no hay ninguno activo.
+   */
+  async findOneWithActiveClient(
+    id: number,
+  ): Promise<Rutina & { id_cliente: number | null }> {
+    const rutina = await this.rutinaRepo.findOne({
+      where: { id_rutina: id },
+      relations: [
+        'entrenador',
+        'clientesRutinas',
+        'rutinaEjercicios',
+        'rutinaEjercicios.ejercicio',
+      ],
+    });
+    console.log('findOneWithActiveClient', rutina);
+    if (!rutina) throw new NotFoundException(`Rutina ${id} no encontrada`);
+
+    // Busca el cliente activo
+    const clienteActivo = rutina.clientesRutinas?.find(
+      (cr) => cr.estado === 'Activa',
+    );
+    return {
+      ...rutina,
+      id_cliente: clienteActivo?.idCliente ?? null,
+      // Si quieres puedes agregar más detalles del clienteActivo aquí
+    };
+  }
+
   async update(id: number, dto: UpdateRutinaDto): Promise<Rutina> {
     const qr = this.dataSource.createQueryRunner();
     await qr.connect();
     await qr.startTransaction();
 
     try {
+      console.log('🟡 Actualizando rutina ID:', id, 'con DTO:', dto);
+
       if (dto.id_cliente) {
         await qr.manager.update(
           ClienteRutina,
@@ -140,34 +179,52 @@ export class RutinasService {
             idRutina: id,
           },
         });
+        console.log('🔍 ClienteRutina existente encontrado:', existente);
 
         if (!existente) {
+          if (!id || !dto.id_cliente) {
+            throw new Error(
+              'Faltan id de rutina o de cliente en ClienteRutina',
+            );
+          }
+          console.log(
+            '📥 Insertando nueva ClienteRutina con id_rutina:',
+            id,
+            'y cliente:',
+            dto.id_cliente,
+          );
+          await qr.query(
+            `INSERT INTO cliente_rutina (estado, id_cliente, id_rutina) VALUES ($1, $2, $3)`,
+            ['Activa', dto.id_cliente, id],
+          );
+        } else {
+          console.log(
+            '🔁 Actualizando ClienteRutina existente (estado: Activa)',
+          );
           await qr.manager
             .createQueryBuilder()
-            .insert()
-            .into(ClienteRutina)
-            .values({
-              estado: 'Activa',
-              idRutina: id,
+            .update(ClienteRutina)
+            .set({ estado: 'Activa' })
+            .where('id_cliente = :idCliente AND id_rutina = :idRutina', {
               idCliente: dto.id_cliente,
+              idRutina: id,
             })
             .execute();
-        } else {
-          await qr.manager.update(
-            ClienteRutina,
-            { idCliente: dto.id_cliente, idRutina: id },
-            { estado: 'Activa' },
-          );
         }
       }
 
-      const rutina = await this.findOne(id);
+      const rutina: Rutina = await this.findOne(id);
+
+      // 🚨 FIX AQUÍ: Eliminar la relación clientesRutinas para que el save NO haga updates raros
+      (rutina as any).clientesRutinas = undefined;
+
       if (dto.nombre !== undefined) rutina.nombre = dto.nombre;
       if (dto.descripcion !== undefined) rutina.descripcion = dto.descripcion;
       if (dto.fecha_inicio) rutina.fecha_inicio = new Date(dto.fecha_inicio);
       if (dto.id_entrenador) {
         rutina.entrenador = { id_entrenador: dto.id_entrenador } as Entrenador;
       }
+      console.log('👀 Rutina antes de save:', JSON.stringify(rutina));
       await qr.manager.save(rutina);
 
       if (dto.ejercicios) {

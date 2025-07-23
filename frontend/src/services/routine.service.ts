@@ -69,6 +69,16 @@ export function getRutinaById(id: number) {
   });
 }
 
+// Ahora (para edición)
+export async function getRutinaForEdit(id: number) {
+  return fetch(`${BASE}/${id}/for-edit`, {
+    headers: AUTH,
+  }).then(res => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  });
+}
+
 /** Actualizar */
 export function updateRutina(id: number, payload: UpdateRutinaDto) {
   return fetch(`${BASE}/${id}`, {
