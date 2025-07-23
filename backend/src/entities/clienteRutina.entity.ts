@@ -5,11 +5,13 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 import { Cliente } from './cliente.entity';
 import { Rutina } from './rutina.entity';
 
 @Entity('cliente_rutina')
+@Unique('cliente_rutina_id_rutina_id_cliente_key', ['idRutina', 'idCliente'])
 export class ClienteRutina {
   @PrimaryGeneratedColumn({ name: 'id_cliente_rutina' })
   id: number;

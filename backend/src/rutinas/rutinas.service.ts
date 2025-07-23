@@ -38,22 +38,18 @@ export class RutinasService {
     private readonly rutinaEjercicioService: RutinaEjercicioService,
   ) {}
 
-  // ── CRUD estándar ──────────────────────────────────────────────────────
-
   async create(dto: CreateRutinaDto): Promise<Rutina> {
     const qr = this.dataSource.createQueryRunner();
     await qr.connect();
     await qr.startTransaction();
 
     try {
-      // 1) Desactivar rutinas previas activas
       await qr.manager.update(
         ClienteRutina,
         { idCliente: dto.id_cliente, estado: 'Activa' },
         { estado: 'Inactiva' },
       );
 
-      // 2) Crear rutina
       const rutina = qr.manager.create(Rutina, {
         entrenador: { id_entrenador: dto.id_entrenador } as Entrenador,
         fecha_inicio: dto.fecha_inicio,
@@ -62,7 +58,6 @@ export class RutinasService {
       });
       const savedRutina = await qr.manager.save(rutina);
 
-      // 3) Asociar rutina->cliente (usando QueryBuilder.insert)
       await qr.manager
         .createQueryBuilder()
         .insert()
@@ -74,7 +69,6 @@ export class RutinasService {
         })
         .execute();
 
-      // 4) Guardar ejercicios de la rutina
       for (const ex of dto.ejercicios) {
         const re = qr.manager.create(RutinaEjercicio, {
           rutina: { id_rutina: savedRutina.id_rutina } as Rutina,
@@ -133,29 +127,40 @@ export class RutinasService {
     await qr.startTransaction();
 
     try {
-      // 1) Si viene id_cliente, desactivar y volver a asociar
       if (dto.id_cliente) {
-        // Desactivar previas
         await qr.manager.update(
           ClienteRutina,
           { idCliente: dto.id_cliente, estado: 'Activa' },
           { estado: 'Inactiva' },
         );
 
-        // Crear nueva asociación activa
-        await qr.manager
-          .createQueryBuilder()
-          .insert()
-          .into(ClienteRutina)
-          .values({
-            estado: 'Activa',
-            idRutina: id,
+        const existente = await qr.manager.findOne(ClienteRutina, {
+          where: {
             idCliente: dto.id_cliente,
-          })
-          .execute();
+            idRutina: id,
+          },
+        });
+
+        if (!existente) {
+          await qr.manager
+            .createQueryBuilder()
+            .insert()
+            .into(ClienteRutina)
+            .values({
+              estado: 'Activa',
+              idRutina: id,
+              idCliente: dto.id_cliente,
+            })
+            .execute();
+        } else {
+          await qr.manager.update(
+            ClienteRutina,
+            { idCliente: dto.id_cliente, idRutina: id },
+            { estado: 'Activa' },
+          );
+        }
       }
 
-      // 2) Actualizar campos básicos de rutina
       const rutina = await this.findOne(id);
       if (dto.nombre !== undefined) rutina.nombre = dto.nombre;
       if (dto.descripcion !== undefined) rutina.descripcion = dto.descripcion;
@@ -165,9 +170,7 @@ export class RutinasService {
       }
       await qr.manager.save(rutina);
 
-      // 3) Sincronizar ejercicios
       if (dto.ejercicios) {
-        // a) Eliminar los que ya no vienen
         const actuales = await qr.manager.find(RutinaEjercicio, {
           where: { rutina: { id_rutina: id } },
         });
@@ -181,7 +184,6 @@ export class RutinasService {
           }
         }
 
-        // b) Crear o actualizar los enviados
         for (const ex of dto.ejercicios) {
           if (ex.id_rutina_ejercicio) {
             await qr.manager.update(RutinaEjercicio, ex.id_rutina_ejercicio, {
@@ -229,7 +231,6 @@ export class RutinasService {
     await qr.startTransaction();
 
     try {
-      // 1) Borrar todas las asociaciones en cliente_rutina
       await qr.manager
         .createQueryBuilder()
         .delete()
@@ -237,7 +238,6 @@ export class RutinasService {
         .where('rutina = :rid', { rid: id })
         .execute();
 
-      // 2) Borrar todos los ejercicios de la rutina
       await qr.manager
         .createQueryBuilder()
         .delete()
@@ -245,7 +245,6 @@ export class RutinasService {
         .where('rutina = :rid', { rid: id })
         .execute();
 
-      // 3) Finalmente borrar la propia Rutina
       await qr.manager
         .createQueryBuilder()
         .delete()
@@ -265,9 +264,6 @@ export class RutinasService {
     }
   }
 
-  // ── Métodos específicos de cliente ────────────────────────────────────
-
-  /** Rutina activa de un cliente */
   async obtenerRutinaCliente(usuarioId: number): Promise<Rutina | null> {
     const cliente = await this.clienteRepo.findOne({
       where: { usuario: { id_usuario: usuarioId } },
@@ -290,7 +286,6 @@ export class RutinasService {
     return cr?.rutina ?? null;
   }
 
-  /** Historial completo de rutinas de un cliente */
   async obtenerRutinasCliente(usuarioId: number): Promise<Rutina[]> {
     const cliente = await this.clienteRepo.findOne({
       where: { usuario: { id_usuario: usuarioId } },

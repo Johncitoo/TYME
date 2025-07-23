@@ -10,6 +10,15 @@ export interface RutinaEjercicioPayload {
   observacion?: string;
 }
 
+export interface UpdateRutinaDto {
+  nombre?: string;
+  descripcion?: string;
+  fecha_inicio?: string;
+  id_entrenador?: number;
+  ejercicios?: RutinaEjercicioPayload[];
+  id_cliente?: number;  // Opcional, para asignar un cliente nuevo
+}
+
 export interface CreateRutinaDto {
   nombre: string;
   descripcion?: string;
@@ -61,7 +70,7 @@ export function getRutinaById(id: number) {
 }
 
 /** Actualizar */
-export function updateRutina(id: number, payload: CreateRutinaDto) {
+export function updateRutina(id: number, payload: UpdateRutinaDto) {
   return fetch(`${BASE}/${id}`, {
     method: 'PUT',
     headers: AUTH,

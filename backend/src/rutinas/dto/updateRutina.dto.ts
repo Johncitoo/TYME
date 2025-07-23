@@ -2,7 +2,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateRutinaDto } from './createRutina.dto';
 import { Type } from 'class-transformer';
-import { ValidateNested, IsOptional } from 'class-validator';
+import { ValidateNested, IsOptional, IsInt } from 'class-validator';
 import { UpdateEjercicioNestedDto } from './updateEjercicioNested.dto';
 
 export class UpdateRutinaDto extends PartialType(CreateRutinaDto) {
@@ -10,4 +10,8 @@ export class UpdateRutinaDto extends PartialType(CreateRutinaDto) {
   @ValidateNested({ each: true })
   @Type(() => UpdateEjercicioNestedDto)
   ejercicios?: UpdateEjercicioNestedDto[];
+
+  @IsOptional()
+  @IsInt()
+  id_cliente?: number;
 }
