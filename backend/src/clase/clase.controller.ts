@@ -10,8 +10,8 @@ export class ClaseController {
   constructor(private readonly claseService: ClaseService) {}
 
   @Post()
-  async create(@Body() createClaseDto: CreateClaseDto, @Request() req) {
-    return this.claseService.create(createClaseDto, req.user.sub);
+  async create(@Body() createClaseDto: CreateClaseDto) {
+    return this.claseService.create(createClaseDto);
   }
 
   @Get()
@@ -39,4 +39,10 @@ export class ClaseController {
   findClasesInscritasSemana(@Param('id', ParseIntPipe) id: number) {
     return this.claseService.findClasesInscritasSemana(id);
   }
+
+  @Get('entrenador/:id')
+  findByEntrenador(@Param('id', ParseIntPipe) id: number) {
+    return this.claseService.findByEntrenador(id);
+  }
+
 }

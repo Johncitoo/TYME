@@ -129,4 +129,25 @@ export class EntrenadorService {
     }
     return result;
   }
+
+  async findAllActivos(): Promise<Entrenador[]> {
+  return this.entrenadorRepo.find({
+    where: { usuario: { activo: true } },
+    relations: [
+      'usuario',
+      'especialidades',
+      'especialidades.tipoEspecialidad',
+    ],
+  });
+}
+
+// ...dentro de la clase EntrenadorService
+async findByUsuario(id_usuario: number) {
+  return this.entrenadorRepo.findOne({
+    where: { usuario: { id_usuario } },
+    relations: ['usuario'],
+  });
+}
+
+
 }

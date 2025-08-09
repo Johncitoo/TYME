@@ -5,11 +5,12 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
-  Column
+  Column,
 } from 'typeorm';
 import { Usuario } from './user.entity';
 import { EntrenadorTipo } from './entrenador_tipo.entity';
 import { Rutina } from './rutina.entity';
+import { Cliente } from './cliente.entity';
 @Entity({ name: 'entrenador' })
 export class Entrenador {
   @PrimaryGeneratedColumn({ name: 'id_entrenador' })
@@ -19,7 +20,7 @@ export class Entrenador {
   @JoinColumn({ name: 'id_usuario' })
   usuario: Usuario;
 
-  @Column({ name: 'id_usuario' }) 
+  @Column({ name: 'id_usuario' })
   id_usuario: number;
 
   /**
@@ -34,4 +35,7 @@ export class Entrenador {
 
   @OneToMany(() => Rutina, (rutina) => rutina.entrenador)
   rutinas: Rutina[];
+
+  @OneToMany(() => Cliente, (cliente) => cliente.entrenador)
+  clientes: Cliente[];
 }

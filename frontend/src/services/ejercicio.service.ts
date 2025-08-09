@@ -44,11 +44,12 @@ export async function updateEjercicio(id: number, payload: EjercicioData) {
 }
 
 interface EjercicioData {
-  // Replace these properties with the actual structure of your ejercicio data
   nombre: string;
-  grupoMuscularId: number;
-  tipoEjercicioId: number;
-  // Add other fields as needed
+  descripcion?: string;  // ← Agrega esta línea
+  video_url?: string;
+  imagen_url?: string;
+  id_grupo_muscular: number;
+  id_tipo_ejercicio: number;
 }
 
 export async function createEjercicio(data: EjercicioData) {

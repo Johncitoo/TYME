@@ -4,10 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from '../entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { Entrenador } from '../entities/entrenador.entity';
 
-//
-// 1) Define el tipo de usuario que devuelve validateUser
-//
 export interface JwtUser {
   id_usuario: number;
   correo: string;
@@ -15,9 +13,6 @@ export interface JwtUser {
   tipo_usuario: string;
 }
 
-//
-// 2) Define el payload exacto que vas a firmar para JWT
-//
 export interface JwtPayload {
   sub: number;
   correo: string;
@@ -30,12 +25,10 @@ export class AuthService {
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
     private readonly jwtService: JwtService,
+    @InjectRepository(Entrenador)
+    private readonly entrenadorRepository: Repository<Entrenador>,
   ) {}
 
-  /**
-   * Busca y valida las credenciales. Si todo está bien,
-   * devuelve un objeto JwtUser; si falla, devuelve null.
-   */
   async validateUser(email: string, password: string): Promise<JwtUser | null> {
     const user = await this.usuarioRepository
       .createQueryBuilder('usuario')
@@ -55,18 +48,46 @@ export class AuthService {
     };
   }
 
-  /**
-   * Genera y devuelve el JWT, tipando entrada y payload para
-   * que ESLint no se queje de `any`.
-   */
+  // CORREGIDO: Token SIEMPRE con expiración explícita (12h)
   generateJwtToken(user: JwtUser): string {
     const payload: JwtPayload = {
       sub: user.id_usuario,
       correo: user.correo,
       role: user.tipo_usuario,
     };
+    return this.jwtService.sign(payload, { expiresIn: '12h' });
+  }
 
-    // Si prefieres asíncrono, usa `signAsync` y haz este método `async`
-    return this.jwtService.sign(payload);
+  async login(email: string, password: string): Promise<any> {
+    const user = await this.usuarioRepository
+      .createQueryBuilder('usuario')
+      .leftJoinAndSelect('usuario.tipo_usuario', 'tipo_usuario')
+      .where('usuario.correo = :email', { email })
+      .getOne();
+
+    if (!user || user.contrasena !== password) {
+      return null;
+    }
+
+    const token = this.generateJwtToken({
+      id_usuario: user.id_usuario,
+      correo: user.correo,
+      primer_nombre: user.primer_nombre,
+      tipo_usuario: user.tipo_usuario?.nombre || '',
+    });
+
+    // Verificar si es entrenador
+    const entrenador = await this.entrenadorRepository.findOne({
+      where: { id_usuario: user.id_usuario },
+    });
+
+    return {
+      id_usuario: user.id_usuario,
+      correo: user.correo,
+      primer_nombre: user.primer_nombre,
+      tipo_usuario: user.tipo_usuario?.nombre || '',
+      token,
+      ...(entrenador && { id_entrenador: entrenador.id_entrenador }), // <- clave
+    };
   }
 }

@@ -55,11 +55,17 @@ export default function DashboardRutinaCliente() {
         ].sort((a, b) => a - b) as number[];
         setDias(diasUnicos);
         setDiaSeleccionado(diasUnicos[0] || 1);
-      } catch (err: any) {
-        setError(
-          err.response?.data?.message ||
-            "No se pudo cargar la rutina. Intenta nuevamente."
-        );
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+          setError(
+            err.response?.data?.message ||
+              "No se pudo cargar la rutina. Intenta nuevamente."
+          );
+        } else if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("No se pudo cargar la rutina. Intenta nuevamente.");
+        }
       } finally {
         setLoading(false);
       }

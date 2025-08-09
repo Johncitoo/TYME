@@ -20,10 +20,10 @@ export async function getAsistenciasCliente() {
 }
 
 // INSCRIBIR ASISTENCIA A UNA CLASE
-export async function inscribirAsistencia(claseId: string) {
+export async function inscribirAsistencia(claseId: string | number) {
   const res = await axios.post(
-    `${API_URL}/asistencia/${claseId}`,
-    {},
+    `${API_URL}/asistencia`,
+    { id_clase: Number(claseId) }, // <-- debe ir así en el body
     {
       headers: { Authorization: `Bearer ${getToken()}` },
     }
@@ -31,14 +31,16 @@ export async function inscribirAsistencia(claseId: string) {
   return res.data;
 }
 
+
+
 export async function cancelarAsistencia(id_asistencia: number) {
-  const API_URL = "http://localhost:3000";
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_URL}/asistencia/${id_asistencia}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
+  const res = await axios.delete(`${API_URL}/asistencia/${id_asistencia}`, {
+    headers: { Authorization: `Bearer ${getToken()}` }
   });
-  if (!res.ok) throw new Error("Error al cancelar asistencia");
-  return res.json();
+  return res.data;
 }
+
+
+
+
 

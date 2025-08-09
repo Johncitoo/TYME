@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Clase } from './clase.entity';
@@ -21,27 +25,43 @@ export class ClaseService {
     private readonly asistenciaRepository: Repository<Asistencia>,
   ) {}
 
-  async create(createClaseDto: CreateClaseDto, id_usuario: number): Promise<Clase> {
-    const usuario = await this.usuarioRepository.findOne({ where: { id_usuario } });
-    if (!usuario) throw new UnauthorizedException('Usuario no encontrado');
-
-    const entrenador = await this.entrenadorRepository.findOne({
-      where: { usuario: { id_usuario } },
-    });
-
-    if (!entrenador && usuario.id_tipo_usuario !== 1) {
-      throw new UnauthorizedException('No eres entrenador o admin');
+  async create(createClaseDto: CreateClaseDto): Promise<Clase> {
+    if (createClaseDto.hora_inicio >= createClaseDto.hora_fin) {
+      throw new BadRequestException('La hora de inicio debe ser menor que la hora de fin.');
     }
-
+    if (!Number.isInteger(createClaseDto.cupo_maximo) || createClaseDto.cupo_maximo <= 0) {
+      throw new BadRequestException('El cupo máximo debe ser un número entero positivo.');
+    }
+    const entrenador = await this.entrenadorRepository.findOne({
+      where: { id_entrenador: createClaseDto.id_entrenador },
+      relations: ['usuario'],
+    });
+    if (!entrenador || !entrenador.usuario || entrenador.usuario.activo !== true) {
+      throw new NotFoundException('Entrenador no encontrado o inactivo.');
+    }
     const clase = this.claseRepository.create({
       ...createClaseDto,
-      ...(entrenador && { entrenador }),
+      entrenador,
     });
     return await this.claseRepository.save(clase);
   }
 
-  findAll(): Promise<Clase[]> {
-    return this.claseRepository.find();
+  // MÉTODO CORREGIDO PARA CUPOS OCUPADOS
+  async findAll(): Promise<any[]> {
+    const clases = await this.claseRepository.find({
+      relations: ['entrenador', 'entrenador.usuario'],
+    });
+
+    // Para cada clase, cuenta los inscritos
+    const result = await Promise.all(
+      clases.map(async (clase) => {
+        const cupos_ocupados = await this.asistenciaRepository.count({
+          where: { clase: { id_clase: clase.id_clase } }
+        });
+        return { ...clase, cupos_ocupados };
+      })
+    );
+    return result;
   }
 
   async findOne(id: number): Promise<Clase> {
@@ -60,24 +80,28 @@ export class ClaseService {
     await this.claseRepository.remove(clase);
   }
 
-  // CLASES INSCRITAS DE UN CLIENTE (PRÓXIMAS)
   async findClasesInscritasSemana(clienteId: number): Promise<Clase[]> {
     const asistencias = await this.asistenciaRepository.find({
       where: { cliente: { id_cliente: clienteId } },
-      relations: ["clase", "clase.entrenador", "clase.entrenador.usuario"],
+      relations: ['clase', 'clase.entrenador', 'clase.entrenador.usuario'],
     });
-
     const ahora = new Date();
     const clasesInscritas: Clase[] = asistencias
-      .map(a => a.clase)
+      .map((a) => a.clase)
       .filter((c): c is Clase => !!c)
-      .filter(c => new Date(`${c.fecha_clase}T${c.hora_fin}`) > ahora)
+      .filter((c) => new Date(`${c.fecha_clase}T${c.hora_fin}`) > ahora)
       .sort((a, b) => {
         const aDate = new Date(`${a.fecha_clase}T${a.hora_inicio}`);
         const bDate = new Date(`${b.fecha_clase}T${b.hora_inicio}`);
         return aDate.getTime() - bDate.getTime();
       });
-
     return clasesInscritas;
+  }
+
+  async findByEntrenador(idEntrenador: number): Promise<Clase[]> {
+    return this.claseRepository.find({
+      where: { entrenador: { id_entrenador: idEntrenador } },
+      relations: ['entrenador', 'entrenador.usuario'],
+    });
   }
 }

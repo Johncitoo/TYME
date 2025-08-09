@@ -1,11 +1,10 @@
-// frontend/src/pages/Teachers.tsx
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarAdmin from "../components/AdminSidebar";
 import { Search } from "lucide-react";
 import { getAllEntrenadores } from "../services/entrenador.service";
 import type { EntrenadorBackend } from "../services/entrenador.service";
+
 const Teachers: React.FC = () => {
   const navigate = useNavigate();
   const [listaEntrenadores, setListaEntrenadores] = useState<EntrenadorBackend[]>([]);
@@ -64,39 +63,31 @@ const Teachers: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      {/* Barra lateral de administrador */}
       <SidebarAdmin />
-
-      {/* Contenido principal */}
       <main className="flex-1 overflow-y-auto bg-[#f4f4f6]">
-        {/* Header de sección */}
         <div className="flex justify-between items-center mb-6 px-8 pt-8">
-         <h1 className="text-3xl font-bold text-teal-500">Profesores</h1>
-         <button
-          className="bg-gray-300 text-white px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
-          onClick={() => navigate("/admin/profesores/crear")}
-        >
-          Agregar profesor
-         </button>
-         <button
-          className="bg-gray-300 text-white px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
-          onClick={() => navigate("/admin/profesores/crearClase")}
-        >
-          Crear Clase
-         </button>
-
-         <button
-          className="bg-gray-300 text-white px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
-          onClick={() => navigate("/admin/profesores/crearRutina")}
-        >
-          Crear rutina
-         </button>
-
+          <h1 className="text-3xl font-bold text-teal-500">Profesores</h1>
+          <button
+            className="bg-gray-300 text-white px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
+            onClick={() => navigate("/admin/profesores/crear")}
+          >
+            Agregar profesor
+          </button>
+          <button
+            className="bg-gray-300 text-white px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
+            onClick={() => navigate("/admin/profesores/crearClase")}
+          >
+            Crear Clase
+          </button>
+          <button
+            className="bg-gray-300 text-white px-4 py-2 rounded-full shadow hover:bg-gray-200 transition"
+            onClick={() => navigate("/admin/profesores/crearRutina")}
+          >
+            Crear rutina
+          </button>
         </div>
-
         <div className="mx-8 mb-8">
           <div className="bg-purple-600 bg-opacity-20 rounded-2xl p-6">
-            {/* Fila superior con “Show Entities” y “Search” */}
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center space-x-2">
                 <label className="text-gray-700 font-medium">Show Entities</label>
@@ -117,8 +108,6 @@ const Teachers: React.FC = () => {
                 </button>
               </div>
             </div>
-
-            {/* Tabla de entrenadores */}
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-xl overflow-hidden shadow">
                 <thead className="bg-purple-600 text-white">
@@ -163,8 +152,6 @@ const Teachers: React.FC = () => {
                 </tbody>
               </table>
             </div>
-
-            {/* Paginación simple */}
             <div className="flex justify-end mt-6 space-x-4">
               <button className="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-md transition">
                 Anterior
@@ -181,4 +168,3 @@ const Teachers: React.FC = () => {
 };
 
 export default Teachers;
-
